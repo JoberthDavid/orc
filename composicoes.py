@@ -36,7 +36,7 @@ lista_eq = list()
 lista_mo = list()
 lista_ma = list()
 
-
+lista_auxiliar = list()
 
 for cp in composicoes_projeto:
 
@@ -50,12 +50,15 @@ for cp in composicoes_projeto:
 
     lista_aa = df_composicao.retornar_lista_atividade_auxiliar()
 
+    lista_auxiliar.append(cp)
+
     if ( lista_aa != None):
         
         for item in lista_aa:
             item = item[1]
             if item not in composicoes_projeto:
                 composicoes_projeto.append( item )
+            lista_auxiliar.append( item )
 
     lista_eq = df_composicao.retornar_lista_equipamento()
 
@@ -81,41 +84,22 @@ for cp in composicoes_projeto:
             if item not in material_projeto:
                 material_projeto.append( item )
 
-# print( lista_auxiliar )
-# auxiliar2 = list()
+lista_auxiliar_reversa = list()
 
-# while (len(lista_auxiliar) != 0):
-#     item = lista_auxiliar[-1]
-#     if item not in auxiliar2:
-#         auxiliar2.append( item )
-#     lista_auxiliar.pop()
-
-# composicoes_projeto = auxiliar2
-# print(len(auxiliar2))
-# print( composicoes_projeto )
-
-# i=0
-# while (len(composicoes_projeto) != 0):
-#     i = i + 1
-#     comp = composicoes_projeto[-1]
-#     dicionario_df[ comp ].calcular_custo_atividade_auxiliar(dicionario_db)
-#     dicionario_df[ comp ].calcular_subtotal_composto()
-#     dicionario_df[ comp ].calcular_custo_unitario_direto_total()
-#     dicionario_df[ comp ].df_insumo = dicionario_df[ comp ].df_insumo.sort_index()
-#     composicoes_projeto.pop()
-# print(i)
+while(len(lista_auxiliar) != 0 ):
+    ultimo = lista_auxiliar[-1]
+    if ultimo not in lista_auxiliar_reversa:
+        lista_auxiliar_reversa.append( ultimo )
+    lista_auxiliar.pop()
 
 
-i=0
-while (len(composicoes_projeto) != 0):
-    i = i + 1
-    comp = composicoes_projeto[-1]
+for item in lista_auxiliar_reversa:
+    comp = item
     dicionario_df[ comp ].calcular_custo_atividade_auxiliar(dicionario_db)
     dicionario_df[ comp ].calcular_subtotal_composto()
     dicionario_df[ comp ].calcular_custo_unitario_direto_total()
     dicionario_df[ comp ].df_insumo = dicionario_df[ comp ].df_insumo.sort_index()
-    composicoes_projeto.pop()
-print(i)
+
 
 equipamento_projeto = pd.DataFrame({'Código': equipamento_projeto})
 equipamento_projeto = pd.merge( equipamento_projeto, baseDF.df_dados_in, on='Código', how='left' )

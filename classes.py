@@ -4,52 +4,52 @@ from funcoes import arred
 from constantes import *
 
 
+class GeradorDF:
+    """Classe que gera um Data Frame e trata as colunas deste"""
+
+    def __init__(self, arquivo: str) -> None:
+        self.df = self.carregar_dados(arquivo)
+
+    def carregar_dados( self, arquivo ) -> pd.core.frame.DataFrame:
+        return pd.read_csv( arquivo, encoding=UTF )
+
+    def tratar_df(self, lista=list()) -> pd.core.frame.DataFrame:
+        self.df.columns = COLUNAS_DF_ORIGEM_CP + lista
+        if lista[-1] == 'NONE':
+            self.df.pop('NONE')
+        return self.df
+
 
 class BaseDF:
     """Classe que reune a base de Data Frame necessários para o projeto"""
     
 
     def __init__(self, arq_db_cp: str, arq_db_in: str, arq_apr_in: str, arq_cto_in: str) -> None:
-        #################### Data-frame dados básicos
-        UTF='utf-8'
-        self.df_dados_cp = pd.read_csv( arq_db_cp, encoding=UTF)
-        self.df_dados_in = pd.read_csv( arq_db_in, encoding=UTF)
-        #################### Data-frame apropriações
-        self.df_apropriacao_in = pd.read_csv( arq_apr_in, encoding=UTF)
-        #################### Data-frame custos de insumos
-        self.df_custo_in = pd.read_csv( arq_cto_in, encoding=UTF)
-        #################### carregando
-        self.carregar_df_dados_basicos_cp()
-        self.carregar_df_dados_basicos_in()
-        self.carregar_df_apropriacao_in()
-        self.carregar_df_custo_in()
+        df_db_cp = GeradorDF(arq_db_cp)
+        df_db_in = GeradorDF(arq_db_in)
+        df_apr_in = GeradorDF(arq_apr_in)
+        df_cto_in = GeradorDF(arq_cto_in)        
+        self.df_dados_cp = self.tratar_df_dados_basicos_cp( df_db_cp )
+        self.df_dados_in = self.tratar_df_dados_basicos_in( df_db_in )
+        self.df_apropriacao_in = self.tratar_df_apropriacao_in( df_apr_in )
+        self.df_custo_in = self.tratar_df_custo_in( df_cto_in )
 
 
-    def tratar_df(self, data_frame: pd.core.frame.DataFrame, lista=list()) -> pd.core.frame.DataFrame:
-        data_frame.columns = ['Origem', 'Estado', 'Publicacao'] + lista
-        if lista[-1] == 'NONE':
-            data_frame.pop('NONE')
-        return data_frame
+    def tratar_df_dados_basicos_cp( self, df_db: pd.core.frame.DataFrame ) -> pd.core.frame.DataFrame:
+        return df_db.tratar_df( COLUNAS_DF_DADOS_BASICO_CP )
 
-    def carregar_df_dados_basicos_cp( self ) -> None:
-        lista = ['Composicao_principal', 'FIC', 'Produtividade', 'Tipo', 'NONE']
-        self.df_dados_cp = self.tratar_df(self.df_dados_cp, lista)
+    def tratar_df_dados_basicos_in( self, df_db: pd.core.frame.DataFrame ) -> pd.core.frame.DataFrame:
+        return df_db.tratar_df( COLUNAS_DF_DADOS_BASICO_IN )
 
-    def carregar_df_dados_basicos_in( self ) -> None:
-        lista = ['Código', 'Descrição', 'Unidade', 'NONE']
-        self.df_dados_in = self.tratar_df(self.df_dados_in, lista)
+    def tratar_df_apropriacao_in( self, df_db: pd.core.frame.DataFrame ) -> pd.core.frame.DataFrame:
+        return df_db.tratar_df( COLUNAS_DF_APROPRIACAO_IN )
 
-    def carregar_df_apropriacao_in( self ) -> None:
-        lista = ['Composicao_principal', 'Código', 'Quantidade', 'Utilização', 'Item transporte','Grupo','NONE']
-        self.df_apropriacao_in = self.tratar_df(self.df_apropriacao_in, lista)
-
-    def carregar_df_custo_in( self ) -> None:
-        lista = ['Código', 'Custo pro onerado', 'Custo imp onerado', 'Custo pro desonerado', 'Custo imp desonerado', 'Preço unitário', 'Grupo', 'NONE']
-        self.df_custo_in = self.tratar_df(self.df_custo_in, lista)
+    def tratar_df_custo_in( self, df_db: pd.core.frame.DataFrame ) -> pd.core.frame.DataFrame:
+        return df_db.tratar_df( COLUNAS_DF_CUSTO_IN )
 
     def max_apr( self ) -> int:
-        maximo_in = self.df_apropriacao_in.groupby('Composicao_principal').size().max()
-        return maximo_in
+        return self.df_apropriacao_in.groupby('Composicao_principal').size().max()
+
 
 class ComposicaoDB:
     """Classe que representa os dados mais importantes de cada composição do projeto"""
@@ -73,6 +73,7 @@ class ComposicaoDB:
         self.custo_unitario_total = 0.0000
         self.custo_bdi = 0.0000
         self.preco_un_total = 0.0000
+
 
     def calcular_custo_horario_execucao(self) -> None:
         self.custo_horario_execucao = arred( self.custo_horario_equipamento + self.custo_horario_mao_de_obra )
@@ -126,11 +127,12 @@ class ComposicaoDF:
         self.df_insumo = pd.merge( self.df_insumo, self.df_custo_in, on='Código', how='left')
         self.inserir_coluna_dmt()
         self.calcular_custo_insumos()
-        custo_produtivo = 'Custo pro onerado'
-        custo_improdutivo = 'Custo imp onerado'
-        if not self.composicao.onerado :
-            custo_produtivo = 'Custo pro desonerado'
-            custo_improdutivo = 'Custo imp desonerado'
+        if self.composicao.onerado:
+            encargos_mao_de_obra = 'onerado'
+        else:
+            encargos_mao_de_obra = 'desonerado'
+        custo_produtivo = 'Custo pro {}'.format(encargos_mao_de_obra)
+        custo_improdutivo = 'Custo imp {}'.format(encargos_mao_de_obra)
         self.lista_colunas = ['Composicao_principal', self.index_grupo, 'Código', 'Descrição', 'Item transporte', 'DMT', 'Unidade', 'Quantidade', 'Utilização', custo_produtivo, custo_improdutivo,'Preço unitário', 'Custo total']
         self.df_insumo = self.df_insumo[self.lista_colunas]
 

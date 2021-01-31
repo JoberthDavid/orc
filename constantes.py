@@ -1,3 +1,4 @@
+UTF='utf-8'
 EQUIPAMENTO = 20
 EQUIPAMENTO_CUSTO_HORARIO = 21
 MAO_DE_OBRA = 30
@@ -17,3 +18,8 @@ CODIGO_HORARIO = 'ho'
 CODIGO_HORARIO_EXECUCAO = 'ho_ex'
 CODIGO_UNITARIO = 'un'
 CODIGO_UNITARIO_DIRETO_TOTAL = 'un_dt'
+COLUNAS_DF_ORIGEM_CP = ['Origem', 'Estado', 'Publicacao']
+COLUNAS_DF_DADOS_BASICO_CP = ['Composicao_principal', 'FIC', 'Produtividade', 'Tipo', 'NONE']
+COLUNAS_DF_DADOS_BASICO_IN = ['Código', 'Descrição', 'Unidade', 'NONE']
+COLUNAS_DF_APROPRIACAO_IN = ['Composicao_principal', 'Código', 'Quantidade', 'Utilização', 'Item transporte','Grupo','NONE']
+COLUNAS_DF_CUSTO_IN = ['Código', 'Custo pro onerado', 'Custo imp onerado', 'Custo pro desonerado', 'Custo imp desonerado', 'Preço unitário', 'Grupo', 'NONE']
