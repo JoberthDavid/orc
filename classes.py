@@ -5,7 +5,7 @@ from constantes import *
 
 
 class GeradorDF:
-    """Classe que gera um Data Frame e trata as colunas deste"""
+    """Classe que gera um Data Frame e trata as suas colunas"""
 
     def __init__(self, arquivo: str) -> None:
         self.df = self.carregar_dados(arquivo)
@@ -23,7 +23,6 @@ class GeradorDF:
 class BaseDF:
     """Classe que reune a base de Data Frame necessários para o projeto"""
     
-
     def __init__(self, arq_db_cp: str, arq_db_in: str, arq_apr_in: str, arq_cto_in: str) -> None:
         df_db_cp = GeradorDF(arq_db_cp)
         df_db_in = GeradorDF(arq_db_in)
@@ -33,7 +32,6 @@ class BaseDF:
         self.df_dados_in = self.tratar_df_dados_basicos_in( df_db_in )
         self.df_apropriacao_in = self.tratar_df_apropriacao_in( df_apr_in )
         self.df_custo_in = self.tratar_df_custo_in( df_cto_in )
-
 
     def tratar_df_dados_basicos_cp( self, df_db: pd.core.frame.DataFrame ) -> pd.core.frame.DataFrame:
         return df_db.tratar_df( COLUNAS_DF_DADOS_BASICO_CP )
@@ -52,7 +50,7 @@ class BaseDF:
 
 
 class ComposicaoDB:
-    """Classe que representa os dados mais importantes de cada composição do projeto"""
+    """Classe que representa os parâmetros mais importantes de cada composição do projeto"""
 
     def __init__(self, codigo: str, onerado=True) -> None:
         self.codigo = codigo
@@ -65,6 +63,8 @@ class ComposicaoDB:
         self.custo_horario_mao_de_obra = 0.0000
         self.custo_horario_execucao = 0.0000
         self.custo_unitario_execucao = 0.0000
+        self.custo_fic = 0.0000
+        self.custo_fit = 0.0000
         self.custo_unitario_material = 0.0000
         self.custo_total_insumos = 0.0000
         self.custo_total_atividade_auxiliar = 0.0000
@@ -72,20 +72,23 @@ class ComposicaoDB:
         self.custo_total_transporte = 0.0000
         self.custo_unitario_total = 0.0000
         self.custo_bdi = 0.0000
-        self.preco_un_total = 0.0000
+        self.preco_unitario_total = 0.0000
 
-
-    def calcular_custo_horario_execucao(self) -> None:
+    def calcular_custo_horario_execucao(self) -> float:
         self.custo_horario_execucao = arred( self.custo_horario_equipamento + self.custo_horario_mao_de_obra )
+        return self.custo_horario_execucao
 
-    def calcular_custo_unitario_execucao(self) -> None:
+    def calcular_custo_unitario_execucao(self) -> float:
         self.custo_unitario_execucao = arred( self.custo_horario_execucao / self.produtividade )
+        return self.custo_unitario_execucao
 
-    def calcular_custo_unitario_total(self) -> None:
+    def calcular_custo_unitario_total(self) -> float:
         self.custo_unitario_total = arred( self.custo_unitario_execucao + self.custo_unitario_material + self.custo_total_atividade_auxiliar + self.custo_total_tempo_fixo + self.custo_total_transporte )
-    
-    def calcular_preco_un_total(self) -> None:
-        self.preco_un_total = arred( self.custo_bdi + self.custo_unitario_total )
+        return self.custo_unitario_total
+
+    def calcular_preco_unitario_total(self) -> float:
+        self.preco_unitario_total = arred( self.custo_bdi + self.custo_unitario_total )
+        return self.preco_unitario_total
 
 
 class ComposicaoDF:
@@ -95,25 +98,19 @@ class ComposicaoDF:
         self.index_grupo = 'Grupo_x'
         self.composicao = composicao
         self.base = base
-
         self.df_dados_basicos = self.base.df_dados_cp
         self.df_custo_in = self.base.df_custo_in
         self.carregar_dados_basicos_composicao()
         self.configurar_composicao()
         self.df_insumo = self.carregar_insumos()
-
         self.configurar_filtro_grupo()
-
         self.calcular_subtotal_simples()
         self.calcular_custo_horario_execucao()
         self.calcular_custo_unitario_execucao()
 
-########### métodos para carregar df_insumo
-
     def carregar_dados_basicos_insumos( self ) -> None:
         self.df_insumo = self.base.df_apropriacao_in.query( "Composicao_principal == '{}'".format( self.composicao.codigo ) )
         self.df_insumo = pd.merge( self.df_insumo, self.base.df_dados_in, on='Código', how='left' )
-
 
     def carregar_dados_basicos_composicao( self ) -> None:
         if len(str(self.composicao.codigo)) == 6 : 

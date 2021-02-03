@@ -38,9 +38,9 @@ lista_ma = list()
 
 lista_auxiliar = list()
 
-for cp in composicoes_projeto:
+for codigo_cp in composicoes_projeto:
 
-    db_composicao = ComposicaoDB( cp, onerado )
+    db_composicao = ComposicaoDB( codigo_cp, onerado )
 
     df_composicao = ComposicaoDF( db_composicao, baseDF )
 
@@ -50,7 +50,7 @@ for cp in composicoes_projeto:
 
     lista_aa = df_composicao.retornar_lista_atividade_auxiliar()
 
-    lista_auxiliar.append(cp)
+    lista_auxiliar.append(codigo_cp)
 
     if ( lista_aa != None):
         
