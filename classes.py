@@ -53,7 +53,7 @@ class ComposicaoDB:
     """Classe que representa os parâmetros mais importantes de cada composição do projeto"""
 
     def __init__(self, codigo: str, onerado=True) -> None:
-        self.codigo = codigo
+        self.codigo = self.tratar_codigo_composicao( codigo )
         self.onerado = onerado
         self.descricao = ''
         self.unidade = ''
@@ -73,6 +73,11 @@ class ComposicaoDB:
         self.custo_unitario_total = 0.0000
         self.custo_bdi = 0.0000
         self.preco_unitario_total = 0.0000
+
+    def tratar_codigo_composicao( self, codigo: str ) -> str:
+        if len( codigo ) == 6 : 
+            codigo = "0{}".format( codigo )
+        return codigo
 
     def calcular_custo_horario_execucao(self) -> float:
         self.custo_horario_execucao = arred( self.custo_horario_equipamento + self.custo_horario_mao_de_obra )
@@ -100,55 +105,84 @@ class ComposicaoDF:
         self.base = base
         self.df_dados_basicos = self.base.df_dados_cp
         self.df_custo_in = self.base.df_custo_in
-        self.carregar_dados_basicos_composicao()
-        self.configurar_composicao()
-        self.df_insumo = self.carregar_insumos()
+        self.composicao.descricao = self.obter_descricao_composicao()
+        self.composicao.unidade = self.obter_unidade_composicao()
+        self.composicao.fic = self.obter_fic_composicao()
+        self.composicao.produtividade = self.obter_produtividade_composicao()
+
+        self.df_insumo = self.associar_custos_apropriacoes_insumos()
+        self.inserir_coluna_dmt()
+        self.configurar_custo_equipamento()
+        self.configurar_custo_mao_de_obra()
+        self.configurar_custo_material()
+        self.df_insumo = self.df_insumo[ self.obter_lista_colunas() ]
+
         self.configurar_filtro_grupo()
         self.calcular_subtotal_simples()
         self.calcular_custo_horario_execucao()
         self.calcular_custo_unitario_execucao()
 
-    def retornar_argumento_query_apropriacao( self ) -> str:
-        return "Composicao_principal == '{}'".format( self.composicao.codigo )
+    def obter_df_dados_basicos_insumos( self ) -> pd.core.frame.DataFrame:
+        return self.base.df_dados_in.query( "Código == '{}'".format( self.composicao.codigo ) )
 
-    def carregar_dados_basicos_insumos( self ) -> pd.core.frame.DataFrame:
-        self.df_insumo = self.base.df_apropriacao_in.query( self.retornar_argumento_query_apropriacao() )
-        self.df_insumo = pd.merge( self.df_insumo, self.base.df_dados_in, on='Código', how='left' )
-        return self.df_insumo
+    def obter_df_dados_basicos_composicao( self ) -> pd.core.frame.DataFrame:
+        return self.base.df_dados_cp.query( "Composicao_principal == '{}'".format( self.composicao.codigo ) )
 
-    def retornar_desoneracao_mao_de_obra( self ) -> str:
+    def obter_df_apropriacoes_insumos( self ) -> pd.core.frame.DataFrame:
+        return self.base.df_apropriacao_in.query( "Composicao_principal == '{}'".format( self.composicao.codigo ) )
+
+    def obter_descricao_composicao( self ) -> str:
+        auxiliar = self.obter_df_dados_basicos_insumos()
+        return auxiliar['Descrição'].values[0]
+
+    def obter_unidade_composicao( self ) -> str:
+        auxiliar = self.obter_df_dados_basicos_insumos()
+        return auxiliar['Unidade'].values[0]
+
+    def obter_fic_composicao( self ) -> float:
+        auxiliar = self.obter_df_dados_basicos_composicao()
+        return auxiliar['FIC'].values[0]
+    
+    def obter_produtividade_composicao( self ) -> float:
+        auxiliar = self.obter_df_dados_basicos_composicao()
+        return auxiliar['Produtividade'].values[0]
+
+    def associar_dados_basicos_apropriacoes_insumos( self ) -> pd.core.frame.DataFrame:
+        return pd.merge( self.obter_df_apropriacoes_insumos(), self.base.df_dados_in, on='Código', how='left' )
+
+    def obter_desoneracao_mao_de_obra( self ) -> str:
         if self.composicao.onerado:
             encargos_mao_de_obra = 'onerado'
         else:
             encargos_mao_de_obra = 'desonerado'
         return encargos_mao_de_obra
 
-    def retornar_custo_produtivo( self ) -> str:
-        return 'Custo pro {}'.format( self.retornar_desoneracao_mao_de_obra() )
+    def obter_descricao_custo_produtivo( self ) -> str:
+        return 'Custo pro {}'.format( self.obter_desoneracao_mao_de_obra() )
 
-    def retornar_custo_improdutivo(self) -> str:
-        return 'Custo imp {}'.format( self.retornar_desoneracao_mao_de_obra() )
+    def obter_descricao_custo_improdutivo(self) -> str:
+        return 'Custo imp {}'.format( self.obter_desoneracao_mao_de_obra() )
 
     def inserir_coluna_dmt( self ) -> None:
         self.df_insumo['DMT'] = ''
 
-    def retornar_lista_colunas( self ) -> list:
-        self.lista_colunas = ['Composicao_principal', self.index_grupo, 'Código', 'Descrição', 'Item transporte', 'DMT', 'Unidade', 'Quantidade', 'Utilização', self.retornar_custo_produtivo(), self.retornar_custo_improdutivo(),'Preço unitário', 'Custo total']
+    def obter_lista_colunas( self ) -> list:
+        self.lista_colunas = ['Composicao_principal', self.index_grupo, 'Código', 'Descrição', 'Item transporte', 'DMT', 'Unidade', 'Quantidade', 'Utilização', self.obter_descricao_custo_produtivo(), self.obter_descricao_custo_improdutivo(),'Preço unitário', 'Custo total']
         return self.lista_colunas
 
-    def juntar_dados_basicos_e_custos_insumos( self ) -> pd.core.frame.DataFrame:
-        return pd.merge( self.df_insumo, self.df_custo_in, on='Código', how='left')
+    def associar_custos_apropriacoes_insumos( self ) -> pd.core.frame.DataFrame:
+        return pd.merge( self.associar_dados_basicos_apropriacoes_insumos(), self.df_custo_in, on='Código', how='left')
 
     def calcular_custo_equipamento( self ) -> pd.core.series.Series:
         qt = self.df_insumo['Quantidade']
-        cp = self.df_insumo[ self.retornar_custo_produtivo() ]
-        ci = self.df_insumo[ self.retornar_custo_improdutivo() ]
+        cp = self.df_insumo[ self.obter_descricao_custo_produtivo() ]
+        ci = self.df_insumo[ self.obter_descricao_custo_improdutivo() ]
         ut = self.df_insumo['Utilização']
         return arred( qt * ( ( ut * cp ) + ( ( 1 - ut ) * ci ) ) )
 
     def calcular_custo_mao_de_obra( self ) -> pd.core.series.Series:
         qt = self.df_insumo['Quantidade']
-        cp = self.df_insumo[ self.retornar_custo_produtivo() ]
+        cp = self.df_insumo[ self.obter_descricao_custo_produtivo() ]
         return arred( qt * cp )
 
     def calcular_custo_material( self ) -> pd.core.series.Series:
@@ -156,51 +190,33 @@ class ComposicaoDF:
         pu = self.df_insumo['Preço unitário']
         return arred( qt * pu )
 
-    def calcular_custo_insumos( self ) -> None:
+    def configurar_custo_equipamento( self ) -> pd.core.series.Series:
         self.df_insumo.loc[self.df_insumo[self.index_grupo] == EQUIPAMENTO, 'Custo total'] = self.calcular_custo_equipamento()
+        return self.df_insumo.loc[self.df_insumo[self.index_grupo] == EQUIPAMENTO, 'Custo total']
+
+    def configurar_custo_mao_de_obra( self ) -> pd.core.series.Series:
         self.df_insumo.loc[self.df_insumo[self.index_grupo] == MAO_DE_OBRA, 'Custo total'] = self.calcular_custo_mao_de_obra()
+        return self.df_insumo.loc[self.df_insumo[self.index_grupo] == MAO_DE_OBRA, 'Custo total']
+
+    def configurar_custo_material( self ) -> pd.core.series.Series:
         self.df_insumo.loc[self.df_insumo[self.index_grupo] == MATERIAL, 'Custo total'] = self.calcular_custo_material()
-
-    def carregar_custos_insumos( self ) -> None:
-        self.df_insumo = self.juntar_dados_basicos_e_custos_insumos()
-        self.inserir_coluna_dmt()
-        self.calcular_custo_insumos()
-        self.df_insumo = self.df_insumo[ self.retornar_lista_colunas() ]
-
-    def carregar_insumos( self ) ->  pd.core.frame.DataFrame:
-        self.carregar_dados_basicos_insumos()
-        self.carregar_custos_insumos()
-        return self.df_insumo
-
-####################
-
-    def carregar_dados_basicos_composicao( self ) -> None:
-        if len(str(self.composicao.codigo)) == 6 : 
-            auxiliar = self.base.df_dados_in.query( "Código == '0{}'".format( self.composicao.codigo ) )
-        else:
-            auxiliar = self.base.df_dados_in.query( "Código == '{}'".format( self.composicao.codigo ) )
-        self.composicao.descricao = auxiliar['Descrição'].values[0]
-        self.composicao.unidade = auxiliar['Unidade'].values[0]
+        return self.df_insumo.loc[self.df_insumo[self.index_grupo] == MATERIAL, 'Custo total']
 
     def configurar_filtro_grupo( self ) -> None:
         self.df_insumo = self.df_insumo.set_index( self.index_grupo )
 
-    def configurar_composicao( self ) -> None:
-        auxiliar = self.base.df_dados_cp.query( self.retornar_argumento_query_apropriacao() )
-        self.composicao.fic = auxiliar['FIC'].values[0]
-        self.composicao.produtividade = auxiliar['Produtividade'].values[0]
+####################
 
     def calcular_custo_atividade_auxiliar( self, dicionario: dict ) -> None:
-        lista = self.retornar_lista_atividade_auxiliar()
+        lista = self.obter_lista_atividade_auxiliar()
         for item in lista:
             grupo = item[0]
             item = item[1]
-            self.df_insumo.loc[ self.df_insumo['Código'] == item,'Preço unitário'] = dicionario[ item ].custo_unitario_total
-            self.df_insumo.loc[ self.df_insumo['Código'] == item, 'DMT'] = 0
-            dt = self.df_insumo.loc[ self.df_insumo['Código'] == item, 'DMT']
+            self.df_insumo.loc[ self.df_insumo['Código'] == item,'Preço unitário'] = dicionario[ item ].custo_unitario_total 
             qt = self.df_insumo.loc[ self.df_insumo['Código'] == item, 'Quantidade']
             pu = self.df_insumo.loc[ self.df_insumo['Código'] == item, 'Preço unitário']
-            if (grupo == TRANSPORTE):
+            if (grupo == TRANSPORTE): 
+                dt = self.df_insumo.loc[ self.df_insumo['Código'] == item, 'DMT'] = 0
                 self.df_insumo.loc[ self.df_insumo['Código'] == item, 'Custo total'] = arred( dt * qt * pu )
             else:
                 self.df_insumo.loc[ self.df_insumo['Código'] == item, 'Custo total'] = arred( qt * pu )
@@ -295,7 +311,7 @@ class ComposicaoDF:
                 self.composicao.custo_total_transporte = auxiliar['Custo total']
             self.df_insumo = self.df_insumo.append( auxiliar )
 
-    def retornar_operador_lista_insumo( self, insumo: int ) -> str:
+    def obter_operador_lista_insumo( self, insumo: int ) -> str:
         operador = '=='
         if insumo == ATIVIDADE_AUXILIAR:
             operador = '>='
@@ -308,19 +324,19 @@ class ComposicaoDF:
                 lista.append( item )
         return lista
 
-    def retornar_lista_insumo( self, insumo: int ) -> list:
-        operador = self.retornar_operador_lista_insumo(insumo)
-        consulta = self.base.df_apropriacao_in.query( "Composicao_principal == '{}' & Grupo {} {}".format( str(self.composicao.codigo), operador, insumo ) )
+    def obter_lista_insumo( self, insumo: int ) -> list:
+        operador = self.obter_operador_lista_insumo(insumo)
+        consulta = self.base.df_apropriacao_in.query( "Composicao_principal == '{}' & Grupo {} {}".format( self.composicao.codigo, operador, insumo ) )
         return self.configurar_lista_insumo( consulta )
 
-    def retornar_lista_atividade_auxiliar( self ) -> list:
-        return self.retornar_lista_insumo(ATIVIDADE_AUXILIAR)
+    def obter_lista_atividade_auxiliar( self ) -> list:
+        return self.obter_lista_insumo(ATIVIDADE_AUXILIAR)
 
-    def retornar_lista_equipamento( self ) -> list:
-        return self.retornar_lista_insumo(EQUIPAMENTO)
+    def obter_lista_equipamento( self ) -> list:
+        return self.obter_lista_insumo(EQUIPAMENTO)
 
-    def retornar_lista_mao_de_obra( self ) -> list:
-        return self.retornar_lista_insumo(MAO_DE_OBRA)
+    def obter_lista_mao_de_obra( self ) -> list:
+        return self.obter_lista_insumo(MAO_DE_OBRA)
     
-    def retornar_lista_material( self ) -> list:
-        return self.retornar_lista_insumo(MATERIAL)
+    def obter_lista_material( self ) -> list:
+        return self.obter_lista_insumo(MATERIAL)

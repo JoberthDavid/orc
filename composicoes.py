@@ -9,12 +9,12 @@ from classes import ComposicaoDF, ComposicaoDB, BaseDF
 baseDF = BaseDF( arq_db_cp, arq_db_in, arq_apr_in, arq_cto_in )
 maximo_linhas_na_composicao = baseDF.max_apr()
 
-composicoes_projeto = ['308321', '408031', '606841', '705371', '804215', '909621', '1108055', '2009619', '3009090', '4011443', '5213385', '6106188', '7119788']
+composicoes_projeto = ['0308321', '0408031', '0606841', '0705371', '0804215', '0909621', '1108055', '2009619', '3009090', '4011287', '5213385', '6106188', '7119788']
 equipamento_projeto = []
 mao_de_obra_projeto = []
 material_projeto = []
 
-onerado = False #True #
+onerado = True #False #
 
 complemento = 'onerado'
 custo_produtivo = 'Custo pro onerado'
@@ -48,7 +48,7 @@ for codigo_cp in composicoes_projeto:
 
     dicionario_df[ db_composicao.codigo ] = df_composicao
 
-    lista_aa = df_composicao.retornar_lista_atividade_auxiliar()
+    lista_aa = df_composicao.obter_lista_atividade_auxiliar()
 
     lista_auxiliar.append(codigo_cp)
 
@@ -60,7 +60,7 @@ for codigo_cp in composicoes_projeto:
                 composicoes_projeto.append( item )
             lista_auxiliar.append( item )
 
-    lista_eq = df_composicao.retornar_lista_equipamento()
+    lista_eq = df_composicao.obter_lista_equipamento()
 
     if( lista_eq != None):
         for item in lista_eq:
@@ -68,7 +68,7 @@ for codigo_cp in composicoes_projeto:
             if item not in equipamento_projeto:
                 equipamento_projeto.append( item )
 
-    lista_mo = df_composicao.retornar_lista_mao_de_obra()
+    lista_mo = df_composicao.obter_lista_mao_de_obra()
 
     if( lista_mo != None):
         for item in lista_mo:
@@ -76,7 +76,7 @@ for codigo_cp in composicoes_projeto:
             if item not in mao_de_obra_projeto:
                 mao_de_obra_projeto.append( item )
 
-    lista_ma = df_composicao.retornar_lista_material()
+    lista_ma = df_composicao.obter_lista_material()
 
     if( lista_ma != None):
         for item in lista_ma:
