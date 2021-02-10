@@ -26,12 +26,12 @@ class TestBaseDF(unittest.TestCase):
         self.assertIsInstance( self.obj_BaseDF, BaseDF )
 
     def test_instance_of_carregar_df(self):
-        self.assertIsInstance( self.obj_BaseDF.df_dados_cp, pd.core.frame.DataFrame )
+        self.assertIsInstance( self.obj_BaseDF.dfr_dados_cp, pd.core.frame.DataFrame )
 
-    def test_result_of_tratar_df_dados_basicos_cp(self):
+    def test_result_of_tratar_dfr_dados_basicos_cp(self):
         obj_GeradorDF = GeradorDF( arq_db_cp )
-        lista_colunas_df_dados_cp = obj_GeradorDF.tratar_df( COLUNAS_DF_DADOS_BASICO_CP ).columns
-        self.assertEqual( len( self.obj_BaseDF.df_dados_cp.columns.values ), len( lista_colunas_df_dados_cp.values ) )
+        lista_colunas_dfr_dados_cp = obj_GeradorDF.tratar_dfr( COLUNAS_DFR_DADOS_BASICO_CP ).columns
+        self.assertEqual( len( self.obj_BaseDF.dfr_dados_cp.columns.values ), len( lista_colunas_dfr_dados_cp.values ) )
 
 
 class TestComposicaoDB(unittest.TestCase):
@@ -60,7 +60,7 @@ class TestComposicaoDB(unittest.TestCase):
     def test_instance_of_ComposicaoDB(self):
         self.assertIsInstance( self.obj_ComposicaoDB, ComposicaoDB )
     
-    def test_instance_of_tratar_codigo_composicao_2( self ):
+    def test_instance_of_tratar_codigo_composicao( self ):
         self.assertEqual( self.obj_ComposicaoDB.codigo, self.obj_ComposicaoDB.tratar_codigo_composicao(codigo_composicao_1) )
         self.assertNotEqual( self.obj_ComposicaoDB.codigo, codigo_composicao_1 )
         self.assertIsInstance( self.obj_ComposicaoDB.codigo, str )
@@ -102,21 +102,21 @@ class TestComposicaoDF(unittest.TestCase):
     def test_instance_of_ComposicaoDF(self):
         self.assertIsInstance( self.obj_ComposicaoDF, ComposicaoDF )
 
-    def test_result_and_instance_of_obter_df_dados_basicos_insumos( self ):
-        resultado = self.obj_ComposicaoDF.obter_df_dados_basicos_insumos()
-        esperado = self.obj_ComposicaoDF.base.df_dados_in.query( "Código == '{}'".format( self.obj_ComposicaoDF.composicao.codigo ) )
+    def test_result_and_instance_of_obter_dfr_dados_basicos_insumos( self ):
+        resultado = self.obj_ComposicaoDF.obter_dfr_dados_basicos_insumos()
+        esperado = self.obj_ComposicaoDF.base.dfr_dados_in.query( "Código == '{}'".format( self.obj_ComposicaoDF.composicao.codigo ) )
         pd._testing.assert_frame_equal( resultado, esperado )
         self.assertIsInstance( resultado, pd.core.frame.DataFrame )
 
-    def test_result_and_instance_of_obter_df_dados_basicos_composicao( self ):
-        resultado = self.obj_ComposicaoDF.obter_df_dados_basicos_composicao()
-        esperado = self.obj_ComposicaoDF.base.df_dados_cp.query( "Composicao_principal == '{}'".format( self.obj_ComposicaoDF.composicao.codigo ) )
+    def test_result_and_instance_of_obter_dfr_dados_basicos_composicao( self ):
+        resultado = self.obj_ComposicaoDF.obter_dfr_dados_basicos_composicao()
+        esperado = self.obj_ComposicaoDF.base.dfr_dados_cp.query( "Composicao_principal == '{}'".format( self.obj_ComposicaoDF.composicao.codigo ) )
         pd._testing.assert_frame_equal( resultado, esperado )
         self.assertIsInstance( resultado, pd.core.frame.DataFrame )
 
-    def test_result_and_instance_of_obter_df_apropriacoes_insumos( self ):
-        resultado = self.obj_ComposicaoDF.obter_df_apropriacoes_insumos()
-        esperado = self.obj_ComposicaoDF.base.df_apropriacao_in.query( "Composicao_principal == '{}'".format( self.obj_ComposicaoDF.composicao.codigo ) )
+    def test_result_and_instance_of_obter_dfr_apropriacoes_insumos( self ):
+        resultado = self.obj_ComposicaoDF.obter_dfr_apropriacoes_insumos()
+        esperado = self.obj_ComposicaoDF.base.dfr_apropriacao_in.query( "Composicao_principal == '{}'".format( self.obj_ComposicaoDF.composicao.codigo ) )
         pd._testing.assert_frame_equal( resultado, esperado )
         self.assertIsInstance( resultado, pd.core.frame.DataFrame )
 
@@ -145,7 +145,7 @@ class TestComposicaoDF(unittest.TestCase):
         self.assertIsInstance( resultado, float )
 
     def test_instance_of_obter_dados_basicos_apropriacoes_insumos( self ):
-        resultado = self.obj_ComposicaoDF.associar_dados_basicos_apropriacoes_insumos()
+        resultado = self.obj_ComposicaoDF.associar_dfr_dados_basicos_apropriacoes_insumos()
         self.assertIsInstance( resultado, pd.core.frame.DataFrame )
 
     def test_result_and_instance_of_obter_desoneracao_mao_de_obra( self ):
@@ -168,50 +168,63 @@ class TestComposicaoDF(unittest.TestCase):
         esperado = self.obj_ComposicaoDF.obter_descricao_custo_improdutivo()
         self.assertEqual( resultado, esperado )
     
-    def test_result_of_inserir_coluna_dmt( self ):
+    def test_result_of_inserir_cl_dmt( self ):
         self.obj_ComposicaoDF.inserir_coluna_dmt()
-        resultado = self.obj_ComposicaoDF.df_insumo['DMT'].to_list()
+        resultado = self.obj_ComposicaoDF.dfr_insumo['DMT'].to_list()
         esperado = ['','','','','','','','','','','','','','','','','','','','','','']
         self.assertListEqual( resultado, esperado )
 
-    def test_result_of_obter_lista_colunas( self ):
-        resultado = self.obj_ComposicaoDF.obter_lista_colunas()
+    def test_result_of_obter_lis_colunas( self ):
+        resultado = self.obj_ComposicaoDF.obter_lis_colunas()
         esperado = ['Composicao_principal', self.obj_ComposicaoDF.index_grupo, 'Código', 'Descrição', 'Item transporte', 'DMT', 'Unidade', 'Quantidade', 'Utilização', self.obj_ComposicaoDF.obter_descricao_custo_produtivo(), self.obj_ComposicaoDF.obter_descricao_custo_improdutivo(),'Preço unitário', 'Custo total']
         self.assertListEqual( resultado, esperado )
 
-    def test_result_of_juntar_dados_basicos_e_custos_insumos( self ):
-        resultado = self.obj_ComposicaoDF.associar_custos_apropriacoes_insumos()
-        esperado = pd.merge( self.obj_ComposicaoDF.associar_dados_basicos_apropriacoes_insumos(), self.obj_ComposicaoDF.df_custo_in, on='Código', how='left' )
+    def test_result_of_associar_dfr_custos_apropriacoes_insumos( self ):
+        resultado = self.obj_ComposicaoDF.associar_dfr_custos_apropriacoes_insumos()
+        esperado = pd.merge( self.obj_ComposicaoDF.associar_dfr_dados_basicos_apropriacoes_insumos(), self.obj_ComposicaoDF.dfr_custo_in, on='Código', how='left' )
         pd._testing.assert_frame_equal( resultado, esperado )
     
-    def test_result_of_calcular_custo_equipamento( self ):
-        resultado = self.obj_ComposicaoDF.df_insumo.query( '{} == {}'.format(self.obj_ComposicaoDF.index_grupo, EQUIPAMENTO ) )
-        resultado = resultado['Custo total'].to_list()
-        esperado = [161.4524, 2.0687, 166.7428, 127.8386, 121.9713, 75.2449]
-        self.assertListEqual( resultado, esperado )
-
-    def test_result_of_calcular_custo_mao_de_obra( self ):
-        resultado = self.obj_ComposicaoDF.df_insumo.query( '{} == {}'.format(self.obj_ComposicaoDF.index_grupo, MAO_DE_OBRA ) )
-        resultado = resultado['Custo total'].to_list()
-        esperado = [90.6054]
-        self.assertListEqual( resultado, esperado )
-
-    def test_result_of_calcular_custo_material( self ):
-        resultado = self.obj_ComposicaoDF.df_insumo.query( '{} == {}'.format(self.obj_ComposicaoDF.index_grupo, MATERIAL ) )
-        resultado = resultado['Custo total'].to_list()
-        esperado = [39.2218]
-        self.assertListEqual( resultado, esperado )
-
-    def test_result_of_configurar_equipamento( self ):
-        resultado = self.obj_ComposicaoDF.calcular_custo_equipamento().sum()
+    def test_result_of_calcular_sre_custo_equipamento( self ):
+        resultado = 0
+        for composicao, _dfr_insumo in self.obj_ComposicaoDF.dfr_insumo.groupby( ['Composicao_principal', self.obj_ComposicaoDF.index_grupo] ):
+            if composicao[1] == EQUIPAMENTO:
+              resultado = _dfr_insumo['Custo total'].sum()
         esperado = self.obj_ComposicaoDF.composicao.custo_horario_equipamento
         self.assertEqual( resultado, esperado )
+
+    def test_result_of_calcular_sre_custo_mao_de_obra( self ):
+        resultado = 0
+        for composicao, _dfr_insumo in self.obj_ComposicaoDF.dfr_insumo.groupby( ['Composicao_principal', self.obj_ComposicaoDF.index_grupo] ):
+            if composicao[1] == MAO_DE_OBRA:
+              resultado = _dfr_insumo['Custo total'].sum()
+        esperado = self.obj_ComposicaoDF.composicao.custo_horario_mao_de_obra
+        self.assertEqual( resultado, esperado )
         
-    def test_result_of_configurar_custo_material( self ):
-        resultado = self.obj_ComposicaoDF.calcular_custo_material().sum()
+    def test_result_of_calcular_sre_custo_material( self ):
+        resultado = 0
+        for composicao, _dfr_insumo in self.obj_ComposicaoDF.dfr_insumo.groupby( ['Composicao_principal', self.obj_ComposicaoDF.index_grupo] ):
+            if composicao[1] == MATERIAL:
+              resultado = _dfr_insumo['Custo total'].sum()
         esperado = self.obj_ComposicaoDF.composicao.custo_unitario_material
         self.assertEqual( resultado, esperado )
 
+    def test_result_of_obter_dfr_custo_equipamento(self):
+        resultado = self.obj_ComposicaoDF.dfr_insumo.query( '{} == {}'.format(self.obj_ComposicaoDF.index_grupo, EQUIPAMENTO ) )
+        esperado = [161.4524, 2.0687, 166.7428, 127.8386, 121.9713, 75.2449]
+        self.assertListEqual( resultado['Custo total'].to_list(), esperado )
+    
+    def test_result_of_obter_dfr_custo_mao_de_obra(self):
+        resultado = self.obj_ComposicaoDF.dfr_insumo.query( '{} == {}'.format(self.obj_ComposicaoDF.index_grupo, MAO_DE_OBRA ) )
+        esperado = [90.6054]
+        self.assertListEqual( resultado['Custo total'].to_list(), esperado )
+
+    def test_result_of_obter_dfr_custo_material(self):
+        resultado = self.obj_ComposicaoDF.dfr_insumo.query( '{} == {}'.format(self.obj_ComposicaoDF.index_grupo, MATERIAL ) )
+        esperado = [39.2218]
+        self.assertListEqual( resultado['Custo total'].to_list(), esperado )
+
+    def test_result_of_configurar_filtro_grupo( self ):
+        pass
 
 
 if __name__ == '__main__':

@@ -35,8 +35,8 @@ def configurar_impressao(worksheet, area_de_impressao, numero_de_composicoes):
 def escrever_arquivo_excel( arquivo, complemento, dicionario, maximo_linhas_na_composicao, df_eq, df_mo, df_ma ):
     numero_de_composicoes = len( dicionario )
     numero_linhas = numero_de_composicoes * maximo_linhas_na_composicao
-    area_de_impressao = '$C${}:$M${}'.format(1, numero_de_composicoes * maximo_linhas_na_composicao )
-    area_formatacao_condicional = '$C${}:$M${}'.format(1, numero_de_composicoes * maximo_linhas_na_composicao )
+    area_de_impressao = '$D${}:$N${}'.format(1, numero_de_composicoes * maximo_linhas_na_composicao )
+    area_formatacao_condicional = '$D${}:$N${}'.format(1, numero_de_composicoes * maximo_linhas_na_composicao )
 
     # contador para as linhas das composições
     linha_inicio = 1
@@ -65,31 +65,31 @@ def escrever_arquivo_excel( arquivo, complemento, dicionario, maximo_linhas_na_c
     format_gray = workbook.add_format({'font_color': '#808080'})
 
     for df in dicionario.values():
-        # df_insumo
-        df.df_insumo.to_excel( writer, startrow=(linha_inicio), sheet_name='composicao', index=True )
+        # dfr_insumo
+        df.dfr_insumo.to_excel( writer, startrow=(linha_inicio), sheet_name='composicao', index=True )
 
         worksheet = writer.sheets['composicao']
         
         configurar_impressao(worksheet, area_de_impressao, numero_de_composicoes)
 
         # acrescentando a linha com dados da composição
-        linhas = [ ('C', df.composicao.codigo, format_codigo_composicao), ('D', df.composicao.descricao, format_descricao_composicao), ('K', df.composicao.produtividade, format_codigo_composicao), ('L', df.composicao.unidade, format_codigo_composicao), ('M', complemento, format_complemento) ]
+        linhas = [ ('D', df.composicao.codigo, format_codigo_composicao), ('E', df.composicao.descricao, format_descricao_composicao), ('L', df.composicao.produtividade, format_codigo_composicao), ('M', df.composicao.unidade, format_codigo_composicao), ('N', complemento, format_complemento) ]
         for lin in linhas:
             worksheet.write( ''.join( (lin[0], str(linha_inicio)) ), lin[1], lin[2])
 
         # formatando colunas
-        colunas = [ ('A:C', modulo, format_centro), ('D:D', 6.5*modulo, format_esquerda), ('E:E', 1.5*modulo, format_centro), ('F:F', modulo, format_valor_2decimais), ('G:G', modulo, format_centro), ('H:H', 1.5*modulo, format_valor_5decimais), ('I:I', modulo, format_valor_2decimais), ('J:M', 2.0*modulo, format_valor_4decimais) ]
+        colunas = [ ('B:D', modulo, format_centro), ('E:E', 6.5*modulo, format_esquerda), ('F:F', 1.5*modulo, format_centro), ('G:G', modulo, format_valor_2decimais), ('H:H', modulo, format_centro), ('I:I', 1.5*modulo, format_valor_5decimais), ('J:J', modulo, format_valor_2decimais), ('K:N', 2.0*modulo, format_valor_4decimais) ]
         for col in colunas:
             worksheet.set_column( col[0], col[1], col[2] )
 
         # formatando as linhas de custos horários e unitários
         criterios = [ ('"{}"'.format(CODIGO_HORARIO), format_horario), ('"{}"'.format(CODIGO_UNITARIO),format_unitario), ('"{}"'.format(CODIGO_UNITARIO_DIRETO_TOTAL),format_total) ]
         for cri in criterios:
-            token = 'INDEX($A${inicio}:$M${fim},ROW(),3)={token}'.format(inicio=1, fim=numero_linhas, token=cri[0] )
+            token = 'INDEX($B${inicio}:$N${fim},ROW(),3)={token}'.format(inicio=1, fim=numero_linhas, token=cri[0] )
             worksheet.conditional_format( area_formatacao_condicional, {'type':'formula','criteria': token,'format':cri[1]} )
 
         # formatação condicional códgio com ho, un e un_dt
-        token = '$C${inicio}:$C${fim}'.format(inicio=1, fim=numero_linhas)
+        token = '$D${inicio}:$D${fim}'.format(inicio=1, fim=numero_linhas)
         condicoes = [ (CODIGO_HORARIO, format_white), (CODIGO_UNITARIO_DIRETO_TOTAL, format_gray), (CODIGO_UNITARIO, format_silver)]
         for con in condicoes:
             worksheet.conditional_format( token, {'type':'text','criteria':'containing','value': con[0],'format':con[1]} )

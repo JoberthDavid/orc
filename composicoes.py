@@ -9,7 +9,7 @@ from classes import ComposicaoDF, ComposicaoDB, BaseDF
 baseDF = BaseDF( arq_db_cp, arq_db_in, arq_apr_in, arq_cto_in )
 maximo_linhas_na_composicao = baseDF.max_apr()
 
-composicoes_projeto = ['0308321', '0408031', '0606841', '0705371', '0804215', '0909621', '1108055', '2009619', '3009090', '4011287', '5213385', '6106188', '7119788']
+composicoes_projeto = ['308321', '408031', '606841', '705371', '804215', '909621', '1108055', '2009619', '3009090', '4011287', '5213385', '6106188', '7119788']
 equipamento_projeto = []
 mao_de_obra_projeto = []
 material_projeto = []
@@ -48,7 +48,7 @@ for codigo_cp in composicoes_projeto:
 
     dicionario_df[ db_composicao.codigo ] = df_composicao
 
-    lista_aa = df_composicao.obter_lista_atividade_auxiliar()
+    lista_aa = df_composicao.obter_lis_atividade_auxiliar()
 
     lista_auxiliar.append(codigo_cp)
 
@@ -60,7 +60,7 @@ for codigo_cp in composicoes_projeto:
                 composicoes_projeto.append( item )
             lista_auxiliar.append( item )
 
-    lista_eq = df_composicao.obter_lista_equipamento()
+    lista_eq = df_composicao.obter_lis_equipamento()
 
     if( lista_eq != None):
         for item in lista_eq:
@@ -68,7 +68,7 @@ for codigo_cp in composicoes_projeto:
             if item not in equipamento_projeto:
                 equipamento_projeto.append( item )
 
-    lista_mo = df_composicao.obter_lista_mao_de_obra()
+    lista_mo = df_composicao.obter_lis_mao_de_obra()
 
     if( lista_mo != None):
         for item in lista_mo:
@@ -76,7 +76,7 @@ for codigo_cp in composicoes_projeto:
             if item not in mao_de_obra_projeto:
                 mao_de_obra_projeto.append( item )
 
-    lista_ma = df_composicao.obter_lista_material()
+    lista_ma = df_composicao.obter_lis_material()
 
     if( lista_ma != None):
         for item in lista_ma:
@@ -92,30 +92,36 @@ while(len(lista_auxiliar) != 0 ):
         lista_auxiliar_reversa.append( ultimo )
     lista_auxiliar.pop()
 
+def tratar_codigo_composicao( codigo: str, menor_tamanho_codigo=6 ) -> str:
+    if len( codigo ) == menor_tamanho_codigo : 
+        codigo = "0{}".format( codigo )
+    return codigo
+
 
 for item in lista_auxiliar_reversa:
-    comp = item
+    comp = tratar_codigo_composicao(item)
     dicionario_df[ comp ].calcular_custo_atividade_auxiliar(dicionario_db)
     dicionario_df[ comp ].calcular_subtotal_composto()
     dicionario_df[ comp ].calcular_custo_unitario_direto_total()
-    dicionario_df[ comp ].df_insumo = dicionario_df[ comp ].df_insumo.sort_index()
+    dicionario_df[ comp ].dfr_insumo.sort_values(by=dicionario_df[ comp ].index_grupo, inplace=True)
+    dicionario_df[ comp ].dfr_insumo.reset_index(drop=True, inplace=True)
 
 
 equipamento_projeto = pd.DataFrame({'Código': equipamento_projeto})
-equipamento_projeto = pd.merge( equipamento_projeto, baseDF.df_dados_in, on='Código', how='left' )
-equipamento_projeto = pd.merge( equipamento_projeto, baseDF.df_custo_in, on='Código', how='left' )
+equipamento_projeto = pd.merge( equipamento_projeto, baseDF.dfr_dados_in, on='Código', how='left' )
+equipamento_projeto = pd.merge( equipamento_projeto, baseDF.dfr_custo_in, on='Código', how='left' )
 lista_colunas_eq = ['Grupo', 'Origem_x', 'Estado_x', 'Publicacao_x', 'Código', 'Descrição', 'Unidade', custo_produtivo, custo_improdutivo]
 equipamento_projeto = equipamento_projeto[lista_colunas_eq]
 
 mao_de_obra_projeto = pd.DataFrame({'Código': mao_de_obra_projeto})
-mao_de_obra_projeto = pd.merge( mao_de_obra_projeto, baseDF.df_dados_in, on='Código', how='left' )
-mao_de_obra_projeto = pd.merge( mao_de_obra_projeto, baseDF.df_custo_in, on='Código', how='left' )
+mao_de_obra_projeto = pd.merge( mao_de_obra_projeto, baseDF.dfr_dados_in, on='Código', how='left' )
+mao_de_obra_projeto = pd.merge( mao_de_obra_projeto, baseDF.dfr_custo_in, on='Código', how='left' )
 lista_colunas_mo = ['Grupo', 'Origem_x', 'Estado_x', 'Publicacao_x', 'Código', 'Descrição', 'Unidade', custo_produtivo]
 mao_de_obra_projeto = mao_de_obra_projeto[lista_colunas_mo]
 
 material_projeto = pd.DataFrame({'Código': material_projeto})
-material_projeto = pd.merge( material_projeto, baseDF.df_dados_in, on='Código', how='left' )
-material_projeto = pd.merge( material_projeto, baseDF.df_custo_in, on='Código', how='left' )
+material_projeto = pd.merge( material_projeto, baseDF.dfr_dados_in, on='Código', how='left' )
+material_projeto = pd.merge( material_projeto, baseDF.dfr_custo_in, on='Código', how='left' )
 lista_colunas_ma = ['Grupo', 'Origem_x', 'Estado_x', 'Publicacao_x', 'Código', 'Descrição', 'Unidade', 'Preço unitário']
 material_projeto = material_projeto[lista_colunas_ma]
 
