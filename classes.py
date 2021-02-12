@@ -203,37 +203,50 @@ class ComposicaoDF:
 
 
 ####################
+    def calcular_subtotal_equipamento(self, _dfr_insumo, composicao) -> pd.core.series.Series:
+        linha_subtotal = _dfr_insumo[['Custo total']].sum()
+        linha_subtotal['Composicao_principal'] = composicao
+        linha_subtotal['Descrição'] = 'Custo horário equipamento'
+        linha_subtotal['Código'] = CODIGO_HORARIO
+        linha_subtotal[self.index_grupo] = EQUIPAMENTO_CUSTO_HORARIO
+        self.composicao.custo_horario_equipamento = linha_subtotal['Custo total']
+        self.composicao.calcular_custo_horario_execucao()
+        self.composicao.calcular_custo_unitario_execucao()
+        return linha_subtotal
+
+    def calcular_subtotal_mao_de_obra(self, _dfr_insumo, composicao) -> pd.core.series.Series:
+        linha_subtotal = _dfr_insumo[['Custo total']].sum()
+        linha_subtotal['Composicao_principal'] = composicao
+        linha_subtotal['Descrição'] = 'Custo horário mão de obra'
+        linha_subtotal['Código'] = CODIGO_HORARIO
+        linha_subtotal[self.index_grupo] = MAO_DE_OBRA_CUSTO_HORARIO
+        self.composicao.custo_horario_mao_de_obra = linha_subtotal['Custo total']
+        self.composicao.calcular_custo_horario_execucao()
+        self.composicao.calcular_custo_unitario_execucao()
+        return linha_subtotal
+
+    def calcular_subtotal_material(self, _dfr_insumo, composicao) -> pd.core.series.Series:
+        linha_subtotal = _dfr_insumo[['Custo total']].sum()
+        linha_subtotal['Composicao_principal'] = composicao
+        linha_subtotal['Descrição'] = 'Custo unitário material'
+        linha_subtotal['Código'] = CODIGO_UNITARIO
+        linha_subtotal[self.index_grupo] = MATERIAL_CUSTO_UNITARIO
+        self.composicao.custo_unitario_material = linha_subtotal['Custo total']
+        return linha_subtotal
 
     def calcular_subtotal_simples( self ) -> None:
-            for composicao, _dfr_insumo in self.dfr_insumo.groupby( ['Composicao_principal', self.index_grupo] ):
-                grupo = composicao[1]
-                auxiliar = None
-                if ( grupo == EQUIPAMENTO ):
-                    auxiliar = _dfr_insumo[['Custo total']].sum()
-                    auxiliar['Composicao_principal'] = composicao[0]
-                    auxiliar['Descrição'] = 'Custo horário equipamento'
-                    auxiliar['Código'] = CODIGO_HORARIO
-                    auxiliar[self.index_grupo] = EQUIPAMENTO_CUSTO_HORARIO
-                    self.composicao.custo_horario_equipamento = auxiliar['Custo total']
-                    self.composicao.calcular_custo_horario_execucao()
-                    self.composicao.calcular_custo_unitario_execucao()
-                elif ( grupo == MAO_DE_OBRA ):
-                    auxiliar = _dfr_insumo[['Custo total']].sum()
-                    auxiliar['Composicao_principal'] = composicao[0]
-                    auxiliar['Descrição'] = 'Custo horário mão de obra'
-                    auxiliar['Código'] = CODIGO_HORARIO
-                    auxiliar[self.index_grupo] = MAO_DE_OBRA_CUSTO_HORARIO
-                    self.composicao.custo_horario_mao_de_obra = auxiliar['Custo total']
-                    self.composicao.calcular_custo_horario_execucao()
-                    self.composicao.calcular_custo_unitario_execucao()
-                elif ( grupo == MATERIAL ):
-                    auxiliar = _dfr_insumo[['Custo total']].sum()
-                    auxiliar['Composicao_principal'] = composicao[0]
-                    auxiliar['Descrição'] = 'Custo unitário material'
-                    auxiliar['Código'] = CODIGO_UNITARIO
-                    auxiliar[self.index_grupo] = MATERIAL_CUSTO_UNITARIO
-                    self.composicao.custo_unitario_material = auxiliar['Custo total']
-                self.dfr_insumo = self.dfr_insumo.append( auxiliar, ignore_index=True )
+        for composicao, _dfr_insumo in self.dfr_insumo.groupby( ['Composicao_principal', self.index_grupo] ):
+            grupo = composicao[1]
+            composicao = composicao[0]
+            if ( grupo == EQUIPAMENTO ):
+                linha_subtotal = self.calcular_subtotal_equipamento( _dfr_insumo, composicao )
+            elif ( grupo == MAO_DE_OBRA ):
+                linha_subtotal = self.calcular_subtotal_mao_de_obra( _dfr_insumo, composicao )
+            elif ( grupo == MATERIAL ):
+                linha_subtotal = self.calcular_subtotal_material( _dfr_insumo, composicao )
+            else:
+                linha_subtotal = None
+            self.dfr_insumo = self.dfr_insumo.append( linha_subtotal, ignore_index=True )
 
     def calcular_custo_atividade_auxiliar( self, dicionario: dict ) -> None:
         lista = self.obter_lis_atividade_auxiliar()
@@ -241,13 +254,13 @@ class ComposicaoDF:
             grupo = item[0]
             item = item[1]
             self.dfr_insumo.loc[ self.dfr_insumo['Código'] == item,'Preço unitário'] = dicionario[ item ].custo_unitario_total 
-            qt = self.dfr_insumo.loc[ self.dfr_insumo['Código'] == item, 'Quantidade']
-            pu = self.dfr_insumo.loc[ self.dfr_insumo['Código'] == item, 'Preço unitário']
+            quantidade = self.dfr_insumo.loc[ self.dfr_insumo['Código'] == item, 'Quantidade']
+            preco_unitario = self.dfr_insumo.loc[ self.dfr_insumo['Código'] == item, 'Preço unitário']
             if (grupo == TRANSPORTE): 
-                dt = self.dfr_insumo.loc[ self.dfr_insumo['Código'] == item, 'DMT'] = 0
-                self.dfr_insumo.loc[ self.dfr_insumo['Código'] == item, 'Custo total'] = arred( dt * qt * pu )
+                distancia_transporte = self.dfr_insumo.loc[ self.dfr_insumo['Código'] == item, 'DMT'] = 0
+                self.dfr_insumo.loc[ self.dfr_insumo['Código'] == item, 'Custo total'] = arred( distancia_transporte * quantidade * preco_unitario )
             else:
-                self.dfr_insumo.loc[ self.dfr_insumo['Código'] == item, 'Custo total'] = arred( qt * pu )
+                self.dfr_insumo.loc[ self.dfr_insumo['Código'] == item, 'Custo total'] = arred( quantidade * preco_unitario )
 
     def calcular_custo_horario_execucao( self ) -> None:
         self.composicao.calcular_custo_unitario_execucao()

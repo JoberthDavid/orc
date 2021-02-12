@@ -223,9 +223,6 @@ class TestComposicaoDF(unittest.TestCase):
         esperado = [39.2218]
         self.assertListEqual( resultado['Custo total'].to_list(), esperado )
 
-    def test_result_of_configurar_filtro_grupo( self ):
-        pass
-
 
 if __name__ == '__main__':
     unittest.main()
