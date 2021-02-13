@@ -96,6 +96,62 @@ class ComposicaoDB:
         return self.preco_unitario_total
 
 
+class LinhaDF:
+
+    def __init__(self, _dfr_insumo, composicao) -> None:
+        self.linha = _dfr_insumo[['Custo total']].sum()
+        self.linha['Composicao_principal'] = composicao
+        self.composicao = self.linha['Composicao_principal']
+        self.total = self.linha['Custo total']
+
+class LinhaEquipamentoDF(LinhaDF):
+
+    def __init__(self, _dfr_insumo, composicao) -> None:
+        super().__init__(_dfr_insumo, composicao)
+        self.configurar_linha_subtotal_equipamento()
+        
+    def configurar_linha_subtotal_equipamento(self) -> None:
+        self.linha['Descrição'] = 'Custo horário equipamento'
+        self.linha['Código'] = CODIGO_HORARIO
+        self.linha['Grupo_x'] = EQUIPAMENTO_CUSTO_HORARIO
+
+
+class LinhaMaoDeObraDF(LinhaDF):
+
+    def __init__(self, _dfr_insumo, composicao) -> None:
+        super().__init__(_dfr_insumo, composicao)
+        self.configurar_linha_subtotal_mao_de_obra()
+
+    def configurar_linha_subtotal_mao_de_obra(self) -> None:
+        self.linha['Descrição'] = 'Custo horário mão de obra'
+        self.linha['Código'] = CODIGO_HORARIO
+        self.linha['Grupo_x'] = MAO_DE_OBRA_CUSTO_HORARIO
+
+
+class LinhaMaterialDF(LinhaDF):
+
+    def __init__(self, _dfr_insumo, composicao) -> None:
+        super().__init__(_dfr_insumo, composicao)
+        self.configurar_linha_subtotal_material()
+
+    def configurar_linha_subtotal_material(self) -> None:
+        self.linha['Descrição'] = 'Custo unitário material'
+        self.linha['Código'] = CODIGO_UNITARIO
+        self.linha['Grupo_x'] = MATERIAL_CUSTO_UNITARIO
+
+
+class LinhaCustoHorarioExecucaoDF(LinhaDF):
+
+    def __init__(self, _dfr_insumo, composicao) -> None:
+        super().__init__(_dfr_insumo, composicao)
+        self.configurar_linha_custo_horario_execucao()
+
+    def configurar_linha_custo_horario_execucao(self) -> None:
+        self.linha['Descrição'] = 'Custo horário de execução'
+        self.linha['Código'] = CODIGO_HORARIO_EXECUCAO
+        self.linha['Grupo_x'] = EXECUCAO_HORARIO
+
+
 class ComposicaoDF:
     """Classe que representa os data frames de cada composição do projeto que servirão para gerar um arquivo xlsx"""
 
@@ -111,7 +167,7 @@ class ComposicaoDF:
         self.composicao.produtividade = self.obter_produtividade_composicao()
 
         self.dfr_insumo = self.associar_dfr_custos_apropriacoes_insumos()
-        self.inserir_coluna_dmt()
+        self.inserir_col_dmt()
         self.dfr_insumo = self.obter_dfr_custo_equipamento()
         self.dfr_insumo = self.obter_dfr_custo_mao_de_obra()
         self.dfr_insumo = self.obter_dfr_custo_material()
@@ -162,7 +218,7 @@ class ComposicaoDF:
     def obter_descricao_custo_improdutivo(self) -> str:
         return 'Custo imp {}'.format( self.obter_desoneracao_mao_de_obra() )
 
-    def inserir_coluna_dmt( self ) -> None:
+    def inserir_col_dmt( self ) -> None:
         self.dfr_insumo['DMT'] = ''
 
     def obter_lis_colunas( self ) -> list:
@@ -201,49 +257,102 @@ class ComposicaoDF:
         self.dfr_insumo.loc[self.dfr_insumo[self.index_grupo] == MATERIAL, 'Custo total'] = self.calcular_sre_custo_material()
         return self.dfr_insumo
 
+    def criar_linha_subtotal_equipamento(self, _dfr_insumo, composicao) -> LinhaEquipamentoDF:
+        return LinhaEquipamentoDF(_dfr_insumo, composicao)
+
+    def criar_linha_subtotal_mao_de_obra(self, _dfr_insumo, composicao) -> LinhaMaoDeObraDF:
+        return LinhaMaoDeObraDF(_dfr_insumo, composicao)
+
+    def criar_linha_subtotal_material(self, _dfr_insumo, composicao) -> LinhaMaterialDF:
+        return LinhaMaterialDF(_dfr_insumo, composicao)
 
 ####################
-    def calcular_subtotal_equipamento(self, _dfr_insumo, composicao) -> pd.core.series.Series:
-        linha_subtotal = _dfr_insumo[['Custo total']].sum()
-        linha_subtotal['Composicao_principal'] = composicao
-        linha_subtotal['Descrição'] = 'Custo horário equipamento'
-        linha_subtotal['Código'] = CODIGO_HORARIO
-        linha_subtotal[self.index_grupo] = EQUIPAMENTO_CUSTO_HORARIO
-        self.composicao.custo_horario_equipamento = linha_subtotal['Custo total']
-        self.composicao.calcular_custo_horario_execucao()
-        self.composicao.calcular_custo_unitario_execucao()
-        return linha_subtotal
 
-    def calcular_subtotal_mao_de_obra(self, _dfr_insumo, composicao) -> pd.core.series.Series:
+    def criar_linha_subtotal_atividade_auxiliar(self, _dfr_insumo, composicao) -> pd.core.series.Series:
         linha_subtotal = _dfr_insumo[['Custo total']].sum()
         linha_subtotal['Composicao_principal'] = composicao
-        linha_subtotal['Descrição'] = 'Custo horário mão de obra'
-        linha_subtotal['Código'] = CODIGO_HORARIO
-        linha_subtotal[self.index_grupo] = MAO_DE_OBRA_CUSTO_HORARIO
-        self.composicao.custo_horario_mao_de_obra = linha_subtotal['Custo total']
-        self.composicao.calcular_custo_horario_execucao()
-        self.composicao.calcular_custo_unitario_execucao()
-        return linha_subtotal
-
-    def calcular_subtotal_material(self, _dfr_insumo, composicao) -> pd.core.series.Series:
-        linha_subtotal = _dfr_insumo[['Custo total']].sum()
-        linha_subtotal['Composicao_principal'] = composicao
-        linha_subtotal['Descrição'] = 'Custo unitário material'
+        linha_subtotal['Descrição'] = 'Custo unitário atividade auxiliar'
         linha_subtotal['Código'] = CODIGO_UNITARIO
-        linha_subtotal[self.index_grupo] = MATERIAL_CUSTO_UNITARIO
-        self.composicao.custo_unitario_material = linha_subtotal['Custo total']
+        linha_subtotal[self.index_grupo] = ATIVIDADE_AUXILIAR_CUSTO_TOTAL
         return linha_subtotal
+
+    def criar_linha_subtotal_tempo_fixo(self, _dfr_insumo, composicao) -> pd.core.series.Series:
+        linha_subtotal = _dfr_insumo[['Custo total']].sum()
+        linha_subtotal['Composicao_principal'] = composicao
+        linha_subtotal['Descrição'] = 'Custo unitário tempo fixo'
+        linha_subtotal['Código'] = CODIGO_UNITARIO
+        linha_subtotal[self.index_grupo] = TEMPO_FIXO_CUSTO_TOTAL
+        return linha_subtotal
+
+    def criar_linha_subtotal_transporte(self, _dfr_insumo, composicao) -> pd.core.series.Series:
+        linha_subtotal = _dfr_insumo[['Custo total']].sum()
+        linha_subtotal['Composicao_principal'] = composicao
+        linha_subtotal['Descrição'] = 'Custo unitário transporte'
+        linha_subtotal['Código'] = CODIGO_UNITARIO
+        linha_subtotal[self.index_grupo] = TRANSPORTE_CUSTO_TOTAL
+        return linha_subtotal
+
+    def criar_linha_custo_unitario_direto_total(self, _dfr_insumo, composicao) -> pd.core.series.Series:
+        linha_custo_unitario_direto_total = _dfr_insumo[['Custo total']].sum()
+        linha_custo_unitario_direto_total['Composicao_principal'] = composicao
+        linha_custo_unitario_direto_total['Descrição'] = 'Custo unitário direto total'
+        linha_custo_unitario_direto_total['Código'] = CODIGO_UNITARIO_DIRETO_TOTAL
+        linha_custo_unitario_direto_total[self.index_grupo] = DIRETO_TOTAL_UNITARIO
+        return linha_custo_unitario_direto_total
+
+    def criar_linha_custo_horario_execucao(self, _dfr_insumo, composicao) -> pd.core.series.Series:
+        linha_custo_horario_execucao = _dfr_insumo[['Custo total']].sum()
+        linha_custo_horario_execucao['Composicao_principal'] = composicao
+        linha_custo_horario_execucao['Descrição'] = 'Custo horário de execução'
+        linha_custo_horario_execucao['Código'] = CODIGO_HORARIO_EXECUCAO
+        linha_custo_horario_execucao[self.index_grupo] = EXECUCAO_HORARIO
+        return linha_custo_horario_execucao
+
+    def criar_linha_custo_unitario_execucao(self, _dfr_insumo, composicao) -> pd.core.series.Series:
+        linha_custo_unitario_execucao = _dfr_insumo[['Custo total']].sum()
+        linha_custo_unitario_execucao['Composicao_principal'] = composicao
+        linha_custo_unitario_execucao['Descrição'] = 'Custo unitário de execução'
+        linha_custo_unitario_execucao['Código'] = CODIGO_UNITARIO
+        linha_custo_unitario_execucao[self.index_grupo] = EXECUCAO_UNITARIO
+        return linha_custo_unitario_execucao
 
     def calcular_subtotal_simples( self ) -> None:
         for composicao, _dfr_insumo in self.dfr_insumo.groupby( ['Composicao_principal', self.index_grupo] ):
             grupo = composicao[1]
             composicao = composicao[0]
             if ( grupo == EQUIPAMENTO ):
-                linha_subtotal = self.calcular_subtotal_equipamento( _dfr_insumo, composicao )
+                obj_linha = self.criar_linha_subtotal_equipamento( _dfr_insumo, composicao )
+                self.composicao.custo_horario_equipamento = obj_linha.total
+                self.composicao.calcular_custo_horario_execucao()
+                self.composicao.calcular_custo_unitario_execucao()
+                linha = obj_linha.linha
             elif ( grupo == MAO_DE_OBRA ):
-                linha_subtotal = self.calcular_subtotal_mao_de_obra( _dfr_insumo, composicao )
+                obj_linha = self.criar_linha_subtotal_mao_de_obra( _dfr_insumo, composicao )
+                self.composicao.custo_horario_mao_de_obra = obj_linha.total
+                self.composicao.calcular_custo_horario_execucao()
+                self.composicao.calcular_custo_unitario_execucao()
+                linha = obj_linha.linha
             elif ( grupo == MATERIAL ):
-                linha_subtotal = self.calcular_subtotal_material( _dfr_insumo, composicao )
+                obj_linha = self.criar_linha_subtotal_material( _dfr_insumo, composicao )
+                self.composicao.custo_unitario_material = obj_linha.total
+                linha = obj_linha.linha
+            else:
+                linha = None
+            self.dfr_insumo = self.dfr_insumo.append( linha, ignore_index=True )
+
+    def calcular_subtotal_composto( self ) -> None:
+        for composicao, _dfr_insumo in self.dfr_insumo.groupby( ['Composicao_principal', self.index_grupo] ):
+            grupo = composicao[1]
+            composicao = composicao[0]
+            if ( grupo == ATIVIDADE_AUXILIAR ):
+                linha_subtotal = self.criar_linha_subtotal_atividade_auxiliar( _dfr_insumo, composicao )
+                self.composicao.custo_total_atividade_auxiliar = linha_subtotal['Custo total']
+            elif ( grupo == TEMPO_FIXO ):
+                linha_subtotal = self.criar_linha_subtotal_tempo_fixo( _dfr_insumo, composicao )
+                self.composicao.custo_total_tempo_fixo = linha_subtotal['Custo total']
+            elif ( grupo == TRANSPORTE ):
+                linha_subtotal = self.criar_linha_subtotal_transporte( _dfr_insumo, composicao )
+                self.composicao.custo_total_transporte = linha_subtotal['Custo total']
             else:
                 linha_subtotal = None
             self.dfr_insumo = self.dfr_insumo.append( linha_subtotal, ignore_index=True )
@@ -262,73 +371,34 @@ class ComposicaoDF:
             else:
                 self.dfr_insumo.loc[ self.dfr_insumo['Código'] == item, 'Custo total'] = arred( quantidade * preco_unitario )
 
-    def calcular_custo_horario_execucao( self ) -> None:
-        self.composicao.calcular_custo_unitario_execucao()
-        for composicao, _dfr_insumo in self.dfr_insumo.groupby( ['Composicao_principal', 'Código'] ):
-            codigo = composicao[1]
-            auxiliar = None
-            if ( codigo == CODIGO_HORARIO ):
-                auxiliar = _dfr_insumo[['Custo total']].sum()
-                auxiliar['Composicao_principal'] = composicao[0]
-                auxiliar['Descrição'] = 'Custo horário de execução'
-                auxiliar['Código'] = CODIGO_HORARIO_EXECUCAO
-                auxiliar[self.index_grupo] = EXECUCAO_HORARIO
-                auxiliar['Custo total'] = self.composicao.custo_horario_execucao
-                self.dfr_insumo = self.dfr_insumo.append( auxiliar, ignore_index=True )
-
-    def calcular_custo_unitario_execucao( self ) -> None:
-        for composicao, _dfr_insumo in self.dfr_insumo.groupby( ['Composicao_principal', 'Código'] ):
-            codigo = composicao[1]
-            auxiliar = None
-            if ( codigo == CODIGO_HORARIO_EXECUCAO ):
-                auxiliar = _dfr_insumo[['Custo total']].sum()
-                auxiliar['Composicao_principal'] = composicao[0]
-                auxiliar['Descrição'] = 'Custo unitário de execução'
-                auxiliar['Código'] = CODIGO_UNITARIO
-                auxiliar[self.index_grupo] = EXECUCAO_UNITARIO
-                auxiliar['Custo total'] = self.composicao.custo_unitario_execucao
-                self.dfr_insumo = self.dfr_insumo.append( auxiliar, ignore_index=True )
-
     def calcular_custo_unitario_direto_total( self ) -> None:
         self.composicao.calcular_custo_unitario_execucao()
         for composicao, _dfr_insumo in self.dfr_insumo.groupby( ['Composicao_principal', 'Código'] ):
             codigo = composicao[1]
-            auxiliar = None
+            composicao = composicao[0]
             if ( codigo == CODIGO_UNITARIO ):
-                auxiliar = _dfr_insumo[['Custo total']].sum()
-                auxiliar['Composicao_principal'] = composicao[0]
-                auxiliar['Descrição'] = 'Custo unitário direto total'
-                auxiliar['Código'] = CODIGO_UNITARIO_DIRETO_TOTAL
-                auxiliar[self.index_grupo] = DIRETO_TOTAL_UNITARIO
-                self.composicao.custo_unitario_total = auxiliar['Custo total']
-                self.dfr_insumo = self.dfr_insumo.append( auxiliar, ignore_index=True )
+                linha_custo_unitario_direto_total = self.criar_linha_custo_unitario_direto_total( _dfr_insumo, composicao )
+                self.composicao.custo_unitario_total = linha_custo_unitario_direto_total['Custo total']
+                self.dfr_insumo = self.dfr_insumo.append( linha_custo_unitario_direto_total, ignore_index=True )
 
-    def calcular_subtotal_composto( self ) -> None:
-        for composicao, _dfr_insumo in self.dfr_insumo.groupby( ['Composicao_principal', self.index_grupo] ):
-            grupo = composicao[1]
-            auxiliar = None
-            if ( grupo == ATIVIDADE_AUXILIAR ):
-                auxiliar = _dfr_insumo[['Custo total']].sum()
-                auxiliar['Composicao_principal'] = composicao[0]
-                auxiliar['Descrição'] = 'Custo unitário atividade auxiliar'
-                auxiliar['Código'] = CODIGO_UNITARIO
-                auxiliar[self.index_grupo] = ATIVIDADE_AUXILIAR_CUSTO_TOTAL
-                self.composicao.custo_total_atividade_auxiliar = auxiliar['Custo total']
-            elif ( grupo == TEMPO_FIXO ):
-                auxiliar = _dfr_insumo[['Custo total']].sum()
-                auxiliar['Composicao_principal'] = composicao[0]
-                auxiliar['Descrição'] = 'Custo unitário tempo fixo'
-                auxiliar['Código'] = CODIGO_UNITARIO
-                auxiliar[self.index_grupo] = TEMPO_FIXO_CUSTO_TOTAL
-                self.composicao.custo_total_tempo_fixo = auxiliar['Custo total']
-            elif ( grupo == TRANSPORTE ):
-                auxiliar = _dfr_insumo[['Custo total']].sum()
-                auxiliar['Composicao_principal'] = composicao[0]
-                auxiliar['Descrição'] = 'Custo unitário transporte'
-                auxiliar['Código'] = CODIGO_UNITARIO
-                auxiliar[self.index_grupo] = TRANSPORTE_CUSTO_TOTAL
-                self.composicao.custo_total_transporte = auxiliar['Custo total']
-            self.dfr_insumo = self.dfr_insumo.append( auxiliar, ignore_index=True )
+    def calcular_custo_horario_execucao( self ) -> None:
+        self.composicao.calcular_custo_unitario_execucao()
+        for composicao, _dfr_insumo in self.dfr_insumo.groupby( ['Composicao_principal', 'Código'] ):
+            codigo = composicao[1]
+            composicao = composicao[0]
+            if ( codigo == CODIGO_HORARIO ):
+                linha_custo_horario_execucao = self.criar_linha_custo_horario_execucao( _dfr_insumo, composicao )
+                linha_custo_horario_execucao['Custo total'] = self.composicao.custo_horario_execucao
+                self.dfr_insumo = self.dfr_insumo.append( linha_custo_horario_execucao, ignore_index=True )
+
+    def calcular_custo_unitario_execucao( self ) -> None:
+        for composicao, _dfr_insumo in self.dfr_insumo.groupby( ['Composicao_principal', 'Código'] ):
+            codigo = composicao[1]
+            composicao = composicao[0]
+            if ( codigo == CODIGO_HORARIO_EXECUCAO ):
+                linha_custo_unitario_execucao = self.criar_linha_custo_unitario_execucao( _dfr_insumo, composicao )
+                linha_custo_unitario_execucao['Custo total'] = self.composicao.custo_unitario_execucao
+                self.dfr_insumo = self.dfr_insumo.append( linha_custo_unitario_execucao, ignore_index=True )
 
     def obter_operador_lis_insumo( self, insumo: int ) -> str:
         if insumo == ATIVIDADE_AUXILIAR:

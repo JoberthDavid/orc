@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 import pandas as pd
 from constantes import *
-from classes import BaseDF, ComposicaoDB, ComposicaoDF, GeradorDF
+from classes import *#BaseDF, ComposicaoDB, LinhaEquipamentoDF, LinhaEquipamentoDF, LinhaEquipamentoDF, ComposicaoDF, GeradorDF
 from arquivos import arq_db_cp, arq_db_in, arq_apr_in, arq_cto_in
 
 codigo_composicao_1 = str(307731)
@@ -169,7 +169,7 @@ class TestComposicaoDF(unittest.TestCase):
         self.assertEqual( resultado, esperado )
     
     def test_result_of_inserir_cl_dmt( self ):
-        self.obj_ComposicaoDF.inserir_coluna_dmt()
+        self.obj_ComposicaoDF.inserir_col_dmt()
         resultado = self.obj_ComposicaoDF.dfr_insumo['DMT'].to_list()
         esperado = ['','','','','','','','','','','','','','','','','','','','','','']
         self.assertListEqual( resultado, esperado )
@@ -223,6 +223,20 @@ class TestComposicaoDF(unittest.TestCase):
         esperado = [39.2218]
         self.assertListEqual( resultado['Custo total'].to_list(), esperado )
 
+    def test_instance_of_criar_linha_subtotal_equipamento(self):
+        _dfr_insumo = self.obj_ComposicaoDF.dfr_insumo.query( '{} == {}'.format(self.obj_ComposicaoDF.index_grupo, EQUIPAMENTO ) )
+        resultado = self.obj_ComposicaoDF.criar_linha_subtotal_equipamento( _dfr_insumo, codigo_composicao_2 )
+        self.assertIsInstance( resultado, LinhaEquipamentoDF)
+
+    def test_instance_of_criar_linha_subtotal_mao_de_obra(self):
+        _dfr_insumo = self.obj_ComposicaoDF.dfr_insumo.query( '{} == {}'.format(self.obj_ComposicaoDF.index_grupo, MAO_DE_OBRA ) )
+        resultado = self.obj_ComposicaoDF.criar_linha_subtotal_mao_de_obra( _dfr_insumo, codigo_composicao_2 )
+        self.assertIsInstance( resultado, LinhaMaoDeObraDF)
+
+    def test_instance_of_criar_linha_subtotal_material(self):
+        _dfr_insumo = self.obj_ComposicaoDF.dfr_insumo.query( '{} == {}'.format(self.obj_ComposicaoDF.index_grupo, MATERIAL ) )
+        resultado = self.obj_ComposicaoDF.criar_linha_subtotal_material( _dfr_insumo, codigo_composicao_2 )
+        self.assertIsInstance( resultado, LinhaMaterialDF)
 
 if __name__ == '__main__':
     unittest.main()
