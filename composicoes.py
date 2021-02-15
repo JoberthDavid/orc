@@ -4,7 +4,7 @@
 
 from arquivos import *
 from funcoes import *
-from classes import ComposicaoDF, ComposicaoDB, BaseDF
+from classes import *
 
 baseDF = BaseDF( arq_db_cp, arq_db_in, arq_apr_in, arq_cto_in )
 maximo_linhas_na_composicao = baseDF.max_apr()
@@ -102,8 +102,7 @@ for item in lista_auxiliar_reversa:
     comp = tratar_codigo_composicao(item)
     dicionario_df[ comp ].calcular_custo_atividade_auxiliar(dicionario_db)
     dicionario_df[ comp ].calcular_subtotal_composto()
-    dicionario_df[ comp ].calcular_custo_unitario_direto_total()
-    dicionario_df[ comp ].dfr_insumo.sort_values(by=dicionario_df[ comp ].index_grupo, inplace=True)
+    dicionario_df[ comp ].dfr_insumo.sort_values(by=dicionario_df[ comp ].obj_col_dfr.grupo, inplace=True)
     dicionario_df[ comp ].dfr_insumo.reset_index(drop=True, inplace=True)
 
 

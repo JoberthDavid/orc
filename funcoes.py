@@ -2,9 +2,6 @@ import pandas as pd
 from constantes import *
 
 
-def arred( valor ):
-    return round( valor, 4)
-    
 
 def carregar_data_frame(csv):
     # Abrir um arquivo csv a partir do Pandas
