@@ -68,13 +68,13 @@ class TestComposicaoDB(unittest.TestCase):
         self.assertIsInstance( self.obj_ComposicaoDB.codigo, str )
 
     def test_result_of_calcular_custo_horario_execucao( self ):
-        resultado = round( self.obj_ComposicaoDB.custo_horario_equipamento + self.obj_ComposicaoDB.custo_horario_mao_de_obra, self.obj_precisao.cto )
+        resultado = round( self.obj_ComposicaoDB.custo_horario_equipamento + self.obj_ComposicaoDB.custo_horario_mao_de_obra, self.obj_precisao.d4 )
         esperado = self.obj_ComposicaoDB.configurar_custo_horario_execucao()
         self.assertEqual( resultado, esperado )
         self.assertIsInstance( resultado, float )
 
     def test_result_of_calcular_custo_unitario_execucao( self ):
-        resultado = round( self.obj_ComposicaoDB.configurar_custo_unitario_execucao(), self.obj_precisao.cto )
+        resultado = round( self.obj_ComposicaoDB.configurar_custo_unitario_execucao(), self.obj_precisao.d4 )
         esperado = self.obj_ComposicaoDB.custo_unitario_execucao
         self.assertEqual( resultado, esperado )
         self.assertIsInstance( resultado, float )
@@ -82,13 +82,13 @@ class TestComposicaoDB(unittest.TestCase):
     def test_result_of_calcular_custo_unitario_total( self ):
         custo_insumos = self.obj_ComposicaoDB.custo_unitario_execucao + self.obj_ComposicaoDB.custo_unitario_material
         custo_servicos = self.obj_ComposicaoDB.custo_total_atividade_auxiliar + self.obj_ComposicaoDB.custo_total_tempo_fixo + self.obj_ComposicaoDB.custo_total_transporte
-        resultado = round( custo_insumos + custo_servicos, self.obj_precisao.cto )
+        resultado = round( custo_insumos + custo_servicos, self.obj_precisao.d4 )
         esperado = self.obj_ComposicaoDB.configurar_custo_unitario_total()
         self.assertEqual( resultado, esperado )
         self.assertIsInstance( resultado, float )
 
     def test_result_of_calcular_preco_unitario_total( self ):
-        resultado = round( self.obj_ComposicaoDB.custo_bdi + self.obj_ComposicaoDB.custo_unitario_total, self.obj_precisao.cto )
+        resultado = round( self.obj_ComposicaoDB.custo_bdi + self.obj_ComposicaoDB.custo_unitario_total, self.obj_precisao.d4 )
         esperado = self.obj_ComposicaoDB.configurar_preco_unitario_total()
         self.assertEqual( resultado, esperado )
         self.assertIsInstance( resultado, float )
@@ -292,17 +292,17 @@ class TestComposicaoDF(unittest.TestCase):
 
     def test_result_of_calcular_subtotal_mao_de_obra( self ):
         _dfr_insumo = self.obj_ComposicaoDF.dfr_insumo.query( '{} == {}'.format(self.obj_ComposicaoDF.obj_col_dfr.grupo, self.obj_grupo.insumo_mao_de_obra ) )
-        resultado = round(_dfr_insumo[ self.obj_col_dfr.custo_total ].sum(), self.obj_precisao.cto)
+        resultado = round(_dfr_insumo[ self.obj_col_dfr.custo_total ].sum(), self.obj_precisao.d4)
         self.assertEqual( resultado, self.obj_ComposicaoDF.composicao.custo_horario_mao_de_obra)
 
     def test_result_of_calcular_custo_horario_execucao( self ):
         _dfr_insumo = self.obj_ComposicaoDF.dfr_insumo.query( '{} == {}'.format(self.obj_ComposicaoDF.obj_col_dfr.grupo, self.obj_grupo.subtotal_horario_execucao ) )
-        resultado = round( _dfr_insumo[ self.obj_col_dfr.custo_total ].sum(), self.obj_precisao.cto)
+        resultado = round( _dfr_insumo[ self.obj_col_dfr.custo_total ].sum(), self.obj_precisao.d4)
         self.assertEqual( resultado, self.obj_ComposicaoDF.composicao.custo_horario_execucao)
 
     def test_result_of_calcular_custo_unitario_execucao( self ):
         _dfr_insumo = self.obj_ComposicaoDF.dfr_insumo.query( '{} == {}'.format(self.obj_ComposicaoDF.obj_col_dfr.grupo, self.obj_grupo.subtotal_unitario_execucao ) )
-        resultado = round( _dfr_insumo[ self.obj_col_dfr.custo_total ].sum(), self.obj_precisao.cto)
+        resultado = round( _dfr_insumo[ self.obj_col_dfr.custo_total ].sum(), self.obj_precisao.d4)
         self.assertEqual( resultado, self.obj_ComposicaoDF.composicao.custo_unitario_execucao)
 
 

@@ -6,105 +6,31 @@ from arquivos import *
 from funcoes import *
 from classes import *
 
+
 baseDF = BaseDF( arq_db_cp, arq_db_in, arq_apr_in, arq_cto_in )
 maximo_linhas_na_composicao = baseDF.max_apr()
 
 composicoes_projeto = ['308321', '408031', '606841', '705371', '804215', '909621', '1108055', '2009619', '3009090', '4011287', '5213385', '6106188', '7119788']
-equipamento_projeto = []
-mao_de_obra_projeto = []
-material_projeto = []
 
-onerado = True #False #
+####### escrita no xlsx
+onerado = False
+projeto = Projeto(composicoes_projeto, baseDF, onerado)
+lista_composicoes = projeto.obter_dfr_projeto()
+
+equipamento_projeto = projeto.equipamento_projeto
+mao_de_obra_projeto = projeto.mao_de_obra_projeto
+material_projeto = projeto.material_projeto
 
 complemento = 'onerado'
-custo_produtivo = 'Custo pro onerado'
-custo_improdutivo = 'Custo imp onerado'
+custo_produtivo = 'Custo produtivo onerado'
+custo_improdutivo = 'Custo improdutivo onerado'
 
 if not onerado:
     complemento = 'desonerado'
-    custo_produtivo = 'Custo pro desonerado'
-    custo_improdutivo = 'Custo imp desonerado'
+    custo_produtivo = 'Custo produtivo desonerado'
+    custo_improdutivo = 'Custo improdutivo desonerado'
 
 arquivo = '_'.join( ('SICRO_TO_07_2019_composicoes_montadas', complemento) )
-
-dicionario_db = dict()
-
-dicionario_df = dict()
-
-lista_aa = list()
-lista_eq = list()
-lista_mo = list()
-lista_ma = list()
-
-lista_auxiliar = list()
-
-for codigo_cp in composicoes_projeto:
-
-    db_composicao = ComposicaoDB( codigo_cp, onerado )
-
-    df_composicao = ComposicaoDF( db_composicao, baseDF )
-
-    dicionario_db[ db_composicao.codigo ] = db_composicao
-
-    dicionario_df[ db_composicao.codigo ] = df_composicao
-
-    lista_aa = df_composicao.obter_lis_atividade_auxiliar()
-
-    lista_auxiliar.append(codigo_cp)
-
-    if ( lista_aa != None):
-        
-        for item in lista_aa:
-            item = item[1]
-            if item not in composicoes_projeto:
-                composicoes_projeto.append( item )
-            lista_auxiliar.append( item )
-
-    lista_eq = df_composicao.obter_lis_equipamento()
-
-    if( lista_eq != None):
-        for item in lista_eq:
-            item = item[1]
-            if item not in equipamento_projeto:
-                equipamento_projeto.append( item )
-
-    lista_mo = df_composicao.obter_lis_mao_de_obra()
-
-    if( lista_mo != None):
-        for item in lista_mo:
-            item = item[1]
-            if item not in mao_de_obra_projeto:
-                mao_de_obra_projeto.append( item )
-
-    lista_ma = df_composicao.obter_lis_material()
-
-    if( lista_ma != None):
-        for item in lista_ma:
-            item = item[1]
-            if item not in material_projeto:
-                material_projeto.append( item )
-
-lista_auxiliar_reversa = list()
-
-while(len(lista_auxiliar) != 0 ):
-    ultimo = lista_auxiliar[-1]
-    if ultimo not in lista_auxiliar_reversa:
-        lista_auxiliar_reversa.append( ultimo )
-    lista_auxiliar.pop()
-
-def tratar_codigo_composicao( codigo: str, menor_tamanho_codigo=6 ) -> str:
-    if len( codigo ) == menor_tamanho_codigo : 
-        codigo = "0{}".format( codigo )
-    return codigo
-
-
-for item in lista_auxiliar_reversa:
-    comp = tratar_codigo_composicao(item)
-    dicionario_df[ comp ].calcular_custo_atividade_auxiliar(dicionario_db)
-    dicionario_df[ comp ].calcular_subtotal_composto()
-    dicionario_df[ comp ].dfr_insumo.sort_values(by=dicionario_df[ comp ].obj_col_dfr.grupo, inplace=True)
-    dicionario_df[ comp ].dfr_insumo.reset_index(drop=True, inplace=True)
-
 
 equipamento_projeto = pd.DataFrame({'Código': equipamento_projeto})
 equipamento_projeto = pd.merge( equipamento_projeto, baseDF.dfr_dados_in, on='Código', how='left' )
@@ -125,4 +51,5 @@ lista_colunas_ma = ['Grupo', 'Origem_x', 'Estado_x', 'Publicacao_x', 'Código', 
 material_projeto = material_projeto[lista_colunas_ma]
 
 
-escrever_arquivo_excel( arquivo, complemento, dicionario_df, maximo_linhas_na_composicao, equipamento_projeto, mao_de_obra_projeto, material_projeto)
+
+escrever_arquivo_excel( arquivo, complemento, lista_composicoes, maximo_linhas_na_composicao, equipamento_projeto, mao_de_obra_projeto, material_projeto)

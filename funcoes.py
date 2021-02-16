@@ -75,7 +75,7 @@ def escrever_arquivo_excel( arquivo, complemento, dicionario, maximo_linhas_na_c
             worksheet.write( ''.join( (lin[0], str(linha_inicio)) ), lin[1], lin[2])
 
         # formatando colunas
-        colunas = [ ('B:D', modulo, format_centro), ('E:E', 6.5*modulo, format_esquerda), ('F:F', 1.5*modulo, format_centro), ('G:G', modulo, format_valor_2decimais), ('H:H', modulo, format_centro), ('I:I', 1.5*modulo, format_valor_5decimais), ('J:J', modulo, format_valor_2decimais), ('K:N', 2.0*modulo, format_valor_4decimais) ]
+        colunas = [ ('B:D', modulo, format_centro), ('E:E', 6.0*modulo, format_esquerda), ('F:F', 1.5*modulo, format_centro), ('G:G', modulo, format_valor_2decimais), ('H:H', modulo, format_centro), ('I:I', modulo, format_valor_5decimais), ('J:J', modulo, format_valor_2decimais), ('K:N', 2.6*modulo, format_valor_4decimais) ]
         for col in colunas:
             worksheet.set_column( col[0], col[1], col[2] )
 

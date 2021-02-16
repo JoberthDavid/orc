@@ -6,33 +6,45 @@ UTF='utf-8'
 class Precisao:
     
     def __init__( self ) -> None:
-        self.cto = 4
-        self.mto = 2
+        self.d2 = 2
+        self.d4 = 4
+        self.d5 = 5
 
     def custo( self, valor: float ) -> float:
-        return round( valor, self.cto )
+        return round( valor, self.d4 )
 
     def monetario( self, valor: float ) -> float:
-        return round( valor, self.mto )
+        return round( valor, self.d2 )
+
+    def utilizacao( self, valor: float ) -> float:
+        return round( valor, self.d5 )
 
 
 class Grupo:
 
     def __init__( self ) -> None:
+        self.linha_vazia_inicial = 13
         self.insumo_equipamento = 20
-        self.subtotal_horario_equipamento = 21
+        self.subtotal_horario_equipamento = 22
+        self.linha_vazia_equipamento = 23
         self.insumo_mao_de_obra = 30
-        self.subtotal_horario_mao_de_obra = 31
-        self.subtotal_horario_execucao = 32
-        self.subtotal_unitario_execucao = 33
+        self.subtotal_horario_mao_de_obra = 32
+        self.linha_vazia_mao_de_obra = 33
+        self.subtotal_horario_execucao = 34
+        self.subtotal_unitario_execucao = 35
+        self.linha_vazia_execucao = 36
         self.insumo_material = 40
-        self.subtotal_unitario_material = 41
+        self.subtotal_unitario_material = 42
+        self.linha_vazia_material = 43
         self.insumo_atividade_auxiliar = 50
-        self.subtotal_unitario_atividade_auxiliar = 51
+        self.subtotal_unitario_atividade_auxiliar = 52
+        self.linha_vazia_atividade_auxiliar = 53
         self.insumo_tempo_fixo = 60
-        self.subtotal_unitario_tempo_fixo = 61
+        self.subtotal_unitario_tempo_fixo = 62
+        self.linha_vazia_tempo_fixo = 63
         self.insumo_transporte = 70
-        self.subtotal_unitario_transporte = 71
+        self.subtotal_unitario_transporte = 72
+        self.linha_vazia_transporte = 73
         self.total_unitario_direto = 80
 
 class Codigo:
@@ -51,7 +63,7 @@ class ListaColuna:
         self.composicao_principal = 'Composicao_principal'
         self.grupo = 'Grupo_x'
         self.descricao = 'Descrição'
-        self.item_transporte = 'Item transporte'
+        self.item_transporte = 'Item transportado'
         self.preco_unitario = 'Preço unitário'
         self.quantidade = 'Quantidade'
         self.unidade = 'Unidade'
@@ -64,11 +76,11 @@ class ListaColuna:
         self.publicacao = 'Publicacao'
         self.tipo = 'Tipo'
         self.origem = 'Origem'
-        self.custo_imp_desonerado = 'Custo imp desonerado'
-        self.custo_imp_onerado = 'Custo imp onerado'
+        self.custo_imp_desonerado = 'Custo improdutivo desonerado'
+        self.custo_imp_onerado = 'Custo improdutivo onerado'
         self.custo_improdutivo = 'Custo improdutivo'
-        self.custo_pro_desonerado = 'Custo pro desonerado'
-        self.custo_pro_onerado = 'Custo pro onerado'
+        self.custo_pro_desonerado = 'Custo produtivo desonerado'
+        self.custo_pro_onerado = 'Custo produtivo onerado'
         self.custo_produtivo = 'Custo produtivo'
         self.none = 'NONE'
 
@@ -246,11 +258,12 @@ class LinhaDF:
         self.obj_col_dfr = obj_col
         self.obj_arred = Precisao()
         self.obj_codigo = Codigo()
-        self.linha = _dfr_insumo[[ obj_col.custo_total ]].sum()
+        self.linha = _dfr_insumo[ [obj_col.custo_total] ].sum()
         self.composicao = composicao
         self.linha[ obj_col.composicao_principal ] = self.composicao.codigo
         self.total = self.linha[ self.obj_col_dfr.custo_total ]
         self.obj_grupo = Grupo()
+
 
 class LinhaEquipamentoDF(LinhaDF):
 
@@ -606,13 +619,13 @@ class ComposicaoDF:
     def configurar_lis_insumo( self, consulta: pd.core.frame.DataFrame ) -> list:
         lista = list()
         obj_col_in = ListaColunaInsumoDB() 
-        if len( consulta[[ 'Grupo', obj_col_in.codigo ]].values ) != 0:
-            for item in consulta[[ 'Grupo', obj_col_in.codigo ]].values:
+        if len( consulta[ ['Grupo', obj_col_in.codigo] ].values ) != 0:
+            for item in consulta[ ['Grupo', obj_col_in.codigo] ].values:
                 lista.append( item )
         return lista
 
     def obter_lis_insumo( self, insumo: int ) -> list:
-        operador = self.obter_operador_lis_insumo(insumo)
+        operador = self.obter_operador_lis_insumo( insumo )
         consulta = self.base.dfr_apropriacao_in.query( "{} == '{}' & Grupo {} {}".format( self.obj_col_dfr.composicao_principal, self.composicao.codigo, operador, insumo ) )
         return self.configurar_lis_insumo( consulta )
 
@@ -627,3 +640,90 @@ class ComposicaoDF:
     
     def obter_lis_material( self ) -> list:
         return self.obter_lis_insumo( self.obj_grupo.insumo_material )
+
+    def criar_linhas_vazias( self ) -> None:
+        self.dfr_insumo = self.dfr_insumo.append( [ { self.obj_col_dfr.composicao_principal : self.composicao.codigo, self.obj_col_dfr.grupo : self.obj_grupo.linha_vazia_inicial } ], ignore_index=True )
+        self.dfr_insumo = self.dfr_insumo.append( [ { self.obj_col_dfr.composicao_principal : self.composicao.codigo, self.obj_col_dfr.grupo : self.obj_grupo.linha_vazia_equipamento } ], ignore_index=True )
+        self.dfr_insumo = self.dfr_insumo.append( [ { self.obj_col_dfr.composicao_principal : self.composicao.codigo, self.obj_col_dfr.grupo : self.obj_grupo.linha_vazia_mao_de_obra } ], ignore_index=True )
+        self.dfr_insumo = self.dfr_insumo.append( [ { self.obj_col_dfr.composicao_principal : self.composicao.codigo, self.obj_col_dfr.grupo : self.obj_grupo.linha_vazia_execucao } ], ignore_index=True )
+        self.dfr_insumo = self.dfr_insumo.append( [ { self.obj_col_dfr.composicao_principal : self.composicao.codigo, self.obj_col_dfr.grupo : self.obj_grupo.linha_vazia_material } ], ignore_index=True )
+        self.dfr_insumo = self.dfr_insumo.append( [ { self.obj_col_dfr.composicao_principal : self.composicao.codigo, self.obj_col_dfr.grupo : self.obj_grupo.linha_vazia_atividade_auxiliar } ], ignore_index=True )
+        self.dfr_insumo = self.dfr_insumo.append( [ { self.obj_col_dfr.composicao_principal : self.composicao.codigo, self.obj_col_dfr.grupo : self.obj_grupo.linha_vazia_tempo_fixo } ], ignore_index=True )
+        self.dfr_insumo = self.dfr_insumo.append( [ { self.obj_col_dfr.composicao_principal : self.composicao.codigo, self.obj_col_dfr.grupo : self.obj_grupo.linha_vazia_transporte } ], ignore_index=True )
+
+
+class Projeto:
+
+    def __init__(self, lista: list, baseDF: BaseDF, onerado=True) -> None:
+        self.baseDF = baseDF
+        self.onerado = onerado
+        self.composicoes_projeto = lista
+        self.equipamento_projeto = list()
+        self.mao_de_obra_projeto = list()
+        self.material_projeto = list()
+        self.dic_db_projeto = dict()
+        self.dic_df_projeto = dict()
+        self.lista_auxiliar = list()
+        self.gerar_dicionario_dados_basicos_composicoes_projeto()
+
+    def gerar_dicionario_dados_basicos_composicoes_projeto( self ):
+        for codigo_cp in self.composicoes_projeto:
+            obj_composicao_db = ComposicaoDB( codigo_cp, self.onerado )
+            obj_composicao_df = ComposicaoDF( obj_composicao_db, self.baseDF )
+            self.dic_db_projeto[ obj_composicao_db.codigo ] = obj_composicao_db
+            self.dic_df_projeto[ obj_composicao_db.codigo ] = obj_composicao_df
+            lista_eq = obj_composicao_df.obter_lis_equipamento()
+            lista_mo = obj_composicao_df.obter_lis_mao_de_obra()
+            lista_ma = obj_composicao_df.obter_lis_material()
+            lista_aa = obj_composicao_df.obter_lis_atividade_auxiliar()
+            self.lista_auxiliar.append( codigo_cp )
+            
+            if ( lista_aa != None):
+                for item in lista_aa:
+                    item = item[1]
+                    if item not in self.composicoes_projeto:
+                        self.composicoes_projeto.append( item )
+                    self.lista_auxiliar.append( item )
+
+            if( lista_eq != None):
+                for item in lista_eq:
+                    item = item[1]
+                    if item not in self.equipamento_projeto:
+                        self.equipamento_projeto.append( item )
+
+            if( lista_mo != None):
+                for item in lista_mo:
+                    item = item[1]
+                    if item not in self.mao_de_obra_projeto:
+                        self.mao_de_obra_projeto.append( item )
+            
+            if( lista_ma != None):
+                for item in lista_ma:
+                    item = item[1]
+                    if item not in self.material_projeto:
+                        self.material_projeto.append( item )
+
+    def tratar_composicoes_projeto(self) -> list:
+        lista_auxiliar_reversa = list()
+        while( len( self.lista_auxiliar ) != 0 ):
+            ultimo = self.lista_auxiliar[-1]
+            if ultimo not in lista_auxiliar_reversa:
+                lista_auxiliar_reversa.append( ultimo )
+            self.lista_auxiliar.pop()
+        return lista_auxiliar_reversa
+
+    def tratar_codigo_composicao( self, codigo: str, menor_tamanho_codigo=6 ) -> str:
+        if len( codigo ) == menor_tamanho_codigo : 
+            codigo = "0{}".format( codigo )
+        return codigo
+
+    def obter_dfr_projeto( self ) -> dict:
+        lista_auxiliar_reversa = self.tratar_composicoes_projeto()
+        for item in lista_auxiliar_reversa:
+            comp = self.tratar_codigo_composicao( item )
+            self.dic_df_projeto[ comp ].calcular_custo_atividade_auxiliar( self.dic_db_projeto )
+            self.dic_df_projeto[ comp ].calcular_subtotal_composto()
+            self.dic_df_projeto[ comp ].criar_linhas_vazias()
+            self.dic_df_projeto[ comp ].dfr_insumo.sort_values( by = self.dic_df_projeto[ comp ].obj_col_dfr.grupo, inplace=True )
+            self.dic_df_projeto[ comp ].dfr_insumo.reset_index( drop=True, inplace=True )
+        return self.dic_df_projeto
