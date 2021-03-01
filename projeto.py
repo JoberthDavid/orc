@@ -130,7 +130,9 @@ class ComposicaoDB:
         return self.custo_bdi
 
     def configurar_custo_unitario_total( self ) -> float:
-        self.custo_unitario_total = self.obj_arred.custo( self.custo_unitario_execucao + self.custo_fic + self.custo_fit + self.custo_unitario_material + self.custo_total_atividade_auxiliar + self.custo_total_tempo_fixo + self.custo_total_transporte )
+        custos_execucao = self.custo_unitario_execucao + self.custo_fic + self.custo_fit
+        custos_atividades_auxiliares = self.custo_total_atividade_auxiliar + self.custo_total_tempo_fixo + self.custo_total_transporte
+        self.custo_unitario_total = self.obj_arred.custo( custos_execucao + self.custo_unitario_material + custos_atividades_auxiliares )
         return self.custo_unitario_total
 
     def configurar_preco_unitario_total( self ) -> float:
@@ -348,7 +350,7 @@ class ComposicaoDF:
         
         self.calcular_subtotal_simples()
 
-        self.obter_lis_tr()
+        # self.obter_lis_tr()
 
 
     def obter_dfr_dados_basicos_insumos( self ) -> pd.core.frame.DataFrame:
@@ -672,7 +674,9 @@ class Projeto:
         self.baseDF = baseDF
         self.bdi = bdi
         self.onerado = self.bdi.onerado
+        self.obj_col_dfr = ListaColunaComposicaoDF(self.onerado)
         self.obj_bdi_zero = BonificacaoDespesasIndiretas(0.0, 0.0, self.onerado)
+        self.obj_grupo = Grupo()
         self.servicos = lista_servico
         self.composicoes_projeto = list()
         self.transportes_projeto = list()
@@ -685,6 +689,7 @@ class Projeto:
         self.lista_auxiliar = list()
         self.configurar_lista_composicoes_projeto()
         self.gerar_dicionario_dados_basicos_composicoes_projeto()
+        self.obter_lista_atividades_auxiliares_servicos_projeto()
 
     def configurar_lista_composicoes_projeto( self ):
         for item in self.servicos:
@@ -776,6 +781,32 @@ class Projeto:
         dfr_material = pd.merge( dfr_material, self.baseDF.dfr_custo_in, on='Código', how='left' )
         lista_colunas_ma = ['Grupo', 'Origem_x', 'Estado_x', 'Publicacao_x', 'Código', 'Descrição', 'Unidade', 'Preço unitário']
         return dfr_material[lista_colunas_ma]
+
+    def obter_lista_auxiliares_servico( self, codigo ):
+        consulta = self.baseDF.dfr_apropriacao_in.query( "{} == '{}' & Grupo == {}".format( self.obj_col_dfr.composicao_principal, codigo, self.obj_grupo.insumo_atividade_auxiliar ) )
+        return consulta
+
+    def obter_lista_atividades_auxiliares_servicos_projeto( self ):
+        for item in self.servicos:
+            obj_arvore_item = ArvoreComposicao()
+            cod = self.tratar_codigo_composicao( item.codigo )
+            obj_arvore_item.inserir_noh_arvore_composicao( cod, cod )
+            lista_auxiliares = self.obter_lista_auxiliares_servico( cod )
+            lista_auxiliares = lista_auxiliares[['Composicao_principal','Código', 'Quantidade']].values
+
+            for i in lista_auxiliares:
+                cod = self.tratar_codigo_composicao( str(i[0]) )
+                aux = i[1]
+                quantidade = i[2]
+                obj_arvore_item.inserir_noh_arvore_composicao( cod, aux, quantidade )
+                lista_auxiliares_das_auxiliares = self.obter_lista_auxiliares_servico( aux )
+                lista_auxiliares_das_auxiliares = lista_auxiliares_das_auxiliares[['Composicao_principal','Código', 'Quantidade']].values 
+                for j in lista_auxiliares_das_auxiliares:
+                    _cod = self.tratar_codigo_composicao( str(j[0]) )
+                    _aux = j[1]
+                    _quantidade = j[2]
+                    obj_arvore_item.inserir_noh_arvore_composicao( _cod, _aux, _quantidade )
+            return obj_arvore_item.obter_lista_noh_arvore_in_order()
 
     def obter_dfr_transporte( self ) -> pd.core.frame.DataFrame:
         dfr_transporte = pd.DataFrame({'Código': self.transportes_projeto})

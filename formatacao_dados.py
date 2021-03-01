@@ -94,7 +94,11 @@ class ListaColunaOrigemCP(ListaColuna):
         super().__init__()
 
     def obter_lista( self ) -> list:
-        return [ self.origem, self.estado, self.publicacao ]
+        return [
+                    self.origem,
+                    self.estado,
+                    self.publicacao
+                ]
 
 
 class ListaColunaComposicaoDB(ListaColuna):
@@ -103,7 +107,13 @@ class ListaColunaComposicaoDB(ListaColuna):
         super().__init__()
 
     def obter_lista( self ) -> list:
-        return [ self.composicao_principal, self.fic, self.produtividade, self.tipo, self.none ]
+        return [
+                    self.composicao_principal,
+                    self.fic,
+                    self.produtividade,
+                    self.tipo,
+                    self.none
+                ]
 
 
 class ListaColunaInsumoDB(ListaColuna):
@@ -112,7 +122,12 @@ class ListaColunaInsumoDB(ListaColuna):
         super().__init__()
 
     def obter_lista( self ) -> list:
-        return [ self.codigo, self.descricao, self.unidade, self.none ]
+        return [
+                    self.codigo,
+                    self.descricao,
+                    self.unidade,
+                    self.none
+                ]
 
 
 class ListaColunaApropriacaoDB(ListaColuna):
@@ -121,7 +136,15 @@ class ListaColunaApropriacaoDB(ListaColuna):
         super().__init__()
 
     def obter_lista( self ) -> list:
-        return [ self.composicao_principal, self.codigo, self.quantidade, self.utilizacao, self.item_transporte, 'Grupo', self.none ]
+        return [
+                    self.composicao_principal,
+                    self.codigo,
+                    self.quantidade,
+                    self.utilizacao,
+                    self.item_transporte,
+                    'Grupo',
+                    self.none
+                ]
 
 
 class ListaColunaCustoInsumoCT(ListaColuna):
@@ -130,7 +153,16 @@ class ListaColunaCustoInsumoCT(ListaColuna):
         super().__init__()
 
     def obter_lista( self ) -> list:
-        return [ self.codigo, self.custo_pro_onerado, self.custo_imp_onerado, self.custo_pro_desonerado, self.custo_imp_desonerado, self.preco_unitario, 'Grupo', self.none ]
+        return [ 
+                    self.codigo,
+                    self.custo_pro_onerado,
+                    self.custo_imp_onerado,
+                    self.custo_pro_desonerado,
+                    self.custo_imp_desonerado,
+                    self.preco_unitario,
+                    'Grupo',
+                    self.none
+                ]
 
 
 class ListaColunaComposicaoDF(ListaColuna):
@@ -141,7 +173,20 @@ class ListaColunaComposicaoDF(ListaColuna):
         self.custo_improdutivo = self.configurar_custo_improdutivo( onerado )
 
     def obter_lista( self ) -> list:
-        return [ self.composicao_principal, self.grupo, self.codigo, self.descricao, self.item_transporte, self.dmt, self.unidade, self.quantidade, self.utilizacao, self.custo_produtivo, self.custo_improdutivo, self.preco_unitario, self.custo_total ]
+        return [ 
+                    self.composicao_principal,
+                    self.grupo, self.codigo,
+                    self.descricao,
+                    self.item_transporte,
+                    self.dmt,
+                    self.unidade,
+                    self.quantidade,
+                    self.utilizacao,
+                    self.custo_produtivo,
+                    self.custo_improdutivo,
+                    self.preco_unitario,
+                    self.custo_total
+                ]
 
     def configurar_custo_produtivo( self, onerado: bool ) -> str:
         if onerado:

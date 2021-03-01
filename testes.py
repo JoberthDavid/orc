@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from classes import *
+from projeto import *
 from arquivos import arq_db_cp, arq_db_in, arq_apr_in, arq_cto_in
 
 codigo_composicao_1 = str(307731)
