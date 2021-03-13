@@ -98,8 +98,8 @@ class ComposicaoDB:
         self.preco_unitario_total = 0.0000
 
     def tratar_codigo_composicao( self, codigo: str ) -> str:
-        if len( codigo ) == 6 : 
-            codigo = "0{}".format( codigo )
+        codigo = str( codigo )
+        codigo = codigo.zfill(7)
         return codigo
 
     def obter_valor_bdi( self ):
@@ -689,7 +689,8 @@ class Projeto:
         self.lista_auxiliar = list()
         self.configurar_lista_composicoes_projeto()
         self.gerar_dicionario_dados_basicos_composicoes_projeto()
-        self.obter_lista_transportes_servicos_projeto()
+        self.obter_lista_atividades_auxiliares_servicos_projeto()
+        # self.obter_lista_transportes_servicos_projeto()
 
     def configurar_lista_composicoes_projeto( self ):
         for item in self.servicos:
@@ -746,9 +747,9 @@ class Projeto:
             self.lista_auxiliar.pop()
         return lista_auxiliar_reversa
 
-    def tratar_codigo_composicao( self, codigo: str, menor_tamanho_codigo=6 ) -> str:
-        if len( codigo ) == menor_tamanho_codigo : 
-            codigo = "0{}".format( codigo )
+    def tratar_codigo_composicao( self, codigo: str ) -> str:
+        codigo = str( codigo )
+        codigo = codigo.zfill(7)
         return codigo
 
     def obter_dfr_composicao( self ) -> dict:
@@ -782,59 +783,79 @@ class Projeto:
         lista_colunas_ma = ['Grupo', 'Origem_x', 'Estado_x', 'Publicacao_x', 'Código', 'Descrição', 'Unidade', 'Preço unitário']
         return dfr_material[lista_colunas_ma]
 
-    def obter_lista_auxiliares_servico( self, codigo ):
-        consulta = self.baseDF.dfr_apropriacao_in.query( "{} == '{}' & Grupo == {}".format( self.obj_col_dfr.composicao_principal, codigo, self.obj_grupo.insumo_atividade_auxiliar ) )
-        return consulta
-
     def obter_lista_transportes_servico( self, codigo ):
         consulta = self.baseDF.dfr_apropriacao_in.query( "{} == '{}' & Grupo == {}".format( self.obj_col_dfr.composicao_principal, codigo, self.obj_grupo.insumo_transporte ) )
         return consulta
 
+
+    def obter_lista_auxiliares_servico( self, codigo ):
+        consulta = self.baseDF.dfr_apropriacao_in.query( "{} == '{}' & Grupo == {}".format( self.obj_col_dfr.composicao_principal, codigo, self.obj_grupo.insumo_atividade_auxiliar ) )
+        consulta = consulta[[self.obj_col_dfr.composicao_principal, self.obj_col_dfr.codigo, self.obj_col_dfr.quantidade]].values.tolist()
+        return consulta
+
+
     def obter_lista_atividades_auxiliares_servicos_projeto( self ) -> list:
-        _lista = list()
+        lista_primaria = list()
         for item in self.servicos:
-            obj_arvore_item = ArvoreComposicao()
-            cod = self.tratar_codigo_composicao( item.codigo )
-            obj_arvore_item.inserir_noh_arvore_composicao( cod, cod )
-            lista_auxiliares = self.obter_lista_auxiliares_servico( cod )
-            lista_auxiliares = lista_auxiliares[[self.obj_col_dfr.composicao_principal, self.obj_col_dfr.codigo, self.obj_col_dfr.quantidade]].values
-            for i in lista_auxiliares: 
-                cod2 = self.tratar_codigo_composicao( str(i[0]) )
-                aux2 = i[1]
-                quantidade2 = i[2]
-                obj_arvore_item.inserir_noh_arvore_composicao( cod2, aux2, quantidade2 )
-                lista_auxiliares_das_auxiliares = self.obter_lista_auxiliares_servico( aux2 )
-                lista_auxiliares_das_auxiliares = lista_auxiliares_das_auxiliares[[self.obj_col_dfr.composicao_principal, self.obj_col_dfr.codigo, self.obj_col_dfr.quantidade]].values 
-                for j in lista_auxiliares_das_auxiliares:
-                    cod3 = self.tratar_codigo_composicao( str(j[0]) )
-                    aux3 = j[1]
-                    quantidade3 = j[2]
-                    obj_arvore_item.inserir_noh_arvore_composicao( cod3, aux3, quantidade3 )
-            _lista.append( obj_arvore_item.obter_lista_noh_arvore_in_order() )
-        return _lista
+            obj_arvore_servico = Arvore( self.baseDF, self.obj_col_dfr, self.obj_grupo )
+
+            obj_arvore_servico.inserir_auxiliar_noh_arvore( item.codigo, item.codigo )
+
+            print( obj_arvore_servico.obter_lista_auxiliares_noh_arvore_in_order() )
+            
+        return lista_primaria
+
+    # def obter_lista_atividades_auxiliares_servicos_projeto( self ) -> list:
+    #     _lista = list()
+    #     for item in self.servicos:
+    #         obj_arvore_item = Arvore()
+    #         cod = self.tratar_codigo_composicao( item.codigo )
+    #         obj_arvore_item.inserir_noh_arvore( cod, cod )
+    #         lista_auxiliares = self.obter_lista_auxiliares_servico( cod )
+    #         lista_auxiliares = lista_auxiliares[[self.obj_col_dfr.composicao_principal, self.obj_col_dfr.codigo, self.obj_col_dfr.quantidade]].values
+    #         for i in lista_auxiliares: 
+    #             cod2 = self.tratar_codigo_composicao( str(i[0]) )
+    #             aux2 = i[1]
+    #             quantidade2 = i[2]
+    #             obj_arvore_item.inserir_noh_arvore( cod2, aux2, quantidade2 )
+    #             lista_auxiliares_das_auxiliares = self.obter_lista_auxiliares_servico( aux2 )
+    #             lista_auxiliares_das_auxiliares = lista_auxiliares_das_auxiliares[[self.obj_col_dfr.composicao_principal, self.obj_col_dfr.codigo, self.obj_col_dfr.quantidade]].values 
+    #             for j in lista_auxiliares_das_auxiliares:
+    #                 cod3 = self.tratar_codigo_composicao( str(j[0]) )
+    #                 aux3 = j[1]
+    #                 quantidade3 = j[2]
+    #                 obj_arvore_item.inserir_noh_arvore( cod3, aux3, quantidade3 )
+    #         _lista.append( obj_arvore_item.obter_lista_auxiliares_noh_arvore_in_order() )
+    #     print( _lista )
+    #     return _lista
 
     def obter_lista_transportes_servicos_projeto( self ) -> list:
         _lista = list()
         for item in self.obter_lista_atividades_auxiliares_servicos_projeto():
-            obj_arvore_item = ArvoreComposicao()
+            obj_arvore_item = Arvore()
             cod = self.tratar_codigo_composicao( item[0][0] )
-            obj_arvore_item.inserir_noh_arvore_composicao( cod, cod )
+            obj_arvore_item.inserir_noh_arvore( cod, cod )
             lista_auxiliares = self.obter_lista_transportes_servico( cod )
-            lista_auxiliares = lista_auxiliares[[self.obj_col_dfr.composicao_principal, self.obj_col_dfr.codigo, self.obj_col_dfr.quantidade]].values
+            lista_auxiliares = lista_auxiliares[[self.obj_col_dfr.composicao_principal, self.obj_col_dfr.codigo, self.obj_col_dfr.quantidade, self.obj_col_dfr.item_transporte]].values
             for i in lista_auxiliares: 
                 cod2 = self.tratar_codigo_composicao( str(i[0]) )
+                # print( cod2 )
                 aux2 = i[1]
                 quantidade2 = i[2]
-                obj_arvore_item.inserir_noh_arvore_composicao( cod2, aux2, quantidade2 )
+                item_transporte2 = i[3]
+
+                obj_arvore_item.inserir_transporte_noh_arvore( cod2, aux2, item_transporte2, quantidade2 )
                 lista_auxiliares_das_auxiliares = self.obter_lista_auxiliares_servico( aux2 )
-                lista_auxiliares_das_auxiliares = lista_auxiliares_das_auxiliares[[self.obj_col_dfr.composicao_principal, self.obj_col_dfr.codigo, self.obj_col_dfr.quantidade]].values 
+                lista_auxiliares_das_auxiliares = lista_auxiliares_das_auxiliares[[self.obj_col_dfr.composicao_principal, self.obj_col_dfr.codigo, self.obj_col_dfr.quantidade, self.obj_col_dfr.item_transporte ]].values 
                 for j in lista_auxiliares_das_auxiliares:
                     cod3 = self.tratar_codigo_composicao( str(j[0]) )
                     aux3 = j[1]
                     quantidade3 = j[2]
-                    obj_arvore_item.inserir_noh_arvore_composicao( cod3, aux3, quantidade3 )
-            _lista.append( obj_arvore_item.obter_lista_noh_arvore_in_order() )
-        print( _lista )
+                    item_transporte3 = j[3]
+                    print( item_transporte3 )
+                    obj_arvore_item.inserir_transporte_noh_arvore( cod3, aux3, item_transporte3, quantidade3 )
+            _lista.append( obj_arvore_item.obter_lista_transporte_noh_arvore_in_order() )
+
         return _lista
 
     def obter_dfr_transporte( self ) -> pd.core.frame.DataFrame:
