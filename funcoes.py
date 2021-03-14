@@ -185,9 +185,9 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
 
    # ##### começa a escrever transportes das composições ###################################
 
-    dfr_transporte = projeto.obter_dfr_transporte()
+    # dfr_transporte = projeto.obter_dfr_transporte()
 
-    dfr_transporte.to_excel( writer, index=False, sheet_name='transporte')
+    # dfr_transporte.to_excel( writer, index=False, sheet_name='transporte')
 
     writer.save()
 

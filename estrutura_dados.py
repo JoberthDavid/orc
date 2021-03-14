@@ -1,42 +1,33 @@
 from formatacao_dados import Precisao
 
 
+class Capsula:
+
+    def __init__(self, codigo_principal, atividade_auxiliar, quantidade) -> None:
+        self.codigo_principal = codigo_principal.zfill(7)
+        self.atividade_auxiliar = atividade_auxiliar.zfill(7)
+        self.quantidade = quantidade
+
+
 class NohArvore:
- 
-    def __init__( self, codigo_principal, quantidade, lista_noh_arvore, insumo=None ) -> None:
-        self.codigo_principal_noh_arvore = codigo_principal
+
+    def __init__( self, encapsulada: Capsula, lista_noh_arvore, insumo=None ) -> None:
+        self.encapsulada = encapsulada
+        self.codigo_principal_noh_arvore = encapsulada.atividade_auxiliar
         self.noh_filhos = list()
         self.lista_auxiliar = lista_noh_arvore
-        self.quantidade = quantidade
+        self.quantidade = encapsulada.quantidade
         self.insumo = insumo
 
-    def inserir_noh_arvore( self, codigo_principal: str, atividade_auxiliar: str, utilizacao: float ) -> bool:
-        # obj_arred = Precisao()
-        produto = utilizacao#obj_arred.utilizacao( self.quantidade * utilizacao )
+    def inserir_noh_arvore( self, encapsulada: Capsula ) -> bool:
         sinal = False
-      
-        if codigo_principal == self.codigo_principal_noh_arvore:
-            self.noh_filhos.append( NohArvore( atividade_auxiliar, produto, self.lista_auxiliar ) )
+        if encapsulada not in self.lista_auxiliar:
+            self.noh_filhos.append( NohArvore( encapsulada, self.lista_auxiliar ) )
             sinal = True
         else:
             for noh_pai in self.noh_filhos:
-                noh_pai.inserir_noh_arvore( codigo_principal, atividade_auxiliar, utilizacao )
+                noh_pai.inserir_noh_arvore( encapsulada )
             sinal = True
-        return sinal
-
-    def inserir_transporte_noh_arvore( self, codigo_principal: str, atividade_auxiliar: str, insumo: str, utilizacao: float ) -> bool:
-        obj_arred = Precisao()
-        produto = obj_arred.utilizacao( self.quantidade * utilizacao )
-        sinal = False
-        self.insumo = insumo
-        if codigo_principal == self.codigo_principal_noh_arvore:
-            self.noh_filhos.append( NohArvore( atividade_auxiliar, produto, self.lista_auxiliar, self.insumo ) )
-            sinal = True
-        else:
-            for noh_pai in self.noh_filhos:  
-                noh_pai.inserir_transporte_noh_arvore( codigo_principal, atividade_auxiliar, self.insumo, utilizacao )
-            sinal = True
-
         return sinal
 
     def configurar_lista_auxiliares_noh_arvore_in_order( self ) -> list:
@@ -82,6 +73,7 @@ class NohArvore:
             for noh_pai in self.noh_filhos:
                 _obj_pilha.colocar_noh_na_pilha( noh_pai )
         return self.lista_auxiliar
+
 
 class NohPilha():
 
@@ -178,50 +170,33 @@ class Arvore:
         consulta = consulta[[self.obj_col_dfr.composicao_principal, self.obj_col_dfr.codigo, self.obj_col_dfr.quantidade]].values.tolist()
         return consulta
 
-    def inserir_auxiliar_noh_arvore( self, codigo_principal: str, atividade_auxiliar: str, quantidade: float=1.0 ) -> bool:
+    def inserir_auxiliar_noh_arvore( self, encapsulada: Capsula ) -> bool:
         sinal = False
-        codigo_principal = codigo_principal.zfill(7)
-        atividade_auxiliar = atividade_auxiliar.zfill(7)
-        if self.noh_raiz_arvore_composicao == None:
-            self.noh_raiz_arvore_composicao = NohArvore( codigo_principal, quantidade, self.lista )
 
-            for item in self.obter_lista_auxiliares_servico( codigo_principal ):
-                self.inserir_auxiliar_noh_arvore( codigo_principal, item[1], item[2] )
+        if self.noh_raiz_arvore_composicao == None:
+            self.noh_raiz_arvore_composicao = NohArvore( encapsulada, self.lista )
+
+            for item in self.obter_lista_auxiliares_servico( encapsulada.codigo_principal ):
+
+                encapsulada2 = Capsula( encapsulada.codigo_principal, item[1], item[2] )
+
+                self.inserir_auxiliar_noh_arvore( encapsulada2 )
 
             sinal = True
         else:
             obj_arred = Precisao()
-            utilizacao = quantidade
-            self.noh_raiz_arvore_composicao.inserir_noh_arvore( codigo_principal, atividade_auxiliar, utilizacao )
 
-            for item in self.obter_lista_auxiliares_servico( atividade_auxiliar ):
-                produto = obj_arred.utilizacao( utilizacao * item[2] )
-                self.inserir_auxiliar_noh_arvore( atividade_auxiliar, item[1], produto )
+            self.noh_raiz_arvore_composicao.inserir_noh_arvore( encapsulada )
+
+            for item in self.obter_lista_auxiliares_servico( encapsulada.atividade_auxiliar ):
+                quantidade = obj_arred.utilizacao( encapsulada.quantidade * item[2] )
+
+                encapsulada3 = Capsula( encapsulada.atividade_auxiliar, item[1], quantidade )
+
+                self.inserir_auxiliar_noh_arvore( encapsulada3 )
 
             sinal = True
 
-        return sinal
-
-    def inserir_noh_arvore( self, codigo_principal: str, atividade_auxiliar: str, quantidade: float=1.0 ) -> bool:
-        sinal = False
-        if self.noh_raiz_arvore_composicao == None:
-            self.noh_raiz_arvore_composicao = NohArvore( codigo_principal, quantidade, self.lista )
-            sinal = True
-        else:
-            utilizacao = quantidade
-            self.noh_raiz_arvore_composicao.inserir_noh_arvore( codigo_principal, atividade_auxiliar, utilizacao )
-            sinal = True
-        return sinal
-
-    def inserir_transporte_noh_arvore( self, codigo_principal: str, atividade_auxiliar: str, insumo: str, quantidade: float ) -> bool:
-        sinal = False
-        if self.noh_raiz_arvore_composicao == None:
-            self.noh_raiz_arvore_composicao = NohArvore( codigo_principal, quantidade, self.lista )
-            sinal = True
-        else:
-            utilizacao = quantidade
-            self.noh_raiz_arvore_composicao.inserir_transporte_noh_arvore( codigo_principal, atividade_auxiliar, insumo, utilizacao )
-            sinal = True
         return sinal
 
     def obter_lista_auxiliares_noh_arvore_in_order( self ) -> list:
@@ -234,20 +209,6 @@ class Arvore:
     def obter_lista_auxiliares_noh_arvore_pos_order( self ) -> list:
         if self.noh_raiz_arvore_composicao != None:
             lista_noh = self.noh_raiz_arvore_composicao.configurar_lista_auxiliares_noh_arvore_pos_order()
-        else:
-            lista_noh = list()
-        return lista_noh
-    
-    def obter_lista_transporte_noh_arvore_in_order( self ) -> list:
-        if self.noh_raiz_arvore_composicao != None:
-            lista_noh = self.noh_raiz_arvore_composicao.configurar_lista_transporte_noh_arvore_in_order()
-        else:
-            lista_noh = list()
-        return lista_noh
-
-    def obter_lista_transporte_noh_arvore_pos_order( self ) -> list:
-        if self.noh_raiz_arvore_composicao != None:
-            lista_noh = self.noh_raiz_arvore_composicao.configurar_lista_transporte_noh_arvore_pos_order()
         else:
             lista_noh = list()
         return lista_noh
