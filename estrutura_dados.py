@@ -52,28 +52,6 @@ class NohArvore:
                 _obj_pilha.colocar_noh_na_pilha( noh_pai )
         return self.lista_auxiliar
 
-    def configurar_lista_transporte_noh_arvore_in_order( self ) -> list:
-        _obj_pilha = Pilha()
-        _obj_pilha.colocar_noh_na_pilha( self )
-        while _obj_pilha.verificar_se_pilha_estah_vazia() != True:
-            self = _obj_pilha.obter_primeiro_noh_da_pilha()
-            self.lista_auxiliar.append( (self.codigo_principal_noh_arvore, self.insumo, self.quantidade) )
-            _obj_pilha.retirar_noh_da_pilha()
-            for noh_pai in self.noh_filhos[::-1]:
-                _obj_pilha.colocar_noh_na_pilha( noh_pai )
-        return self.lista_auxiliar
-
-    def configurar_lista_transporte_noh_arvore_pos_order( self ) -> list:
-        _obj_pilha = Pilha()
-        _obj_pilha.colocar_noh_na_pilha( self )
-        while _obj_pilha.verificar_se_pilha_estah_vazia() != True:
-            self = _obj_pilha.obter_primeiro_noh_da_pilha()
-            self.lista_auxiliar.append( (self.codigo_principal_noh_arvore, self.insumo, self.quantidade) )
-            _obj_pilha.retirar_noh_da_pilha()
-            for noh_pai in self.noh_filhos:
-                _obj_pilha.colocar_noh_na_pilha( noh_pai )
-        return self.lista_auxiliar
-
 
 class NohPilha():
 
@@ -172,31 +150,20 @@ class Arvore:
 
     def inserir_auxiliar_noh_arvore( self, encapsulada: Capsula ) -> bool:
         sinal = False
-
         if self.noh_raiz_arvore_composicao == None:
             self.noh_raiz_arvore_composicao = NohArvore( encapsulada, self.lista )
-
             for item in self.obter_lista_atividades_auxiliares_composicao( encapsulada.codigo_principal ):
-
                 encapsulada2 = Capsula( encapsulada.codigo_principal, item[1], item[2] )
-
                 self.inserir_auxiliar_noh_arvore( encapsulada2 )
-
             sinal = True
         else:
             obj_arred = Precisao()
-
             self.noh_raiz_arvore_composicao.inserir_noh_arvore( encapsulada )
-
             for item in self.obter_lista_atividades_auxiliares_composicao( encapsulada.atividade_auxiliar ):
                 quantidade = obj_arred.utilizacao( encapsulada.quantidade * item[2] )
-
                 encapsulada3 = Capsula( encapsulada.atividade_auxiliar, item[1], quantidade )
-
                 self.inserir_auxiliar_noh_arvore( encapsulada3 )
-
             sinal = True
-
         return sinal
 
     def obter_lista_auxiliares_noh_arvore_in_order( self ) -> list:
