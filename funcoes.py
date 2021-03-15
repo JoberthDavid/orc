@@ -46,6 +46,7 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
     modulo = 10
 
     # Add some cell formats.
+    format_valor_10decimais = workbook.add_format({'num_format': '#,##0.0000000000'})
     format_valor_5decimais = workbook.add_format({'num_format': '#,##0.00000'})
     format_valor_4decimais = workbook.add_format({'num_format': '#,##0.0000'})
     format_valor_2decimais = workbook.add_format({'num_format': '#,##0.00'})
@@ -120,6 +121,8 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
     worksheet_dfr_equipamento.set_paper(9) # índice 9 (papel A4) vem da documentação da biblioteca xlsxwriter
     # centralizando horizontalmente a tabela na página
     worksheet_dfr_equipamento.center_horizontally()
+    # repetindo primeira linha
+    worksheet_dfr_equipamento.repeat_rows(0)
 
     # formatando colunas
     colunas = [ ('A:E', 1.2*modulo, format_centro), ('F:F', 8.0*modulo, format_esquerda), ('G:G', modulo, format_centro), ('H:I', 2.5*modulo, format_valor_4decimais) ]
@@ -148,6 +151,8 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
     worksheet_dfr_mao_de_obra.set_paper(9) # índice 9 (papel A4) vem da documentação da biblioteca xlsxwriter
     # centralizando horizontalmente a tabela na página
     worksheet_dfr_mao_de_obra.center_horizontally()
+    # repetindo primeira linha
+    worksheet_dfr_mao_de_obra.repeat_rows(0)
 
     # formatando colunas
     colunas = [ ('A:E', 1.2*modulo, format_centro), ('F:F', 8.0*modulo, format_esquerda), ('G:G', modulo, format_centro), ('H:H', 2.5*modulo, format_valor_4decimais) ]
@@ -177,6 +182,8 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
     worksheet_dfr_material.set_paper(9) # índice 9 (papel A4) vem da documentação da biblioteca xlsxwriter
     # centralizando horizontalmente a tabela na página
     worksheet_dfr_material.center_horizontally()
+    # repetindo primeira linha
+    worksheet_dfr_material.repeat_rows(0)
 
     # formatando colunas
     colunas = [ ('A:E', 1.2*modulo, format_centro), ('F:F', 8.0*modulo, format_esquerda), ('G:G', modulo, format_centro), ('H:H', 2.5*modulo, format_valor_4decimais) ]
@@ -185,9 +192,34 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
 
    # ##### começa a escrever transportes das composições ###################################
 
-    # dfr_transporte = projeto.obter_dfr_transporte()
+    dfr_transporte = projeto.obter_dfr_transportes_servicos()
+    
+    dfr_transporte.to_excel( writer, index=True, sheet_name='transporte_servico_unitario')
 
-    # dfr_transporte.to_excel( writer, index=False, sheet_name='transporte')
+    worksheet_dfr_transporte = writer.sheets['transporte_servico_unitario']
+    
+    tamanho = dfr_transporte.shape[0]
+
+    area_de_impressao = '$A${}:$I${}'.format(1, tamanho )
+    
+    # definindo a área de impressão
+    worksheet_dfr_transporte.print_area( area_de_impressao )
+    # dimensionando as páginas largura por extensão
+    worksheet_dfr_transporte.fit_to_pages(1, tamanho)
+    # rotacionando a página
+    worksheet_dfr_transporte.set_portrait()
+    # definindo papel
+    worksheet_dfr_transporte.set_paper(9) # índice 9 (papel A4) vem da documentação da biblioteca xlsxwriter
+    # centralizando horizontalmente a tabela na página
+    worksheet_dfr_transporte.center_horizontally()
+    # repetindo primeira linha
+    worksheet_dfr_transporte.repeat_rows(0)
+
+    # formatando colunas
+    colunas = [ ('A:A', 0.5*modulo, format_centro), ('B:D', 1.8*modulo, format_centro), ('E:E', 8.5*modulo, format_esquerda), ('F:G', 1.5*modulo, format_centro), ('H:H', 1.5*modulo, format_valor_10decimais) ]
+    for col in colunas:
+        worksheet_dfr_transporte.set_column( col[0], col[1], col[2] )
+
 
     writer.save()
 

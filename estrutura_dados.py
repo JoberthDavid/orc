@@ -165,7 +165,7 @@ class Arvore:
         self.noh_raiz_arvore_composicao = None
         self.lista = list()
 
-    def obter_lista_auxiliares_servico( self, codigo ):
+    def obter_lista_atividades_auxiliares_composicao( self, codigo: str ) -> list:
         consulta = self.baseDF.dfr_apropriacao_in.query( "{} == '{}' & Grupo == {}".format( self.obj_col_dfr.composicao_principal, codigo, self.obj_grupo.insumo_atividade_auxiliar ) )
         consulta = consulta[[self.obj_col_dfr.composicao_principal, self.obj_col_dfr.codigo, self.obj_col_dfr.quantidade]].values.tolist()
         return consulta
@@ -176,7 +176,7 @@ class Arvore:
         if self.noh_raiz_arvore_composicao == None:
             self.noh_raiz_arvore_composicao = NohArvore( encapsulada, self.lista )
 
-            for item in self.obter_lista_auxiliares_servico( encapsulada.codigo_principal ):
+            for item in self.obter_lista_atividades_auxiliares_composicao( encapsulada.codigo_principal ):
 
                 encapsulada2 = Capsula( encapsulada.codigo_principal, item[1], item[2] )
 
@@ -188,7 +188,7 @@ class Arvore:
 
             self.noh_raiz_arvore_composicao.inserir_noh_arvore( encapsulada )
 
-            for item in self.obter_lista_auxiliares_servico( encapsulada.atividade_auxiliar ):
+            for item in self.obter_lista_atividades_auxiliares_composicao( encapsulada.atividade_auxiliar ):
                 quantidade = obj_arred.utilizacao( encapsulada.quantidade * item[2] )
 
                 encapsulada3 = Capsula( encapsulada.atividade_auxiliar, item[1], quantidade )

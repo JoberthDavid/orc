@@ -24,6 +24,13 @@ class GeradorDF:
         return self.dfr
 
 
+class ComposicaoStr:
+
+    def __init__( self, codigo: str, quantidade_digitos_codigo: int=7 ) -> None:
+        self.codigo = codigo
+        self.codigo = codigo.zfill( quantidade_digitos_codigo )
+
+
 class BaseDF:
     """Classe que reune a base de Data Frame necessários para o projeto"""
     
@@ -72,7 +79,8 @@ class ComposicaoDB:
 
     def __init__( self, codigo: str, bdi: BonificacaoDespesasIndiretas, diferenciado=False ) -> None:
         self.obj_arred = Precisao()
-        self.codigo = self.tratar_codigo_composicao( codigo )
+        obj_composicaostr = ComposicaoStr( codigo )
+        self.codigo = obj_composicaostr.codigo
         self.bdi = bdi
         self.diferenciado = diferenciado
         self.onerado = self.bdi.onerado
@@ -97,10 +105,6 @@ class ComposicaoDB:
         self.custo_bdi = 0.0000
         self.preco_unitario_total = 0.0000
 
-    def tratar_codigo_composicao( self, codigo: str ) -> str:
-        codigo = str( codigo )
-        codigo = codigo.zfill(7)
-        return codigo
 
     def obter_valor_bdi( self ):
         if self.diferenciado:
@@ -156,7 +160,7 @@ class LinhaDF:
 class LinhaEquipamentoDF(LinhaDF):
 
     def __init__( self, _dfr_insumo, composicao, obj_col ) -> None:
-        super().__init__(_dfr_insumo, composicao, obj_col)
+        super().__init__( _dfr_insumo, composicao, obj_col )
         self.configurar_linha_subtotal_equipamento()
         
     def configurar_linha_subtotal_equipamento( self ) -> None:
@@ -168,7 +172,7 @@ class LinhaEquipamentoDF(LinhaDF):
 class LinhaMaoDeObraDF(LinhaDF):
 
     def __init__( self, _dfr_insumo, composicao, obj_col ) -> None:
-        super().__init__(_dfr_insumo, composicao, obj_col)
+        super().__init__( _dfr_insumo, composicao, obj_col )
         self.configurar_linha_subtotal_mao_de_obra()
 
     def configurar_linha_subtotal_mao_de_obra( self ) -> None:
@@ -180,7 +184,7 @@ class LinhaMaoDeObraDF(LinhaDF):
 class LinhaMaterialDF(LinhaDF):
 
     def __init__( self, _dfr_insumo, composicao, obj_col ) -> None:
-        super().__init__(_dfr_insumo, composicao, obj_col)
+        super().__init__( _dfr_insumo, composicao, obj_col )
         self.configurar_linha_subtotal_material()
 
     def configurar_linha_subtotal_material( self ) -> None:
@@ -192,7 +196,7 @@ class LinhaMaterialDF(LinhaDF):
 class LinhaCustoHorarioExecucaoDF(LinhaDF):
 
     def __init__( self, _dfr_insumo, composicao, obj_col ) -> None:
-        super().__init__(_dfr_insumo, composicao, obj_col)
+        super().__init__( _dfr_insumo, composicao, obj_col )
         self.configurar_linha_custo_execucao()
 
     def configurar_linha_custo_execucao( self ) -> None:
@@ -205,7 +209,7 @@ class LinhaCustoHorarioExecucaoDF(LinhaDF):
 class LinhaCustoUnitarioExecucaoDF(LinhaDF):
 
     def __init__( self, _dfr_insumo, composicao, obj_col ) -> None:
-        super().__init__(_dfr_insumo, composicao, obj_col)
+        super().__init__( _dfr_insumo, composicao, obj_col )
         self.configurar_linha_custo_unitario_execucao()
 
     def configurar_linha_custo_unitario_execucao( self ) -> None:
@@ -218,7 +222,7 @@ class LinhaCustoUnitarioExecucaoDF(LinhaDF):
 class LinhaFatorInfluenciaChuvaDF(LinhaDF):
 
     def __init__( self, _dfr_insumo, composicao, obj_col ) -> None:
-        super().__init__(_dfr_insumo, composicao, obj_col)
+        super().__init__( _dfr_insumo, composicao, obj_col )
         self.configurar_linha_subtotal_fic()
 
     def configurar_linha_subtotal_fic( self ) -> None:
@@ -233,7 +237,7 @@ class LinhaFatorInfluenciaChuvaDF(LinhaDF):
 class LinhaFatorInterferenciaTrafegoDF(LinhaDF):
 
     def __init__( self, _dfr_insumo, composicao, obj_col ) -> None:
-        super().__init__(_dfr_insumo, composicao, obj_col)
+        super().__init__( _dfr_insumo, composicao, obj_col )
         self.configurar_linha_subtotal_fit()
 
     def configurar_linha_subtotal_fit( self ) -> None:
@@ -248,7 +252,7 @@ class LinhaFatorInterferenciaTrafegoDF(LinhaDF):
 class LinhaBdiDF(LinhaDF):
 
     def __init__( self, _dfr_insumo, composicao, obj_col ) -> None:
-        super().__init__(_dfr_insumo, composicao, obj_col)
+        super().__init__( _dfr_insumo, composicao, obj_col )
         self.configurar_linha_subtotal_bdi()
 
     def configurar_linha_subtotal_bdi( self ) -> None:
@@ -263,7 +267,7 @@ class LinhaBdiDF(LinhaDF):
 class LinhaPrecoUnitarioDF(LinhaDF):
 
     def __init__( self, _dfr_insumo, composicao, obj_col ) -> None:
-        super().__init__(_dfr_insumo, composicao, obj_col)
+        super().__init__( _dfr_insumo, composicao, obj_col )
         self.configurar_linha_preco_unitario()
 
     def configurar_linha_preco_unitario( self ) -> None:
@@ -276,7 +280,7 @@ class LinhaPrecoUnitarioDF(LinhaDF):
 class LinhaAtividadeAuxiliarDF(LinhaDF):
 
     def __init__( self, _dfr_insumo, composicao, obj_col ) -> None:
-        super().__init__(_dfr_insumo, composicao, obj_col)
+        super().__init__( _dfr_insumo, composicao, obj_col )
         self.configurar_linha_subtotal_atividade_auxiliar()
 
     def configurar_linha_subtotal_atividade_auxiliar( self ) -> None:
@@ -288,7 +292,7 @@ class LinhaAtividadeAuxiliarDF(LinhaDF):
 class LinhaTempoFixoDF(LinhaDF):
 
     def __init__( self, _dfr_insumo, composicao, obj_col ) -> None:
-        super().__init__(_dfr_insumo, composicao, obj_col)
+        super().__init__( _dfr_insumo, composicao, obj_col )
         self.configurar_linha_subtotal_tempo_fixo()
 
     def configurar_linha_subtotal_tempo_fixo( self ) -> None:
@@ -300,7 +304,7 @@ class LinhaTempoFixoDF(LinhaDF):
 class LinhaTransporteDF(LinhaDF):
 
     def __init__( self, _dfr_insumo, composicao, obj_col ) -> None:
-        super().__init__(_dfr_insumo, composicao, obj_col)
+        super().__init__( _dfr_insumo, composicao, obj_col )
         self.configurar_linha_subtotal_transporte()
 
     def configurar_linha_subtotal_transporte( self ) -> None:
@@ -312,7 +316,7 @@ class LinhaTransporteDF(LinhaDF):
 class LinhaCustoUnitarioDiretoTotalDF(LinhaDF):
 
     def __init__( self, _dfr_insumo, composicao, obj_col ) -> None:
-        super().__init__(_dfr_insumo, composicao, obj_col)
+        super().__init__( _dfr_insumo, composicao, obj_col )
         self.configurar_linha_total_unitario_direto()
 
     def configurar_linha_total_unitario_direto( self ) -> None:
@@ -349,8 +353,6 @@ class ComposicaoDF:
         self.configurar_codigo_composicao_principal()
         
         self.calcular_subtotal_simples()
-
-        # self.obter_lis_tr()
 
 
     def obter_dfr_dados_basicos_insumos( self ) -> pd.core.frame.DataFrame:
@@ -405,15 +407,15 @@ class ComposicaoDF:
         return self.obj_arred.custo( quantidade * preco_unitario )
 
     def obter_dfr_custo_equipamento( self ) -> pd.core.frame.DataFrame:
-        self.dfr_insumo.loc[self.dfr_insumo[self.obj_col_dfr.grupo] == self.obj_grupo.insumo_equipamento, self.obj_col_dfr.custo_total ] = self.calcular_sre_custo_equipamento()
+        self.dfr_insumo.loc[self.dfr_insumo[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_equipamento, self.obj_col_dfr.custo_total ] = self.calcular_sre_custo_equipamento()
         return self.dfr_insumo
 
     def obter_dfr_custo_mao_de_obra( self ) -> pd.core.frame.DataFrame:
-        self.dfr_insumo.loc[self.dfr_insumo[self.obj_col_dfr.grupo] == self.obj_grupo.insumo_mao_de_obra, self.obj_col_dfr.custo_total ] = self.calcular_sre_custo_mao_de_obra()
+        self.dfr_insumo.loc[self.dfr_insumo[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_mao_de_obra, self.obj_col_dfr.custo_total ] = self.calcular_sre_custo_mao_de_obra()
         return self.dfr_insumo
 
     def obter_dfr_custo_material( self ) -> pd.core.frame.DataFrame:
-        self.dfr_insumo.loc[self.dfr_insumo[self.obj_col_dfr.grupo] == self.obj_grupo.insumo_material, self.obj_col_dfr.custo_total ] = self.calcular_sre_custo_material()
+        self.dfr_insumo.loc[self.dfr_insumo[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_material, self.obj_col_dfr.custo_total ] = self.calcular_sre_custo_material()
         return self.dfr_insumo
 
     def criar_linha_subtotal_equipamento( self, _dfr_insumo: pd.core.frame.DataFrame, composicao: ComposicaoDB, obj_col: ListaColunaComposicaoDF ) -> LinhaEquipamentoDF:
@@ -480,28 +482,28 @@ class ComposicaoDF:
         return obj_linha_ma
 
     def obter_dfr_execucao( self ) -> pd.core.frame.DataFrame:
-        return self.dfr_insumo.query( '{} == {}'.format(self.obj_col_dfr.grupo, self.obj_grupo.subtotal_execucao ) )
+        return self.dfr_insumo.query( '{} == {}'.format( self.obj_col_dfr.grupo, self.obj_grupo.subtotal_execucao ) )
 
     def obter_dfr_subtotal_execucao( self ):
         obj_linha_he = self.criar_linha_custo_execucao( self.obter_dfr_execucao(), self.composicao, self.obj_col_dfr )
         return obj_linha_he
 
     def obter_dfr_unitario_execucao( self ) -> pd.core.frame.DataFrame:
-        return self.dfr_insumo.query( '{} == {}'.format(self.obj_col_dfr.grupo, self.obj_grupo.subtotal_unitario_execucao ) )
+        return self.dfr_insumo.query( '{} == {}'.format( self.obj_col_dfr.grupo, self.obj_grupo.subtotal_unitario_execucao ) )
 
     def obter_dfr_subtotal_unitario_execucao( self ):
         obj_linha_ue = self.criar_linha_custo_unitario_execucao( self.obter_dfr_unitario_execucao(), self.composicao, self.obj_col_dfr )
         return obj_linha_ue
 
     def obter_dfr_fic( self ) -> pd.core.frame.DataFrame:
-        return self.dfr_insumo.query( '{} == {}'.format(self.obj_col_dfr.grupo, self.obj_grupo.subtotal_unitario_fic ) )
+        return self.dfr_insumo.query( '{} == {}'.format( self.obj_col_dfr.grupo, self.obj_grupo.subtotal_unitario_fic ) )
 
     def obter_dfr_custo_fic( self ):
         obj_linha_fic = self.criar_linha_custo_fic( self.obter_dfr_fic(), self.composicao, self.obj_col_dfr )
         return obj_linha_fic
 
     def obter_dfr_fit( self ) -> pd.core.frame.DataFrame:
-        return self.dfr_insumo.query( '{} == {}'.format(self.obj_col_dfr.grupo, self.obj_grupo.subtotal_unitario_fit ) )
+        return self.dfr_insumo.query( '{} == {}'.format( self.obj_col_dfr.grupo, self.obj_grupo.subtotal_unitario_fit ) )
 
     def obter_dfr_custo_fit( self ):
         obj_linha_fit = self.criar_linha_custo_fit( self.obter_dfr_fit(), self.composicao, self.obj_col_dfr )
@@ -600,7 +602,7 @@ class ComposicaoDF:
         for item in lista:
             grupo = item[0]
             item = item[1]
-            self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.codigo ] == item,self.obj_col_dfr.preco_unitario ] = dicionario[ item ].custo_unitario_total 
+            self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.codigo ] == item, self.obj_col_dfr.preco_unitario ] = dicionario[ item ].custo_unitario_total 
             quantidade = self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.codigo ] == item, self.obj_col_dfr.quantidade ]
             preco_unitario = self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.codigo ] == item, self.obj_col_dfr.preco_unitario ]
             if ( grupo == self.obj_grupo.insumo_transporte ):
@@ -655,14 +657,14 @@ class ComposicaoDF:
 
     def obter_lis_tr( self ):
         dfr_aa = self.obter_lis_aa( self.composicao.codigo )
-        lista_aa = dfr_aa[['Composicao_principal','Código','Quantidade']].to_dict(orient='records')
+        lista_aa = dfr_aa[ ['Composicao_principal','Código','Quantidade'] ].to_dict( orient='records' )
         for item in lista_aa:
-            print( str(item['Composicao_principal']) + ' ; ' + str(item['Código']) + ' ; ' + str(item['Quantidade']) )
+            print( str( item['Composicao_principal'] ) + ' ; ' + str( item['Código'] ) + ' ; ' + str( item['Quantidade'] ) )
 
 
 class Servico:
 
-    def __init__(self, codigo: str, quantidade: float, diferenciado: bool) -> None:
+    def __init__( self, codigo: str, quantidade: float, diferenciado: bool ) -> None:
         self.codigo = codigo
         self.diferenciado = diferenciado
         self.quantidade = quantidade
@@ -670,16 +672,15 @@ class Servico:
 
 class Projeto:
 
-    def __init__(self, lista_servico: list, baseDF: BaseDF, bdi: BonificacaoDespesasIndiretas) -> None:
+    def __init__( self, lista_servico: list, baseDF: BaseDF, bdi: BonificacaoDespesasIndiretas ) -> None:
         self.baseDF = baseDF
         self.bdi = bdi
         self.onerado = self.bdi.onerado
-        self.obj_col_dfr = ListaColunaComposicaoDF(self.onerado)
-        self.obj_bdi_zero = BonificacaoDespesasIndiretas(0.0, 0.0, self.onerado)
+        self.obj_col_dfr = ListaColunaComposicaoDF( self.onerado )
+        self.obj_bdi_zero = BonificacaoDespesasIndiretas( 0.0, 0.0, self.onerado )
         self.obj_grupo = Grupo()
         self.servicos = lista_servico
         self.composicoes_projeto = list()
-        self.transportes_projeto = list()
         self.composicoes_com_bdi = list()
         self.equipamento_projeto = list()
         self.mao_de_obra_projeto = list()
@@ -689,16 +690,19 @@ class Projeto:
         self.lista_auxiliar = list()
         self.configurar_lista_composicoes_projeto()
         self.gerar_dicionario_dados_basicos_composicoes_projeto()
-        self.obter_lista_atividades_auxiliares_servicos_projeto()
+        self.atividades_auxiliares_projeto = self.obter_lista_atividades_auxiliares_servicos_projeto()
+        self.transportes_projeto = self.obter_dicionario_transportes_servicos_projeto()
 
-    def configurar_lista_composicoes_projeto( self ):
+
+    def configurar_lista_composicoes_projeto( self ) -> None:
         for item in self.servicos:
-            self.composicoes_projeto.append( self.tratar_codigo_composicao( item.codigo ) )
+            obj_composicaostr = ComposicaoStr( item.codigo )
+            self.composicoes_projeto.append( obj_composicaostr.codigo )
         self.composicoes_com_bdi = self.composicoes_projeto.copy()
 
     def instanciar_composicao_db( self, codigo: str, posicao_em_servicos: int ) -> ComposicaoDB:
         if codigo in self.composicoes_com_bdi:
-            obj_composicao_db = ComposicaoDB( codigo, self.bdi, self.servicos[posicao_em_servicos].diferenciado )
+            obj_composicao_db = ComposicaoDB( codigo, self.bdi, self.servicos[ posicao_em_servicos ].diferenciado )
         else:
             obj_composicao_db = ComposicaoDB( codigo, self.obj_bdi_zero )
         return obj_composicao_db
@@ -707,7 +711,7 @@ class Projeto:
         return ComposicaoDF( obj_composicao_db, self.baseDF ) 
 
     def obter_lis_insumo_projeto( self, lista_auxiliar: list, lista_projeto: list ) -> list:
-        if( lista_auxiliar != None):
+        if ( lista_auxiliar != None ):
             for item in lista_auxiliar:
                 item = item[1]
                 if item not in lista_projeto:
@@ -715,21 +719,18 @@ class Projeto:
         return lista_projeto
 
     def obter_lista_auxiliar( self, lista_auxiliar: list ) -> list:
-        if ( lista_auxiliar != None):
+        if ( lista_auxiliar != None ):
             for item in lista_auxiliar:
                 item = item[1]
                 self.lista_auxiliar.append( item )
         return self.lista_auxiliar
 
-    def gerar_dicionario_dados_basicos_composicoes_projeto( self ):
-        for i, codigo in enumerate(self.composicoes_projeto):
-
+    def gerar_dicionario_dados_basicos_composicoes_projeto( self ) -> None:
+        for i, codigo in enumerate( self.composicoes_projeto ):
             obj_composicao_db = self.instanciar_composicao_db( codigo, i )
             obj_composicao_df = self.instanciar_composicao_df( obj_composicao_db )   
-
             self.dic_db_projeto[ obj_composicao_db.codigo ] = obj_composicao_db
             self.dic_df_composicao[ obj_composicao_db.codigo ] = obj_composicao_df
-           
             self.lista_auxiliar.append( codigo )
             self.composicoes_projeto = self.obter_lis_insumo_projeto( obj_composicao_df.obter_lis_atividade_auxiliar(), self.composicoes_projeto )
             self.lista_auxiliar = self.obter_lista_auxiliar( obj_composicao_df.obter_lis_atividade_auxiliar() )
@@ -737,7 +738,7 @@ class Projeto:
             self.mao_de_obra_projeto = self.obter_lis_insumo_projeto( obj_composicao_df.obter_lis_mao_de_obra(), self.mao_de_obra_projeto )
             self.material_projeto = self.obter_lis_insumo_projeto( obj_composicao_df.obter_lis_material(), self.material_projeto )
 
-    def tratar_composicoes_projeto(self) -> list:
+    def tratar_composicoes_projeto( self ) -> list:
         lista_auxiliar_reversa = list()
         while( len( self.lista_auxiliar ) != 0 ):
             ultimo = self.lista_auxiliar[-1]
@@ -746,63 +747,84 @@ class Projeto:
             self.lista_auxiliar.pop()
         return lista_auxiliar_reversa
 
-    def tratar_codigo_composicao( self, codigo: str ) -> str:
-        codigo = str( codigo )
-        codigo = codigo.zfill(7)
-        return codigo
-
     def obter_dfr_composicao( self ) -> dict:
         lista_auxiliar_reversa = self.tratar_composicoes_projeto()
         for item in lista_auxiliar_reversa:
             self.dic_df_composicao[ item ].calcular_custo_atividade_auxiliar( self.dic_db_projeto )
             self.dic_df_composicao[ item ].calcular_subtotal_composto()
             self.dic_df_composicao[ item ].criar_linhas_vazias()
-            self.dic_df_composicao[ item ].dfr_insumo.sort_values( by =[ self.dic_df_composicao[ item ].obj_col_dfr.grupo, self.dic_df_composicao[ item ].obj_col_dfr.item_transporte ], inplace=True )
+            self.dic_df_composicao[ item ].dfr_insumo.sort_values( by=[ self.dic_df_composicao[ item ].obj_col_dfr.grupo, self.dic_df_composicao[ item ].obj_col_dfr.item_transporte ], inplace=True )
             self.dic_df_composicao[ item ].dfr_insumo.reset_index( drop=True, inplace=True )
         return self.dic_df_composicao
     
     def obter_dfr_equipamento( self ) -> pd.core.frame.DataFrame:
-        dfr_equipamento = pd.DataFrame({'Código': self.equipamento_projeto})
-        dfr_equipamento = pd.merge( dfr_equipamento, self.baseDF.dfr_dados_in, on='Código', how='left' )
-        dfr_equipamento = pd.merge( dfr_equipamento, self.baseDF.dfr_custo_in, on='Código', how='left' )
-        lista_colunas_eq = ['Grupo', 'Origem_x', 'Estado_x', 'Publicacao_x', 'Código', 'Descrição', 'Unidade', 'Custo produtivo desonerado', 'Custo improdutivo desonerado']
-        return dfr_equipamento[lista_colunas_eq]
+        dfr_equipamento = pd.DataFrame( {self.obj_col_dfr.codigo: self.equipamento_projeto} )
+        dfr_equipamento = pd.merge( dfr_equipamento, self.baseDF.dfr_dados_in, on=self.obj_col_dfr.codigo, how='left' )
+        dfr_equipamento = pd.merge( dfr_equipamento, self.baseDF.dfr_custo_in, on=self.obj_col_dfr.codigo, how='left' )
+        lista_colunas_eq = ['Grupo', 'Origem_x', 'Estado_x', 'Publicacao_x', self.obj_col_dfr.codigo, self.obj_col_dfr.descricao, self.obj_col_dfr.unidade, 'Custo produtivo desonerado', 'Custo improdutivo desonerado']
+        return dfr_equipamento[ lista_colunas_eq ]
     
     def obter_dfr_mao_de_obra( self ) -> pd.core.frame.DataFrame:
-        dfr_mao_de_obra = pd.DataFrame({'Código': self.mao_de_obra_projeto})
-        dfr_mao_de_obra = pd.merge( dfr_mao_de_obra, self.baseDF.dfr_dados_in, on='Código', how='left' )
-        dfr_mao_de_obra = pd.merge( dfr_mao_de_obra, self.baseDF.dfr_custo_in, on='Código', how='left' )
-        lista_colunas_mo = ['Grupo', 'Origem_x', 'Estado_x', 'Publicacao_x', 'Código', 'Descrição', 'Unidade', 'Custo produtivo desonerado']
-        return dfr_mao_de_obra[lista_colunas_mo]
+        dfr_mao_de_obra = pd.DataFrame( {self.obj_col_dfr.codigo: self.mao_de_obra_projeto} )
+        dfr_mao_de_obra = pd.merge( dfr_mao_de_obra, self.baseDF.dfr_dados_in, on=self.obj_col_dfr.codigo, how='left' )
+        dfr_mao_de_obra = pd.merge( dfr_mao_de_obra, self.baseDF.dfr_custo_in, on=self.obj_col_dfr.codigo, how='left' )
+        lista_colunas_mo = ['Grupo', 'Origem_x', 'Estado_x', 'Publicacao_x', self.obj_col_dfr.codigo, self.obj_col_dfr.descricao, self.obj_col_dfr.unidade, 'Custo produtivo desonerado']
+        return dfr_mao_de_obra[ lista_colunas_mo ]
     
     def obter_dfr_material( self ) -> pd.core.frame.DataFrame:
-        dfr_material = pd.DataFrame({'Código': self.material_projeto})
-        dfr_material = pd.merge( dfr_material, self.baseDF.dfr_dados_in, on='Código', how='left' )
-        dfr_material = pd.merge( dfr_material, self.baseDF.dfr_custo_in, on='Código', how='left' )
-        lista_colunas_ma = ['Grupo', 'Origem_x', 'Estado_x', 'Publicacao_x', 'Código', 'Descrição', 'Unidade', 'Preço unitário']
-        return dfr_material[lista_colunas_ma]
+        dfr_material = pd.DataFrame( {self.obj_col_dfr.codigo: self.material_projeto} )
+        dfr_material = pd.merge( dfr_material, self.baseDF.dfr_dados_in, on=self.obj_col_dfr.codigo, how='left' )
+        dfr_material = pd.merge( dfr_material, self.baseDF.dfr_custo_in, on=self.obj_col_dfr.codigo, how='left' )
+        lista_colunas_ma = ['Grupo', 'Origem_x', 'Estado_x', 'Publicacao_x', self.obj_col_dfr.codigo, self.obj_col_dfr.descricao, self.obj_col_dfr.unidade, self.obj_col_dfr.preco_unitario]
+        return dfr_material[ lista_colunas_ma ]
 
-    def obter_lista_transportes_servico( self, codigo ):
+    def obter_lista_transportes_composicao( self, codigo: str ) -> list:
         consulta = self.baseDF.dfr_apropriacao_in.query( "{} == '{}' & Grupo == {}".format( self.obj_col_dfr.composicao_principal, codigo, self.obj_grupo.insumo_transporte ) )
-        return consulta
-
-    def obter_lista_auxiliares_servico( self, codigo ):
-        consulta = self.baseDF.dfr_apropriacao_in.query( "{} == '{}' & Grupo == {}".format( self.obj_col_dfr.composicao_principal, codigo, self.obj_grupo.insumo_atividade_auxiliar ) )
-        consulta = consulta[[self.obj_col_dfr.composicao_principal, self.obj_col_dfr.codigo, self.obj_col_dfr.quantidade]].values.tolist()
+        consulta = consulta[ [self.obj_col_dfr.composicao_principal, self.obj_col_dfr.codigo, self.obj_col_dfr.item_transporte, self.obj_col_dfr.quantidade] ].values.tolist()
         return consulta
 
     def obter_lista_atividades_auxiliares_servicos_projeto( self ) -> list:
         lista_primaria = list()
         for item in self.servicos:
-
             quantidade = 1.0
-
             obj_arvore_servico = Arvore( self.baseDF, self.obj_col_dfr, self.obj_grupo )
-            
             encapsulada = Capsula( item.codigo, item.codigo, quantidade )
-
             obj_arvore_servico.inserir_auxiliar_noh_arvore( encapsulada )
-
-            print( obj_arvore_servico.obter_lista_auxiliares_noh_arvore_in_order() )
-            
+            lista_primaria.append( obj_arvore_servico.obter_lista_auxiliares_noh_arvore_in_order() )           
         return lista_primaria
+
+    def obter_dfr_transportes_servicos( self ) -> pd.core.frame.DataFrame:
+        dfr_transportes = pd.DataFrame( self.transportes_projeto )
+        dfr_transportes = pd.merge( dfr_transportes, self.baseDF.dfr_dados_in, on=self.obj_col_dfr.codigo, how='left' )
+        lista_colunas_tr = [ "Serviço orçamento", self.obj_col_dfr.composicao_principal, self.obj_col_dfr.codigo, 'Descrição', 'Unidade', self.obj_col_dfr.item_transporte, self.obj_col_dfr.utilizacao]
+        return dfr_transportes[ lista_colunas_tr ]
+
+    def obter_dicionario_transportes_servicos_projeto( self ) -> dict:
+        obj_precisao = Precisao()
+        dicionario_transportes = dict()
+        lista_servico = list()
+        lista_composicao_principal = list()
+        lista_transporte = list()
+        lista_item_transportado = list()
+        lista_fator_utilizacao = list()
+        for item in self.obter_lista_atividades_auxiliares_servicos_projeto():
+            for subitem in item:
+                lista_auxiliar_sub = self.obter_lista_transportes_composicao( subitem[0] )
+                for sub in lista_auxiliar_sub:
+                    obj_composicaostr = ComposicaoStr( str(sub[0]) )
+                    obj_transportestr = ComposicaoStr( str(sub[1]) )
+
+                    sub[3] = obj_precisao.utilizacao_transporte( subitem[1] * sub[3] )
+                    lista_fator_utilizacao.append( sub[3] )
+                    lista_item_transportado.append( sub[2] )
+                    lista_transporte.append( obj_transportestr.codigo )
+                    lista_composicao_principal.append( obj_composicaostr.codigo )
+                    lista_servico.append( item[0][0] )
+
+        dicionario_transportes[ self.obj_col_dfr.utilizacao ] = lista_fator_utilizacao
+        dicionario_transportes[ self.obj_col_dfr.item_transporte ] = lista_item_transportado
+        dicionario_transportes[ self.obj_col_dfr.codigo ] = lista_transporte
+        dicionario_transportes[ self.obj_col_dfr.composicao_principal ] = lista_composicao_principal
+        dicionario_transportes[ "Serviço orçamento" ] = lista_servico
+
+        return dicionario_transportes
