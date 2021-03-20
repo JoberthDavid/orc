@@ -2,8 +2,14 @@
 # Para consultar sobre a biblioteca Pandas https://www.dataquest.io/blog/excel-and-pandas/
 # https://medium.com/analytics-vidhya/common-excel-formulas-in-python-c5a7ce0ae07a
 
-from arquivos import *
-from funcoes import *
+from arquivos import (
+                        arq_db_cp,
+                        arq_db_in,
+                        arq_apr_in,
+                        arq_cto_in
+                    )
+                    
+from funcoes import escrever_arquivo_excel
 from projeto import BaseDF, Servico, BonificacaoDespesasIndiretas, Projeto
 
 baseDF = BaseDF( arq_db_cp, arq_db_in, arq_apr_in, arq_cto_in )

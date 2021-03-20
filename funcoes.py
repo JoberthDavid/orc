@@ -1,6 +1,36 @@
 import pandas as pd
-from projeto import *
-from constantes import *
+from projeto import (
+                        Projeto,
+                    )
+from estrutura_dados import (
+                        NohArvore,
+                        NohPilha,
+                        Pilha,
+                        NohFila,
+                        Fila,
+                    )
+from constantes import (
+                        EQUIPAMENTO,
+                        EQUIPAMENTO_CUSTO_HORARIO,
+                        MAO_DE_OBRA,
+                        MAO_DE_OBRA_CUSTO_HORARIO,
+                        EXECUCAO_HORARIO,
+                        EXECUCAO_UNITARIO,
+                        MATERIAL,
+                        MATERIAL_CUSTO_UNITARIO,
+                        ATIVIDADE_AUXILIAR,
+                        ATIVIDADE_AUXILIAR_CUSTO_TOTAL,
+                        TEMPO_FIXO,
+                        TEMPO_FIXO_CUSTO_TOTAL,
+                        TRANSPORTE,
+                        TRANSPORTE_CUSTO_TOTAL,
+                        DIRETO_TOTAL_UNITARIO,
+                        CODIGO_HORARIO,
+                        CODIGO_HORARIO_EXECUCAO,
+                        CODIGO_UNITARIO,
+                        CODIGO_UNITARIO_DIRETO_TOTAL,
+                        CODIGO_PRECO_TOTAL 
+                    )
 
 
 def carregar_data_frame(csv):
@@ -40,7 +70,8 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
 
     # cria um objeto Excel
     writer = pd.ExcelWriter( '.'.join( (arquivo,'xlsx') ) , engine='xlsxwriter' )
-    
+
+
     workbook  = writer.book 
 
     modulo = 10

@@ -1,7 +1,12 @@
 import pandas as pd
 
-from arquivos import *
-from classes import BaseDF
+from arquivos import (
+                        arq_db_cp,
+                        arq_db_in,
+                        arq_apr_in,
+                        arq_cto_in
+                    )
+from projeto import BaseDF
 
 # criando objeto BaseDF
 baseDF = BaseDF( arq_db_cp, arq_db_in, arq_apr_in, arq_cto_in )

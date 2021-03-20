@@ -1,4 +1,5 @@
-from funcoes import *
+import pandas as pd
+from funcoes import carregar_data_frame
 
 #################### Preços de equipamentos
 

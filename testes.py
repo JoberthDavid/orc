@@ -2,7 +2,35 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from projeto import *
+from projeto import (
+                    GeradorDF,
+                    ComposicaoStr,
+                    BaseDF,
+                    BonificacaoDespesasIndiretas,
+                    ComposicaoDB,
+                    ComposicaoDF,
+                    LinhaEquipamentoDF,
+                    LinhaMaoDeObraDF,
+                    LinhaMaterialDF,
+                    LinhaCustoHorarioExecucaoDF,
+                    LinhaCustoUnitarioExecucaoDF,
+                    LinhaAtividadeAuxiliarDF,
+                    LinhaTempoFixoDF,
+                    LinhaTransporteDF,
+                    LinhaCustoUnitarioDiretoTotalDF
+                )
+from formatacao_dados import (
+                    Precisao,
+                    Grupo,
+                    Codigo,
+                    ListaColuna,
+                    ListaColunaOrigemCP,
+                    ListaColunaComposicaoDB,
+                    ListaColunaInsumoDB,
+                    ListaColunaApropriacaoDB,
+                    ListaColunaCustoInsumoCT,
+                    ListaColunaComposicaoDF,
+                )
 from arquivos import arq_db_cp, arq_db_in, arq_apr_in, arq_cto_in
 
 codigo_composicao_1 = str(307731)
@@ -16,6 +44,17 @@ class TestGeradorDF(unittest.TestCase):
     def test_create_GeradorDF( self ):
         self.assertIsInstance( self.obj_GeradorDF, GeradorDF )
 
+class TestComposicaoStr(unittest.TestCase):
+
+    def setUp( self ):
+        self.obj_ComposicaoStr = ComposicaoStr( codigo_composicao_1 )
+
+    def test_create_ComposicaoStr( self ):
+        self.assertIsInstance( self.obj_ComposicaoStr, ComposicaoStr )
+
+    def test_result_of_ComposicaoStr( self ):
+        self.assertEqual( len(self.obj_ComposicaoStr.codigo), 7 )
+        self.assertIsInstance( self.obj_ComposicaoStr.codigo, str )
 
 class TestBaseDF(unittest.TestCase):
 
@@ -63,11 +102,6 @@ class TestComposicaoDB(unittest.TestCase):
     def test_instance_of_ComposicaoDB( self ):
         self.assertIsInstance( self.obj_ComposicaoDB, ComposicaoDB )
     
-    def test_instance_of_tratar_codigo_composicao( self ):
-        self.assertEqual( self.obj_ComposicaoDB.codigo, self.obj_ComposicaoDB.tratar_codigo_composicao(codigo_composicao_1) )
-        self.assertNotEqual( self.obj_ComposicaoDB.codigo, codigo_composicao_1 )
-        self.assertIsInstance( self.obj_ComposicaoDB.codigo, str )
-
     def test_result_of_calcular_custo_horario_execucao( self ):
         resultado = round( self.obj_ComposicaoDB.custo_horario_equipamento + self.obj_ComposicaoDB.custo_horario_mao_de_obra, self.obj_precisao.d4 )
         esperado = self.obj_ComposicaoDB.configurar_custo_execucao()
@@ -280,6 +314,7 @@ class TestComposicaoDF(unittest.TestCase):
     def test_instance_of_criar_linha_subtotal_transporte( self ):
         _dfr_insumo = self.obj_ComposicaoDF.dfr_insumo.query( '{} == {}'.format(self.obj_ComposicaoDF.obj_col_dfr.grupo, self.obj_grupo.subtotal_unitario_transporte ) )
         resultado = self.obj_ComposicaoDF.criar_linha_subtotal_transporte( _dfr_insumo, self.obj_ComposicaoDF.composicao, self.obj_ComposicaoDF.obj_col_dfr )
+        self.assertIsInstance( resultado, LinhaTransporteDF)
 
     def test_instance_of_criar_linha_custo_unitario_direto_total( self ):
         _dfr_insumo = self.obj_ComposicaoDF.dfr_insumo.query( '{} == {}'.format(self.obj_ComposicaoDF.obj_col_dfr.grupo, self.obj_grupo.total_unitario_direto ) ) 

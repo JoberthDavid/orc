@@ -1,7 +1,28 @@
 import numpy as np
 import pandas as pd
-from estrutura_dados import *
-from formatacao_dados import *
+
+from estrutura_dados import (
+                            NohArvore,
+                            NohPilha,
+                            NohFila,
+                            Arvore,
+                            Pilha,
+                            Fila,
+                            Capsula
+                        )
+                        
+from formatacao_dados import (
+                            Precisao,
+                            Grupo,
+                            Codigo,
+                            ListaColuna,
+                            ListaColunaOrigemCP,
+                            ListaColunaComposicaoDB,
+                            ListaColunaInsumoDB,
+                            ListaColunaApropriacaoDB,
+                            ListaColunaCustoInsumoCT,
+                            ListaColunaComposicaoDF,
+                        )
 
 
 ENCODING = 'utf-8' #'ISO-8859-1'
@@ -838,7 +859,7 @@ class Projeto:
 
     def obter_dfr_equipamentos_servicos( self ) -> pd.core.frame.DataFrame:
         dfr_equipamentos = pd.DataFrame( self.equipamento_projeto )
-        dfr_transportes = pd.merge( dfr_equipamentos, self.baseDF.dfr_dados_in, on=self.obj_col_dfr.codigo, how='left' )
+        dfr_equipamentos = pd.merge( dfr_equipamentos, self.baseDF.dfr_dados_in, on=self.obj_col_dfr.codigo, how='left' )
         lista_colunas_eq = [ "Serviço orçamento", self.obj_col_dfr.composicao_principal, self.obj_col_dfr.codigo, 'Quantidade produtiva', 'Quantidade improdutiva']
         return dfr_equipamentos[ lista_colunas_eq ]
 
