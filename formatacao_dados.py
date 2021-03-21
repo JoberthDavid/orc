@@ -4,7 +4,10 @@ class Precisao:
         self.d2 = 2
         self.d4 = 4
         self.d5 = 5
-        self.dt = 10
+        self.dtr = 10
+        self.deq = 10
+        self.dma = 10
+        self.dmo = 10
 
     def custo( self, valor: float ) -> float:
         return round( valor, self.d4 )
@@ -16,7 +19,16 @@ class Precisao:
         return round( valor, self.d5 )
 
     def utilizacao_transporte( self, valor: float ) -> float:
-        return round( valor, self.dt )
+        return round( valor, self.dtr )
+
+    def utilizacao_equipamento( self, valor: float ) -> float:
+        return round( valor, self.deq )
+
+    def utilizacao_material( self, valor: float ) -> float:
+        return round( valor, self.dma )
+
+    def utilizacao_mao_de_obra( self, valor: float ) -> float:
+        return round( valor, self.dmo )
 
 
 class Grupo:

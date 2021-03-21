@@ -93,9 +93,9 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
     format_unidade_composicao = workbook.add_format({'bold': True,'italic': True,'align': 'left'})
     format_complemento = workbook.add_format({'bold': True,'italic': True,'align': 'center', 'font_color': 'red'})
     format_branco = workbook.add_format({'font_color': 'white'})
-    format_cinza_claro = workbook.add_format({'font_color': '#DCDCDC'})
-    format_cinza_medio = workbook.add_format({'font_color': '#A9A9A9'})
-    format_azul_forte = workbook.add_format({'font_color': '#B0C4DE'})
+    # format_cinza_claro = workbook.add_format({'font_color': '#DCDCDC'})
+    # format_cinza_medio = workbook.add_format({'font_color': '#A9A9A9'})
+    # format_azul_forte = workbook.add_format({'font_color': '#B0C4DE'})
 
     for df in dicionario.values():
         # dfr_insumo
@@ -123,7 +123,7 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
 
         # formatação condicional códgio com ho, un e un_dt
         token = '$D${inicio}:$D${fim}'.format(inicio=1, fim=numero_linhas)
-        condicoes = [ (CODIGO_HORARIO, format_branco), (CODIGO_UNITARIO_DIRETO_TOTAL, format_cinza_medio), (CODIGO_HORARIO_EXECUCAO, format_branco), (CODIGO_UNITARIO, format_cinza_claro), (CODIGO_PRECO_TOTAL, format_azul_forte)]
+        condicoes = [ (CODIGO_HORARIO, format_branco), (CODIGO_UNITARIO_DIRETO_TOTAL, format_branco), (CODIGO_HORARIO_EXECUCAO, format_branco), (CODIGO_UNITARIO, format_branco), (CODIGO_PRECO_TOTAL, format_branco)]
         for con in condicoes:
             worksheet_dfr_composicao.conditional_format( token, {'type':'text','criteria':'containing','value': con[0],'format':con[1]} )
         
@@ -170,7 +170,7 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
     
     tamanho = dfr_mao_de_obra.shape[0]
 
-    area_de_impressao = '$A${}:$I${}'.format(1, tamanho )
+    area_de_impressao = '$A${}:$H${}'.format(1, tamanho )
     
     # definindo a área de impressão
     worksheet_dfr_mao_de_obra.print_area( area_de_impressao )
@@ -201,7 +201,7 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
     
     tamanho = dfr_material.shape[0]
 
-    area_de_impressao = '$A${}:$I${}'.format(1, tamanho )
+    area_de_impressao = '$A${}:$H${}'.format(1, tamanho )
     
     # definindo a área de impressão
     worksheet_dfr_material.print_area( area_de_impressao )
@@ -231,7 +231,7 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
     
     tamanho = dfr_transporte.shape[0]
 
-    area_de_impressao = '$A${}:$I${}'.format(1, tamanho )
+    area_de_impressao = '$A${}:$H${}'.format(1, tamanho )
     
     # definindo a área de impressão
     worksheet_dfr_transporte.print_area( area_de_impressao )
@@ -247,7 +247,7 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
     worksheet_dfr_transporte.repeat_rows(0)
 
     # formatando colunas
-    colunas = [ ('A:A', 0.5*modulo, format_centro), ('B:D', 1.8*modulo, format_centro), ('E:E', 8.5*modulo, format_esquerda), ('F:G', 1.5*modulo, format_centro), ('H:H', 1.5*modulo, format_valor_10decimais) ]
+    colunas = [ ('A:A', 0.5*modulo, format_centro), ('B:D', 2.0*modulo, format_centro), ('E:E', 8.5*modulo, format_esquerda), ('F:G', 1.5*modulo, format_centro), ('H:H', 2.5*modulo, format_valor_10decimais) ]
     for col in colunas:
         worksheet_dfr_transporte.set_column( col[0], col[1], col[2] )
 
@@ -262,7 +262,7 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
     
     tamanho = dfr_equipamentos_.shape[0]
 
-    area_de_impressao = '$A${}:$I${}'.format(1, tamanho )
+    area_de_impressao = '$A${}:$J${}'.format(1, tamanho )
     
     # definindo a área de impressão
     worksheet_dfr_equipamentos_.print_area( area_de_impressao )
@@ -275,12 +275,105 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
     # centralizando horizontalmente a tabela na página
     worksheet_dfr_equipamentos_.center_horizontally()
     # repetindo primeira linha
-    worksheet_dfr_transporte.repeat_rows(0)
+    worksheet_dfr_equipamentos_.repeat_rows(0)
 
     # formatando colunas
-    # colunas = [ ('A:A', 0.5*modulo, format_centro), ('B:D', 1.8*modulo, format_centro), ('E:E', 8.5*modulo, format_esquerda), ('F:G', 1.5*modulo, format_centro), ('H:H', 1.5*modulo, format_valor_10decimais) ]
-    # for col in colunas:
-    #     worksheet_dfr_equipamentos_.set_column( col[0], col[1], col[2] )
+    colunas = [ ('A:A', 0.5*modulo, format_centro), ('B:D', 2.0*modulo, format_centro), ('E:E', 8.5*modulo, format_esquerda), ('F:J', 2.5*modulo, format_valor_10decimais) ]
+    for col in colunas:
+        worksheet_dfr_equipamentos_.set_column( col[0], col[1], col[2] )
+
+
+# ##### começa a escrever mão de obra das composições ###################################
+
+    dfr_mao_de_obra_ = projeto.obter_dfr_mao_de_obra_servicos()
+    
+    dfr_mao_de_obra_.to_excel( writer, index=True, sheet_name='mao_de_obra_servico_utilizacao')
+
+    worksheet_dfr_mao_de_obra_ = writer.sheets['mao_de_obra_servico_utilizacao']
+    
+    tamanho = dfr_mao_de_obra_.shape[0]
+
+    area_de_impressao = '$A${}:$G${}'.format(1, tamanho )
+    
+    # definindo a área de impressão
+    worksheet_dfr_mao_de_obra_.print_area( area_de_impressao )
+    # dimensionando as páginas largura por extensão
+    worksheet_dfr_mao_de_obra_.fit_to_pages(1, tamanho)
+    # rotacionando a página
+    worksheet_dfr_mao_de_obra_.set_portrait()
+    # definindo papel
+    worksheet_dfr_mao_de_obra_.set_paper(9) # índice 9 (papel A4) vem da documentação da biblioteca xlsxwriter
+    # centralizando horizontalmente a tabela na página
+    worksheet_dfr_mao_de_obra_.center_horizontally()
+    # repetindo primeira linha
+    worksheet_dfr_mao_de_obra_.repeat_rows(0)
+
+    # formatando colunas
+    colunas = [ ('A:A', 0.5*modulo, format_centro), ('B:D', 2.0*modulo, format_centro), ('E:E', 8.5*modulo, format_esquerda), ('F:G', 2.5*modulo, format_valor_10decimais) ]
+    for col in colunas:
+        worksheet_dfr_mao_de_obra_.set_column( col[0], col[1], col[2] )
+
+
+# ##### começa a escrever materiais das composições ###################################
+
+    dfr_materiais_ = projeto.obter_dfr_materiais_servicos()
+    
+    dfr_materiais_.to_excel( writer, index=True, sheet_name='material_servico_utilizacao')
+
+    worksheet_dfr_materiais_ = writer.sheets['material_servico_utilizacao']
+    
+    tamanho = dfr_materiais_.shape[0]
+
+    area_de_impressao = '$A${}:$G${}'.format(1, tamanho )
+    
+    # definindo a área de impressão
+    worksheet_dfr_materiais_.print_area( area_de_impressao )
+    # dimensionando as páginas largura por extensão
+    worksheet_dfr_materiais_.fit_to_pages(1, tamanho)
+    # rotacionando a página
+    worksheet_dfr_materiais_.set_portrait()
+    # definindo papel
+    worksheet_dfr_materiais_.set_paper(9) # índice 9 (papel A4) vem da documentação da biblioteca xlsxwriter
+    # centralizando horizontalmente a tabela na página
+    worksheet_dfr_materiais_.center_horizontally()
+    # repetindo primeira linha
+    worksheet_dfr_materiais_.repeat_rows(0)
+
+    # formatando colunas
+    colunas = [ ('A:A', 0.5*modulo, format_centro), ('B:D', 2.0*modulo, format_centro), ('E:E', 8.5*modulo, format_esquerda), ('F:G', 2.5*modulo, format_valor_10decimais) ]
+    for col in colunas:
+        worksheet_dfr_materiais_.set_column( col[0], col[1], col[2] )
+
+
+# ##### começa a escrever serviços do projeto ###################################
+
+    dfr_servico_ = projeto.obter_dfr_servicos_projeto()
+    
+    dfr_servico_.to_excel( writer, index=True, sheet_name='servico')
+
+    worksheet_dfr_servico_ = writer.sheets['servico']
+    
+    tamanho = dfr_servico_.shape[0]
+
+    area_de_impressao = '$A${}:$G${}'.format(1, tamanho )
+    
+    # definindo a área de impressão
+    worksheet_dfr_servico_.print_area( area_de_impressao )
+    # dimensionando as páginas largura por extensão
+    worksheet_dfr_servico_.fit_to_pages(1, tamanho)
+    # rotacionando a página
+    worksheet_dfr_servico_.set_portrait()
+    # definindo papel
+    worksheet_dfr_servico_.set_paper(9) # índice 9 (papel A4) vem da documentação da biblioteca xlsxwriter
+    # centralizando horizontalmente a tabela na página
+    worksheet_dfr_servico_.center_horizontally()
+    # repetindo primeira linha
+    worksheet_dfr_servico_.repeat_rows(0)
+
+    # formatando colunas
+    colunas = [ ('A:A', 0.5*modulo, format_centro), ('B:B', 2.0*modulo, format_centro), ('C:C', 10.0*modulo, format_esquerda), ('D:D', 1.0*modulo, format_centro), ('E:F', 2.5*modulo, format_valor_4decimais), ('G:G', 2.5*modulo, format_valor_2decimais) ]
+    for col in colunas:
+        worksheet_dfr_servico_.set_column( col[0], col[1], col[2] )
 
     writer.save()
 

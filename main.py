@@ -24,7 +24,7 @@ for i, codigo in enumerate(codigos_servicos_projeto):
     servicos_projeto.append( Servico( codigo, quantidade_servicos_projeto[ i ], bdi_servicos_projeto[ i ] ) )
 
 onerado = False #True # 
-bdi = BonificacaoDespesasIndiretas(0.267,0.150, onerado)
+bdi = BonificacaoDespesasIndiretas(0.267, 0.150, onerado)
 projeto = Projeto(servicos_projeto, baseDF, bdi)
 
 complemento = 'onerado'
