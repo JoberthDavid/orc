@@ -1029,9 +1029,6 @@ class Projeto:
         lista_preco_total = list()
         obj_precisao = Precisao()
         
-        # print(self.dic_df_composicao['0606841'].composicao.custo_horario_equipamento)
-        # print(self.dic_df_composicao['0606841'].composicao.preco_unitario_total)
-
         for item in self.servicos:
             obj_compstr = ComposicaoStr( item.codigo )
             
@@ -1053,5 +1050,6 @@ class Projeto:
         dicionario_servicos[ self.obj_col_dfr.custo_total ] = lista_preco_total
     
         print(dicionario_servicos)
+        
         return dicionario_servicos
             

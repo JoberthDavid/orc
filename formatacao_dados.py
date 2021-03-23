@@ -31,6 +31,87 @@ class Precisao:
         return round( valor, self.dmo )
 
 
+class FormatoCelula:
+
+    def __init__( self, writer ):
+        self.workbook = writer.book
+        self.dicionario_formatacao = dict()
+        self.dicionario_formatacao['italic'] = False
+        self.dicionario_formatacao['bold'] = False
+        self.dicionario_cor = {
+                    'black' : '#000000',
+                    'blue' : '#0000FF',
+                    'brown' : '#800000',
+                    'cyan' : '#00FFFF',
+                    'green' : '#008000',
+                    'lime' : '#00FF00',
+                    'magenta' : '#FF00FF',
+                    'navy' : '#000080',
+                    'orange' : '#FF6600',
+                    'pink' : '#FF00FF',
+                    'purple' : '#800080',
+                    'red' : '#FF0000',
+                    'light-gray' : '#DCDCDC',
+                    'dark-gray' : '#A9A9A9',
+                    'light-blue' : '#B0C4DE',
+                    'white' : 'white',
+                    'yellow' : '#FFFF00',
+                    }
+
+    def alinhamento_centro( self ):
+        self.dicionario_formatacao.update( {'align':'center'} )
+
+    def alinhamento_esquerda( self ):
+        self.dicionario_formatacao.update( {'align':'left'} )
+
+    def alinhamento_direita( self ):
+        self.dicionario_formatacao.update( {'align':'right'} )
+
+    def linha_grade_superior( self ):
+        self.dicionario_formatacao.update( {'top':1} )
+
+    def linha_grade_inferior( self ):
+        self.dicionario_formatacao.update( {'bottom':1} )
+
+    def cor_letra( self, cor: str='black' ) -> bool:
+        if cor in self.dicionario_cor:
+            self.dicionario_formatacao.update( {'font_color': self.dicionario_cor[cor] } )
+        else:
+            self.dicionario_formatacao.update( {'font_color':'black'} )
+
+    def cor_fundo( self, cor: str='white' ):
+        if cor in self.dicionario_cor:
+            self.dicionario_formatacao.update( {'bg_color': self.dicionario_cor[cor] } )
+        else:
+            self.dicionario_formatacao.update( {'bg_color':'white'} )
+
+    def algarismo_significativo( self, numero: int):
+        representacao_valor = '###,###,###,##0'
+        if numero > 0:
+            representacao_valor = representacao_valor + '.'
+            while numero > 0:
+                representacao_valor = representacao_valor + '0'
+                numero -= 1
+        self.dicionario_formatacao.update( {'num_format': representacao_valor} )
+
+    def negrito( self ):
+        if self.dicionario_formatacao['bold'] == True:
+            valor = False
+        else:
+            valor = True
+        self.dicionario_formatacao.update( {'bold': valor} )
+
+    def italico( self ):
+        if self.dicionario_formatacao['italic'] == True:
+            valor = False
+        else:
+            valor = True
+        self.dicionario_formatacao.update( {'italic': valor} )
+
+    def aplicar_formatacao( self ):
+        return self.workbook.add_format( self.dicionario_formatacao )
+
+
 class Grupo:
 
     def __init__( self ) -> None:
