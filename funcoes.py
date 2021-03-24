@@ -9,7 +9,11 @@ from estrutura_dados import (
                         NohFila,
                         Fila,
                     )
-from formatacao_dados import Codigo, FormatoCelula
+from formatacao_dados import (
+                        Codigo,
+                        FormatacaoComposicao,
+                        FormatacaoConsumoDesdobrado,
+                    )
 
 
 def carregar_data_frame(csv):
@@ -51,97 +55,10 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
     # cria um objeto Excel
     writer = pd.ExcelWriter( '.'.join( (arquivo,'xlsx' ) ) , engine='xlsxwriter' )
 
-
     modulo = 10
 
-    obj_format_digito_02 = FormatoCelula( writer )
-    obj_format_digito_04 = FormatoCelula( writer )
-    obj_format_digito_05 = FormatoCelula( writer )
-    obj_format_digito_10 = FormatoCelula( writer )
-    obj_format_centro = FormatoCelula( writer )
-    obj_format_esquerda = FormatoCelula( writer )
-    obj_format_horario = FormatoCelula( writer )
-    obj_format_unitario = FormatoCelula( writer )
-    obj_format_total = FormatoCelula( writer )
-    obj_format_preco_unitario = FormatoCelula( writer )
-    obj_format_descricao_composicao = FormatoCelula( writer )
-    obj_format_codigo_composicao = FormatoCelula( writer )
-    obj_format_produtividade_composicao = FormatoCelula( writer )
-    obj_format_unidade_composicao = FormatoCelula( writer )
-    obj_format_complemento = FormatoCelula( writer )
-    obj_format_branco = FormatoCelula( writer )
-    # Add some cell formats.
-
-    obj_format_digito_02.algarismo_significativo(2)
-    format_digito_02 = obj_format_digito_02.aplicar_formatacao()
-
-    obj_format_digito_04.algarismo_significativo(4)
-    format_digito_04 = obj_format_digito_04.aplicar_formatacao()
-
-    obj_format_digito_05.algarismo_significativo(5)
-    format_digito_05 = obj_format_digito_05.aplicar_formatacao()
-
-    obj_format_digito_10.algarismo_significativo(10)
-    format_digito_10 = obj_format_digito_10.aplicar_formatacao()
-
-    obj_format_centro.alinhamento_centro()
-    format_centro = obj_format_centro.aplicar_formatacao()
-
-    obj_format_esquerda.alinhamento_esquerda()
-    format_esquerda = obj_format_esquerda.aplicar_formatacao()
-
-    obj_format_horario.negrito()
-    obj_format_horario.linha_grade_inferior()
-    obj_format_horario.linha_grade_superior()
-    format_horario = obj_format_horario.aplicar_formatacao()
-
-    obj_format_unitario.cor_fundo( 'light-gray' )
-    obj_format_unitario.negrito()
-    obj_format_unitario.linha_grade_inferior()
-    obj_format_unitario.linha_grade_superior()
-    format_unitario = obj_format_unitario.aplicar_formatacao()
-
-    obj_format_total.negrito()
-    obj_format_total.cor_fundo( 'dark-gray' )
-    obj_format_total.linha_grade_inferior()
-    obj_format_total.linha_grade_superior()
-    format_total = obj_format_total.aplicar_formatacao()
-
-    obj_format_preco_unitario.negrito()
-    obj_format_preco_unitario.cor_fundo( 'light-blue' )
-    obj_format_preco_unitario.linha_grade_inferior()
-    obj_format_preco_unitario.linha_grade_superior()
-    format_preco_unitario = obj_format_preco_unitario.aplicar_formatacao()
-
-    obj_format_descricao_composicao.negrito()
-    obj_format_descricao_composicao.alinhamento_esquerda()
-    format_descricao_composicao = obj_format_descricao_composicao.aplicar_formatacao()
-
-    obj_format_codigo_composicao.negrito()
-    obj_format_codigo_composicao.italico()
-    obj_format_codigo_composicao.alinhamento_centro()
-    format_codigo_composicao = obj_format_codigo_composicao.aplicar_formatacao()
-
-    obj_format_produtividade_composicao.alinhamento_direita()
-    obj_format_produtividade_composicao.negrito()
-    obj_format_produtividade_composicao.italico()
-    obj_format_produtividade_composicao.algarismo_significativo(5)
-    format_produtividade_composicao = obj_format_produtividade_composicao.aplicar_formatacao()
-
-    obj_format_unidade_composicao.negrito()
-    obj_format_unidade_composicao.italico()
-    obj_format_unidade_composicao.alinhamento_esquerda()
-    format_unidade_composicao = obj_format_unidade_composicao.aplicar_formatacao()
-
-    obj_format_complemento.negrito()
-    obj_format_complemento.italico()
-    obj_format_complemento.alinhamento_centro()
-    obj_format_complemento.cor_letra( 'red' )
-    format_complemento = obj_format_complemento.aplicar_formatacao()
-        
-    obj_format_branco.cor_letra( 'white' )
-    format_branco = obj_format_branco.aplicar_formatacao()
-
+    formato_consumo_desdobrado = FormatacaoConsumoDesdobrado( writer )  
+    formato = FormatacaoComposicao( writer )
 
     for _df in dicionario.values():
         # dfr_insumo
@@ -152,24 +69,24 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
         configurar_impressao(worksheet_dfr_composicao, area_de_impressao, numero_de_composicoes)
 
         # acrescentando a linha com dados da composição
-        linhas = [ ( 'D', _df.composicao.codigo, format_codigo_composicao ), ( 'E', _df.composicao.descricao, format_descricao_composicao ), ( 'L', _df.composicao.produtividade, format_produtividade_composicao ), ( 'M', _df.composicao.unidade, format_unidade_composicao ), ( 'N', complemento, format_complemento) ]
+        linhas = [ ( 'D', _df.composicao.codigo, formato.codigo_composicao ), ( 'E', _df.composicao.descricao, formato.descricao_composicao ), ( 'L', _df.composicao.produtividade, formato.produtividade_composicao ), ( 'M', _df.composicao.unidade, formato.unidade_composicao ), ( 'N', complemento, formato.onerado_composicao) ]
         for lin in linhas:
             worksheet_dfr_composicao.write( ''.join( (lin[0], str(linha_inicio)) ), lin[1], lin[2])
 
         # formatando colunas
-        colunas = [ ( 'B:D', modulo, format_centro ), ( 'E:E', 12.0*modulo, format_esquerda), ( 'F:F', 1.5*modulo, format_centro ), ( 'G:G', modulo, format_digito_02), ( 'H:H', modulo, format_centro ), ( 'I:I', modulo, format_digito_05), ( 'J:J', modulo, format_digito_02), ( 'K:N', 2.6*modulo, format_digito_04) ]
+        colunas = [ ( 'B:D', modulo, formato.codigo_insumo ), ( 'E:E', 12.0*modulo, formato.descricao_insumo), ( 'F:F', 1.5*modulo, formato.codigo_insumo ), ( 'G:G', modulo, formato.utilizacao_insumo), ( 'H:H', modulo, formato.codigo_insumo ), ( 'I:I', modulo, formato.quantidade_insumo), ( 'J:J', modulo, formato.utilizacao_insumo), ( 'K:N', 2.6*modulo, formato.custo_insumo) ]
         for col in colunas:
             worksheet_dfr_composicao.set_column( col[0], col[1], col[2] )
 
         # formatando as linhas de custos horários e unitários
-        criterios = [ ( '"{}"'.format( obj_codigo.horario ), format_horario ), ( '"{}"'.format( obj_codigo.unitario ),format_unitario ), ( '"{}"'.format( obj_codigo.execucao ),format_horario ), ( '"{}"'.format( obj_codigo.direto_total ),format_total), ( '"{}"'.format( obj_codigo.preco_unitario ),format_preco_unitario) ]
+        criterios = [ ( '"{}"'.format( obj_codigo.horario ), formato.custo_horario_total ), ( '"{}"'.format( obj_codigo.unitario ), formato.custo_unitario_total ), ( '"{}"'.format( obj_codigo.execucao ),formato.custo_horario_total ), ( '"{}"'.format( obj_codigo.direto_total ), formato.custo_unitario_direto_total), ( '"{}"'.format( obj_codigo.preco_unitario ), formato.preco_unitario_total) ]
         for cri in criterios:
             token = 'INDEX($B${inicio}:$N${fim},ROW(),3)={token}'.format(inicio=1, fim=numero_linhas, token=cri[0] )
             worksheet_dfr_composicao.conditional_format( area_formatacao_condicional, {'type':'formula','criteria': token,'format':cri[1]} )
 
         # formatação condicional código com ho, un e un_dt
         token = '$D${inicio}:$D${fim}'.format(inicio=1, fim=numero_linhas)
-        condicoes = [ ( obj_codigo.horario, format_branco ), ( obj_codigo.direto_total, format_branco ), ( obj_codigo.execucao, format_branco ), ( obj_codigo.unitario, format_branco ), ( obj_codigo.preco_unitario, format_branco)]
+        condicoes = [ ( obj_codigo.horario, formato.nao_mostrar ), ( obj_codigo.direto_total, formato.nao_mostrar ), ( obj_codigo.execucao, formato.nao_mostrar ), ( obj_codigo.unitario, formato.nao_mostrar ), ( obj_codigo.preco_unitario, formato.nao_mostrar)]
         for con in condicoes:
             worksheet_dfr_composicao.conditional_format( token, {'type':'text','criteria':'containing','value': con[0],'format':con[1]} )
         
@@ -202,7 +119,7 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
     worksheet_dfr_equipamento.repeat_rows(0)
 
     # formatando colunas
-    colunas = [ ( 'A:E', 1.2*modulo, format_centro ), ( 'F:F', 8.0*modulo, format_esquerda), ( 'G:G', modulo, format_centro ), ( 'H:I', 2.5*modulo, format_digito_04) ]
+    colunas = [ ( 'A:E', 1.2*modulo, formato.codigo_insumo ), ( 'F:F', 8.0*modulo, formato.descricao_insumo), ( 'G:G', modulo, formato.codigo_insumo ), ( 'H:I', 2.5*modulo, formato.custo_insumo) ]
     for col in colunas:
         worksheet_dfr_equipamento.set_column( col[0], col[1], col[2] )
 
@@ -232,7 +149,7 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
     worksheet_dfr_mao_de_obra.repeat_rows(0)
 
     # formatando colunas
-    colunas = [ ( 'A:E', 1.2*modulo, format_centro ), ( 'F:F', 8.0*modulo, format_esquerda), ( 'G:G', modulo, format_centro ), ( 'H:H', 2.5*modulo, format_digito_04) ]
+    colunas = [ ( 'A:E', 1.2*modulo, formato.codigo_insumo ), ( 'F:F', 8.0*modulo, formato.descricao_insumo), ( 'G:G', modulo, formato.codigo_insumo ), ( 'H:H', 2.5*modulo, formato.custo_insumo) ]
     for col in colunas:
         worksheet_dfr_mao_de_obra.set_column( col[0], col[1], col[2] )
 
@@ -263,7 +180,7 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
     worksheet_dfr_material.repeat_rows(0)
 
     # formatando colunas
-    colunas = [ ( 'A:E', 1.2*modulo, format_centro ), ( 'F:F', 8.0*modulo, format_esquerda), ( 'G:G', modulo, format_centro ), ( 'H:H', 2.5*modulo, format_digito_04) ]
+    colunas = [ ( 'A:E', 1.2*modulo, formato.codigo_insumo ), ( 'F:F', 8.0*modulo, formato.descricao_insumo), ( 'G:G', modulo, formato.codigo_insumo ), ( 'H:H', 2.5*modulo, formato.custo_insumo) ]
     for col in colunas:
         worksheet_dfr_material.set_column( col[0], col[1], col[2] )
 
@@ -293,7 +210,7 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
     worksheet_dfr_transporte.repeat_rows(0)
 
     # formatando colunas
-    colunas = [ ( 'A:A', 0.5*modulo, format_centro ), ( 'B:D', 2.0*modulo, format_centro ), ( 'E:E', 8.5*modulo, format_esquerda), ( 'F:G', 1.5*modulo, format_centro ), ( 'H:H', 2.5*modulo, format_digito_10) ]
+    colunas = [ ( 'A:A', 0.5*modulo, formato.codigo_insumo ), ( 'B:D', 2.0*modulo, formato.codigo_insumo ), ( 'E:E', 8.5*modulo, formato.descricao_insumo), ( 'F:G', 1.5*modulo, formato.codigo_insumo ), ( 'H:H', 2.5*modulo, formato_consumo_desdobrado.formatado) ]
     for col in colunas:
         worksheet_dfr_transporte.set_column( col[0], col[1], col[2] )
 
@@ -324,7 +241,7 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
     worksheet_dfr_equipamentos_.repeat_rows(0)
 
     # formatando colunas
-    colunas = [ ( 'A:A', 0.5*modulo, format_centro ), ( 'B:D', 2.0*modulo, format_centro ), ( 'E:E', 8.5*modulo, format_esquerda), ( 'F:J', 2.5*modulo, format_digito_10) ]
+    colunas = [ ( 'A:A', 0.5*modulo, formato.codigo_insumo ), ( 'B:D', 2.0*modulo, formato.codigo_insumo ), ( 'E:E', 8.5*modulo, formato.descricao_insumo), ( 'F:J', 2.5*modulo, formato_consumo_desdobrado.formatado) ]
     for col in colunas:
         worksheet_dfr_equipamentos_.set_column( col[0], col[1], col[2] )
 
@@ -355,7 +272,7 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
     worksheet_dfr_mao_de_obra_.repeat_rows(0)
 
     # formatando colunas
-    colunas = [ ( 'A:A', 0.5*modulo, format_centro ), ( 'B:D', 2.0*modulo, format_centro ), ( 'E:E', 8.5*modulo, format_esquerda), ( 'F:G', 2.5*modulo, format_digito_10) ]
+    colunas = [ ( 'A:A', 0.5*modulo, formato.codigo_insumo ), ( 'B:D', 2.0*modulo, formato.codigo_insumo ), ( 'E:E', 8.5*modulo, formato.descricao_insumo), ( 'F:G', 2.5*modulo, formato_consumo_desdobrado.formatado) ]
     for col in colunas:
         worksheet_dfr_mao_de_obra_.set_column( col[0], col[1], col[2] )
 
@@ -386,7 +303,7 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
     worksheet_dfr_materiais_.repeat_rows(0)
 
     # formatando colunas
-    colunas = [ ( 'A:A', 0.5*modulo, format_centro ), ( 'B:D', 2.0*modulo, format_centro ), ( 'E:E', 8.5*modulo, format_esquerda), ( 'F:G', 2.5*modulo, format_digito_10) ]
+    colunas = [ ( 'A:A', 0.5*modulo, formato.codigo_insumo ), ( 'B:D', 2.0*modulo, formato.codigo_insumo ), ( 'E:E', 8.5*modulo, formato.descricao_insumo), ( 'F:G', 2.5*modulo, formato_consumo_desdobrado.formatado) ]
     for col in colunas:
         worksheet_dfr_materiais_.set_column( col[0], col[1], col[2] )
 
@@ -417,7 +334,7 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
     worksheet_dfr_servico_.repeat_rows(0)
 
     # formatando colunas
-    colunas = [ ( 'A:A', 0.5*modulo, format_centro ), ( 'B:B', 2.0*modulo, format_centro ), ( 'C:C', 10.0*modulo, format_esquerda), ( 'D:D', 1.0*modulo, format_centro ), ( 'E:F', 2.5*modulo, format_digito_04), ( 'G:G', 2.5*modulo, format_digito_02) ]
+    colunas = [ ( 'A:A', 0.5*modulo, formato.codigo_insumo ), ( 'B:B', 2.0*modulo, formato.codigo_insumo ), ( 'C:C', 10.0*modulo, formato.descricao_insumo), ( 'D:D', 1.0*modulo, formato.codigo_insumo ), ( 'E:F', 2.5*modulo, formato.custo_insumo), ( 'G:G', 2.5*modulo, formato.utilizacao_insumo) ]
     for col in colunas:
         worksheet_dfr_servico_.set_column( col[0], col[1], col[2] )
 

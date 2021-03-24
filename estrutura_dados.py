@@ -1,7 +1,7 @@
 from formatacao_dados import Precisao
 
 
-class Capsula:
+class Particula:
 
     def __init__(self, codigo_principal, atividade_auxiliar, quantidade) -> None:
         self.codigo_principal = codigo_principal.zfill(7)
@@ -11,7 +11,7 @@ class Capsula:
 
 class NohArvore:
 
-    def __init__( self, encapsulada: Capsula, lista_noh_arvore, insumo=None ) -> None:
+    def __init__( self, encapsulada: Particula, lista_noh_arvore, insumo=None ) -> None:
         self.encapsulada = encapsulada
         self.codigo_principal_noh_arvore = encapsulada.atividade_auxiliar
         self.noh_filhos = list()
@@ -19,7 +19,7 @@ class NohArvore:
         self.quantidade = encapsulada.quantidade
         self.insumo = insumo
 
-    def inserir_noh_arvore( self, encapsulada: Capsula ) -> bool:
+    def inserir_noh_arvore( self, encapsulada: Particula ) -> bool:
         sinal = False
         if encapsulada not in self.lista_auxiliar:
             self.noh_filhos.append( NohArvore( encapsulada, self.lista_auxiliar ) )
@@ -148,12 +148,12 @@ class Arvore:
         consulta = consulta[[self.obj_col_dfr.composicao_principal, self.obj_col_dfr.codigo, self.obj_col_dfr.quantidade]].values.tolist()
         return consulta
 
-    def inserir_auxiliar_noh_arvore( self, encapsulada: Capsula ) -> bool:
+    def inserir_auxiliar_noh_arvore( self, encapsulada: Particula ) -> bool:
         sinal = False
         if self.noh_raiz_arvore_composicao == None:
             self.noh_raiz_arvore_composicao = NohArvore( encapsulada, self.lista )
             for item in self.obter_lista_atividades_auxiliares_composicao( encapsulada.codigo_principal ):
-                encapsulada2 = Capsula( encapsulada.codigo_principal, item[1], item[2] )
+                encapsulada2 = Particula( encapsulada.codigo_principal, item[1], item[2] )
                 self.inserir_auxiliar_noh_arvore( encapsulada2 )
             sinal = True
         else:
@@ -161,7 +161,7 @@ class Arvore:
             self.noh_raiz_arvore_composicao.inserir_noh_arvore( encapsulada )
             for item in self.obter_lista_atividades_auxiliares_composicao( encapsulada.atividade_auxiliar ):
                 quantidade = obj_arred.utilizacao( encapsulada.quantidade * item[2] )
-                encapsulada3 = Capsula( encapsulada.atividade_auxiliar, item[1], quantidade )
+                encapsulada3 = Particula( encapsulada.atividade_auxiliar, item[1], quantidade )
                 self.inserir_auxiliar_noh_arvore( encapsulada3 )
             sinal = True
         return sinal
