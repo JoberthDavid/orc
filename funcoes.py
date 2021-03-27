@@ -12,22 +12,31 @@ from estrutura_dados import (
 from formatacao_dados import (
                         Codigo,
                         FormatacaoComposicao,
-                        FormatacaoConsumoDesdobrado,
+                        FormatacaoComposicaoConsumoDesdobrado,
+                        FormatacaoResumoID,
+                        FormatacaoResumoGrupo,
+                        FormatacaoResumoOrigem,
+                        FormatacaoResumoEstado,
+                        FormatacaoResumoPublicacao,
+                        FormatacaoResumoCodigo,
+                        FormatacaoResumoDescricao,
+                        FormatacaoResumoUnidade,
+                        FormatacaoResumoQuantidade,
+                        FormatacaoResumoPrecoUnitario,
+                        FormatacaoResumoCustoTotal,
+                        FormatacaoResumoQuantidadeDesdobrada,
+                        FormatacaoResumoCustoTotalDesdobrado,
+                        FormatacaoEscritaCustoEquipamento,
+                        FormatacaoEscritaCustoMaoDeObra,
+                        FormatacaoEscritaCustoMaterial,
+                        FormatacaoEscritaResumoTransporte,
+                        FormatacaoEscritaResumoEquipamento,
+                        FormatacaoEscritaResumoMaoDeObra,
+                        FormatacaoEscritaResumoMaterial,
+                        FormatacaoEscritaResumoServico,
+                        Escrita,
                     )
 
-
-def carregar_data_frame(csv):
-    # Abrir um arquivo csv a partir do Pandas
-    data_frame_csv = pd.read_csv(csv, encoding='utf-8' )# encoding='ISO-8859-1' )
-    return data_frame_csv
-
-def tratar_data_frame(data_frame, lista=list()):
-    # Renomeando os nomes das colunas com o método columns
-    data_frame.columns = ['Origem', 'Estado', 'Publicacao'] + lista
-    # Excluir a última coluna que está com caracteres de tabulação
-    if lista[-1] == 'NONE':
-        data_frame.pop( 'NONE' )
-    return data_frame
 
 def configurar_impressao(worksheet, area_de_impressao, numero_de_composicoes):
     # definindo a área de impressão
@@ -57,7 +66,7 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
 
     modulo = 10
 
-    formato_consumo_desdobrado = FormatacaoConsumoDesdobrado( writer )  
+    # formato_consumo_desdobrado = FormatacaoComposicaoConsumoDesdobrado( writer )
     formato = FormatacaoComposicao( writer )
 
     for _df in dicionario.values():
@@ -93,250 +102,60 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
 
         linha_inicio = linha_inicio + maximo_linhas_na_composicao
 
-    # ##### começa a escrever equipamentos das composições ###################################
+    # ##### começa a escrever custos de equipamentos das composições ###################################
    
-    dfr_equipamento = projeto.obter_dfr_equipamento()
+    dfr_equipamento_custo = projeto.obter_dfr_equipamento()
+    obj_format = FormatacaoEscritaCustoEquipamento( writer )
+    obj_escrita = Escrita( dfr_equipamento_custo, obj_format )
+    writer = obj_escrita.obter_escritor_configurado()
 
-    dfr_equipamento.to_excel( writer, index=False, sheet_name='equipamento_custo' )
+    # ##### começa a escrever custos de mão de obra das composições ###################################
 
-    worksheet_dfr_equipamento = writer.sheets['equipamento_custo']
-    
-    tamanho = dfr_equipamento.shape[0]
+    dfr_mao_de_obra_custo = projeto.obter_dfr_mao_de_obra()
+    obj_format = FormatacaoEscritaCustoMaoDeObra( writer )
+    obj_escrita = Escrita( dfr_mao_de_obra_custo, obj_format )
+    writer = obj_escrita.obter_escritor_configurado()
 
-    area_de_impressao = '$A${}:$I${}'.format(1, tamanho )
-    
-    # definindo a área de impressão
-    worksheet_dfr_equipamento.print_area( area_de_impressao )
-    # dimensionando as páginas largura por extensão
-    worksheet_dfr_equipamento.fit_to_pages(1, tamanho)
-    # rotacionando a página
-    worksheet_dfr_equipamento.set_portrait()
-    # definindo papel
-    worksheet_dfr_equipamento.set_paper(9) # índice 9 (papel A4) vem da documentação da biblioteca xlsxwriter
-    # centralizando horizontalmente a tabela na página
-    worksheet_dfr_equipamento.center_horizontally()
-    # repetindo primeira linha
-    worksheet_dfr_equipamento.repeat_rows(0)
+   # ##### começa a escrever custos de materiais das composições ###################################
 
-    # formatando colunas
-    colunas = [ ( 'A:E', 1.2*modulo, formato.codigo_insumo ), ( 'F:F', 8.0*modulo, formato.descricao_insumo), ( 'G:G', modulo, formato.codigo_insumo ), ( 'H:I', 2.5*modulo, formato.custo_insumo) ]
-    for col in colunas:
-        worksheet_dfr_equipamento.set_column( col[0], col[1], col[2] )
+    dfr_material_custo = projeto.obter_dfr_material()
+    obj_format = FormatacaoEscritaCustoMaterial( writer )
+    obj_escrita = Escrita( dfr_material_custo, obj_format )
+    writer = obj_escrita.obter_escritor_configurado()
 
-    # ##### começa a escrever mão de obra das composições ###################################
+   # ##### começa a escrever utilizações de transportes das composições ###################################
 
-    dfr_mao_de_obra = projeto.obter_dfr_mao_de_obra()
+    dfr_transporte_utilizacao = projeto.obter_dfr_transportes_servicos()
+    obj_format = FormatacaoEscritaResumoTransporte( writer )
+    obj_escrita = Escrita( dfr_transporte_utilizacao, obj_format )
+    writer = obj_escrita.obter_escritor_configurado()
 
-    dfr_mao_de_obra.to_excel( writer, index=False, sheet_name='mao_de_obra_custo' )
+  # ##### começa a escrever utilizações de equipamentos das composições ###################################
 
-    worksheet_dfr_mao_de_obra = writer.sheets['mao_de_obra_custo']
-    
-    tamanho = dfr_mao_de_obra.shape[0]
+    dfr_equipamento_utilizacao = projeto.obter_dfr_equipamentos_servicos()
+    obj_format = FormatacaoEscritaResumoEquipamento( writer )
+    obj_escrita = Escrita( dfr_equipamento_utilizacao, obj_format )
+    writer = obj_escrita.obter_escritor_configurado()
 
-    area_de_impressao = '$A${}:$H${}'.format(1, tamanho )
-    
-    # definindo a área de impressão
-    worksheet_dfr_mao_de_obra.print_area( area_de_impressao )
-    # dimensionando as páginas largura por extensão
-    worksheet_dfr_mao_de_obra.fit_to_pages(1, tamanho)
-    # rotacionando a página
-    worksheet_dfr_mao_de_obra.set_portrait()
-    # definindo papel
-    worksheet_dfr_mao_de_obra.set_paper(9) # índice 9 (papel A4) vem da documentação da biblioteca xlsxwriter
-    # centralizando horizontalmente a tabela na página
-    worksheet_dfr_mao_de_obra.center_horizontally()
-    # repetindo primeira linha
-    worksheet_dfr_mao_de_obra.repeat_rows(0)
+# ##### começa a escrever utilizações de mão de obra das composições ###################################
 
-    # formatando colunas
-    colunas = [ ( 'A:E', 1.2*modulo, formato.codigo_insumo ), ( 'F:F', 8.0*modulo, formato.descricao_insumo), ( 'G:G', modulo, formato.codigo_insumo ), ( 'H:H', 2.5*modulo, formato.custo_insumo) ]
-    for col in colunas:
-        worksheet_dfr_mao_de_obra.set_column( col[0], col[1], col[2] )
+    dfr_mao_de_obra_utilizacao = projeto.obter_dfr_mao_de_obra_servicos()
+    obj_format = FormatacaoEscritaResumoMaoDeObra( writer )
+    obj_escrita = Escrita( dfr_mao_de_obra_utilizacao, obj_format )
+    writer = obj_escrita.obter_escritor_configurado()
 
+# ##### começa a escrever utilizações de materiais das composições ###################################
 
-   # ##### começa a escrever materiais das composições ###################################
+    dfr_material_utilizacao = projeto.obter_dfr_materiais_servicos()
+    obj_format = FormatacaoEscritaResumoMaterial( writer )
+    obj_escrita = Escrita( dfr_material_utilizacao, obj_format )
+    writer = obj_escrita.obter_escritor_configurado()
 
-    dfr_material = projeto.obter_dfr_material()
+# ##### começa a escrever resumo de serviços do projeto ###################################
 
-    dfr_material.to_excel( writer, index=False, sheet_name='material_custo' )
-
-    worksheet_dfr_material = writer.sheets['material_custo']
-    
-    tamanho = dfr_material.shape[0]
-
-    area_de_impressao = '$A${}:$H${}'.format(1, tamanho )
-    
-    # definindo a área de impressão
-    worksheet_dfr_material.print_area( area_de_impressao )
-    # dimensionando as páginas largura por extensão
-    worksheet_dfr_material.fit_to_pages(1, tamanho)
-    # rotacionando a página
-    worksheet_dfr_material.set_portrait()
-    # definindo papel
-    worksheet_dfr_material.set_paper(9) # índice 9 (papel A4) vem da documentação da biblioteca xlsxwriter
-    # centralizando horizontalmente a tabela na página
-    worksheet_dfr_material.center_horizontally()
-    # repetindo primeira linha
-    worksheet_dfr_material.repeat_rows(0)
-
-    # formatando colunas
-    colunas = [ ( 'A:E', 1.2*modulo, formato.codigo_insumo ), ( 'F:F', 8.0*modulo, formato.descricao_insumo), ( 'G:G', modulo, formato.codigo_insumo ), ( 'H:H', 2.5*modulo, formato.custo_insumo) ]
-    for col in colunas:
-        worksheet_dfr_material.set_column( col[0], col[1], col[2] )
-
-   # ##### começa a escrever transportes das composições ###################################
-
-    dfr_transporte = projeto.obter_dfr_transportes_servicos()
-    
-    dfr_transporte.to_excel( writer, index=True, sheet_name='transporte_servico_utilizacao' )
-
-    worksheet_dfr_transporte = writer.sheets['transporte_servico_utilizacao']
-    
-    tamanho = dfr_transporte.shape[0]
-
-    area_de_impressao = '$A${}:$H${}'.format(1, tamanho )
-    
-    # definindo a área de impressão
-    worksheet_dfr_transporte.print_area( area_de_impressao )
-    # dimensionando as páginas largura por extensão
-    worksheet_dfr_transporte.fit_to_pages(1, tamanho)
-    # rotacionando a página
-    worksheet_dfr_transporte.set_portrait()
-    # definindo papel
-    worksheet_dfr_transporte.set_paper(9) # índice 9 (papel A4) vem da documentação da biblioteca xlsxwriter
-    # centralizando horizontalmente a tabela na página
-    worksheet_dfr_transporte.center_horizontally()
-    # repetindo primeira linha
-    worksheet_dfr_transporte.repeat_rows(0)
-
-    # formatando colunas
-    colunas = [ ( 'A:A', 0.5*modulo, formato.codigo_insumo ), ( 'B:D', 2.0*modulo, formato.codigo_insumo ), ( 'E:E', 8.5*modulo, formato.descricao_insumo), ( 'F:G', 1.5*modulo, formato.codigo_insumo ), ( 'H:H', 2.5*modulo, formato_consumo_desdobrado.formatado) ]
-    for col in colunas:
-        worksheet_dfr_transporte.set_column( col[0], col[1], col[2] )
-
-
-  # ##### começa a escrever equipamentos das composições ###################################
-
-    dfr_equipamentos_ = projeto.obter_dfr_equipamentos_servicos()
-    
-    dfr_equipamentos_.to_excel( writer, index=True, sheet_name='equipamento_servico_utilizacao' )
-
-    worksheet_dfr_equipamentos_ = writer.sheets['equipamento_servico_utilizacao']
-    
-    tamanho = dfr_equipamentos_.shape[0]
-
-    area_de_impressao = '$A${}:$J${}'.format(1, tamanho )
-    
-    # definindo a área de impressão
-    worksheet_dfr_equipamentos_.print_area( area_de_impressao )
-    # dimensionando as páginas largura por extensão
-    worksheet_dfr_equipamentos_.fit_to_pages(1, tamanho)
-    # rotacionando a página
-    worksheet_dfr_equipamentos_.set_portrait()
-    # definindo papel
-    worksheet_dfr_equipamentos_.set_paper(9) # índice 9 (papel A4) vem da documentação da biblioteca xlsxwriter
-    # centralizando horizontalmente a tabela na página
-    worksheet_dfr_equipamentos_.center_horizontally()
-    # repetindo primeira linha
-    worksheet_dfr_equipamentos_.repeat_rows(0)
-
-    # formatando colunas
-    colunas = [ ( 'A:A', 0.5*modulo, formato.codigo_insumo ), ( 'B:D', 2.0*modulo, formato.codigo_insumo ), ( 'E:E', 8.5*modulo, formato.descricao_insumo), ( 'F:J', 2.5*modulo, formato_consumo_desdobrado.formatado) ]
-    for col in colunas:
-        worksheet_dfr_equipamentos_.set_column( col[0], col[1], col[2] )
-
-
-# ##### começa a escrever mão de obra das composições ###################################
-
-    dfr_mao_de_obra_ = projeto.obter_dfr_mao_de_obra_servicos()
-    
-    dfr_mao_de_obra_.to_excel( writer, index=True, sheet_name='mao_de_obra_servico_utilizacao' )
-
-    worksheet_dfr_mao_de_obra_ = writer.sheets['mao_de_obra_servico_utilizacao']
-    
-    tamanho = dfr_mao_de_obra_.shape[0]
-
-    area_de_impressao = '$A${}:$G${}'.format(1, tamanho )
-    
-    # definindo a área de impressão
-    worksheet_dfr_mao_de_obra_.print_area( area_de_impressao )
-    # dimensionando as páginas largura por extensão
-    worksheet_dfr_mao_de_obra_.fit_to_pages(1, tamanho)
-    # rotacionando a página
-    worksheet_dfr_mao_de_obra_.set_portrait()
-    # definindo papel
-    worksheet_dfr_mao_de_obra_.set_paper(9) # índice 9 (papel A4) vem da documentação da biblioteca xlsxwriter
-    # centralizando horizontalmente a tabela na página
-    worksheet_dfr_mao_de_obra_.center_horizontally()
-    # repetindo primeira linha
-    worksheet_dfr_mao_de_obra_.repeat_rows(0)
-
-    # formatando colunas
-    colunas = [ ( 'A:A', 0.5*modulo, formato.codigo_insumo ), ( 'B:D', 2.0*modulo, formato.codigo_insumo ), ( 'E:E', 8.5*modulo, formato.descricao_insumo), ( 'F:G', 2.5*modulo, formato_consumo_desdobrado.formatado) ]
-    for col in colunas:
-        worksheet_dfr_mao_de_obra_.set_column( col[0], col[1], col[2] )
-
-
-# ##### começa a escrever materiais das composições ###################################
-
-    dfr_materiais_ = projeto.obter_dfr_materiais_servicos()
-    
-    dfr_materiais_.to_excel( writer, index=True, sheet_name='material_servico_utilizacao' )
-
-    worksheet_dfr_materiais_ = writer.sheets['material_servico_utilizacao']
-    
-    tamanho = dfr_materiais_.shape[0]
-
-    area_de_impressao = '$A${}:$G${}'.format(1, tamanho )
-    
-    # definindo a área de impressão
-    worksheet_dfr_materiais_.print_area( area_de_impressao )
-    # dimensionando as páginas largura por extensão
-    worksheet_dfr_materiais_.fit_to_pages(1, tamanho)
-    # rotacionando a página
-    worksheet_dfr_materiais_.set_portrait()
-    # definindo papel
-    worksheet_dfr_materiais_.set_paper(9) # índice 9 (papel A4) vem da documentação da biblioteca xlsxwriter
-    # centralizando horizontalmente a tabela na página
-    worksheet_dfr_materiais_.center_horizontally()
-    # repetindo primeira linha
-    worksheet_dfr_materiais_.repeat_rows(0)
-
-    # formatando colunas
-    colunas = [ ( 'A:A', 0.5*modulo, formato.codigo_insumo ), ( 'B:D', 2.0*modulo, formato.codigo_insumo ), ( 'E:E', 8.5*modulo, formato.descricao_insumo), ( 'F:G', 2.5*modulo, formato_consumo_desdobrado.formatado) ]
-    for col in colunas:
-        worksheet_dfr_materiais_.set_column( col[0], col[1], col[2] )
-
-
-# ##### começa a escrever serviços do projeto ###################################
-
-    dfr_servico_ = projeto.obter_dfr_servicos_projeto()
-    
-    dfr_servico_.to_excel( writer, index=True, sheet_name='servico' )
-
-    worksheet_dfr_servico_ = writer.sheets['servico']
-    
-    tamanho = dfr_servico_.shape[0]
-
-    area_de_impressao = '$A${}:$G${}'.format(1, tamanho )
-    
-    # definindo a área de impressão
-    worksheet_dfr_servico_.print_area( area_de_impressao )
-    # dimensionando as páginas largura por extensão
-    worksheet_dfr_servico_.fit_to_pages(1, tamanho)
-    # rotacionando a página
-    worksheet_dfr_servico_.set_portrait()
-    # definindo papel
-    worksheet_dfr_servico_.set_paper(9) # índice 9 (papel A4) vem da documentação da biblioteca xlsxwriter
-    # centralizando horizontalmente a tabela na página
-    worksheet_dfr_servico_.center_horizontally()
-    # repetindo primeira linha
-    worksheet_dfr_servico_.repeat_rows(0)
-
-    # formatando colunas
-    colunas = [ ( 'A:A', 0.5*modulo, formato.codigo_insumo ), ( 'B:B', 2.0*modulo, formato.codigo_insumo ), ( 'C:C', 10.0*modulo, formato.descricao_insumo), ( 'D:D', 1.0*modulo, formato.codigo_insumo ), ( 'E:F', 2.5*modulo, formato.custo_insumo), ( 'G:G', 2.5*modulo, formato.utilizacao_insumo) ]
-    for col in colunas:
-        worksheet_dfr_servico_.set_column( col[0], col[1], col[2] )
+    dfr_servico_resumo = projeto.obter_dfr_servicos_projeto()
+    obj_format = FormatacaoEscritaResumoServico( writer )
+    obj_escrita = Escrita( dfr_servico_resumo, obj_format )
+    writer = obj_escrita.obter_escritor_configurado()
 
     writer.save()
-
