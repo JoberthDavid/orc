@@ -11,8 +11,9 @@ from estrutura_dados import (
                     )
 from formatacao_dados import (
                         Codigo,
-                        FormatacaoComposicao,
-                        FormatacaoComposicaoConsumoDesdobrado,
+                        Escrita,
+                    )
+from escrita_resumo import (
                         FormatacaoResumoID,
                         FormatacaoResumoGrupo,
                         FormatacaoResumoOrigem,
@@ -34,7 +35,10 @@ from formatacao_dados import (
                         FormatacaoEscritaResumoMaoDeObra,
                         FormatacaoEscritaResumoMaterial,
                         FormatacaoEscritaResumoServico,
-                        Escrita,
+                    )
+from escrita_composicao import  (
+                        FormatacaoComposicao,
+                        FormatacaoComposicaoConsumoDesdobrado,
                     )
 
 
@@ -82,25 +86,56 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
         for lin in linhas:
             worksheet_dfr_composicao.write( ''.join( (lin[0], str(linha_inicio)) ), lin[1], lin[2])
 
-        # formatando colunas
-        colunas = [ ( 'B:D', modulo, formato.codigo_insumo ), ( 'E:E', 12.0*modulo, formato.descricao_insumo), ( 'F:F', 1.5*modulo, formato.codigo_insumo ), ( 'G:G', modulo, formato.utilizacao_insumo), ( 'H:H', modulo, formato.codigo_insumo ), ( 'I:I', modulo, formato.quantidade_insumo), ( 'J:J', modulo, formato.utilizacao_insumo), ( 'K:N', 2.6*modulo, formato.custo_insumo) ]
-        for col in colunas:
-            worksheet_dfr_composicao.set_column( col[0], col[1], col[2] )
-
-        # formatando as linhas de custos horários e unitários
-        criterios = [ ( '"{}"'.format( obj_codigo.horario ), formato.custo_horario_total ), ( '"{}"'.format( obj_codigo.unitario ), formato.custo_unitario_total ), ( '"{}"'.format( obj_codigo.execucao ),formato.custo_horario_total ), ( '"{}"'.format( obj_codigo.direto_total ), formato.custo_unitario_direto_total), ( '"{}"'.format( obj_codigo.preco_unitario ), formato.preco_unitario_total) ]
-        for cri in criterios:
-            token = 'INDEX($B${inicio}:$N${fim},ROW(),3)={token}'.format(inicio=1, fim=numero_linhas, token=cri[0] )
-            worksheet_dfr_composicao.conditional_format( area_formatacao_condicional, {'type':'formula','criteria': token,'format':cri[1]} )
-
-        # formatação condicional código com ho, un e un_dt
-        token = '$D${inicio}:$D${fim}'.format(inicio=1, fim=numero_linhas)
-        condicoes = [ ( obj_codigo.horario, formato.nao_mostrar ), ( obj_codigo.direto_total, formato.nao_mostrar ), ( obj_codigo.execucao, formato.nao_mostrar ), ( obj_codigo.unitario, formato.nao_mostrar ), ( obj_codigo.preco_unitario, formato.nao_mostrar)]
-        for con in condicoes:
-            worksheet_dfr_composicao.conditional_format( token, {'type':'text','criteria':'containing','value': con[0],'format':con[1]} )
-        
-
         linha_inicio = linha_inicio + maximo_linhas_na_composicao
+
+
+    # obj_format = FormatacaoComposicao( writer )
+    # obj_escrita = EscritaComposicao( obj_format )
+    # writer = obj_escrita.obter_escritor_configurado()
+
+    # formatando colunas
+    colunas = [
+                ( 'B:B', 01.0 * modulo, formato.codigo_composicao ),
+                ( 'C:C', 01.0 * modulo, formato.codigo_composicao ),
+                ( 'D:D', 01.0 * modulo, formato.codigo_insumo ),
+                ( 'E:E', 12.0 * modulo, formato.descricao_insumo),
+                ( 'F:F', 01.5 * modulo, formato.codigo_composicao ),
+                ( 'G:G', 01.0 * modulo, formato.codigo_composicao ),
+                ( 'H:H', 01.0 * modulo, formato.codigo_composicao ),
+                ( 'I:I', 01.0 * modulo, formato.quantidade_insumo ),
+                ( 'J:J', 01.0 * modulo, formato.utilizacao_insumo ),
+                ( 'K:K', 02.6 * modulo, formato.custo_insumo),
+                ( 'L:L', 02.6 * modulo, formato.custo_insumo),
+                ( 'M:M', 02.6 * modulo, formato.custo_insumo),
+                ( 'N:N', 02.6 * modulo, formato.custo_insumo),
+            ]
+    for col in colunas:
+        writer.sheets['composicao'].set_column( col[0], col[1], col[2] )
+
+    # formatando as linhas de custos horários e unitários
+    criterios = [
+                ( '"{}"'.format( obj_codigo.horario ),formato.custo_horario_total ),
+                ( '"{}"'.format( obj_codigo.unitario ), formato.custo_unitario_total ),
+                ( '"{}"'.format( obj_codigo.execucao ),formato.custo_horario_total ),
+                ( '"{}"'.format( obj_codigo.direto_total ), formato.custo_unitario_direto_total),
+                ( '"{}"'.format( obj_codigo.preco_unitario ), formato.preco_unitario_total)
+            ]
+    for cri in criterios:
+        token = 'INDEX($B${inicio}:$N${fim},ROW(),3)={token}'.format(inicio=1, fim=numero_linhas, token=cri[0] )
+        worksheet_dfr_composicao.conditional_format( area_formatacao_condicional, {'type':'formula','criteria': token,'format':cri[1]} )
+
+    # formatação condicional código com ho, un e un_dt
+    token = '$D${inicio}:$D${fim}'.format(inicio=1, fim=numero_linhas)
+    condicoes = [ 
+                ( obj_codigo.horario, formato.nao_mostrar ),
+                ( obj_codigo.direto_total, formato.nao_mostrar ),
+                ( obj_codigo.execucao, formato.nao_mostrar ),
+                ( obj_codigo.unitario, formato.nao_mostrar ),
+                ( obj_codigo.preco_unitario, formato.nao_mostrar)
+            ]
+    for con in condicoes:
+        worksheet_dfr_composicao.conditional_format( token, {'type':'text','criteria':'containing','value': con[0],'format':con[1]} )
+    
 
     # ##### começa a escrever custos de equipamentos das composições ###################################
    
@@ -159,3 +194,22 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
     writer = obj_escrita.obter_escritor_configurado()
 
     writer.save()
+
+
+
+
+    # colunas = [
+    #             ( 'B:B', 01.0 * modulo, formato.codigo_composicao ),
+    #             ( 'C:C', 01.0 * modulo, formato.grupo ),
+    #             ( 'D:D', 01.0 * modulo, formato.codigo_insumo ),
+    #             ( 'E:E', 12.0 * modulo, formato.descricao_insumo),
+    #             ( 'F:F', 01.5 * modulo, formato.transportado_insumo ),
+    #             ( 'G:G', 01.0 * modulo, formato.dmt_insumo ),
+    #             ( 'H:H', 01.0 * modulo, formato.unidade_insumo ),
+    #             ( 'I:I', 01.0 * modulo, formato.quantidade_insumo ),
+    #             ( 'J:J', 01.0 * modulo, formato.utilizacao_insumo ),
+    #             ( 'K:K', 02.6 * modulo, formato.custo_produtivo_insumo ),
+    #             ( 'L:L', 02.6 * modulo, formato.custo_improdutivo_insumo ),
+    #             ( 'M:M', 02.6 * modulo, formato.preco_unitario_insumo ),
+    #             ( 'N:N', 02.6 * modulo, formato.custo_total_insumo ),
+    #         ]
