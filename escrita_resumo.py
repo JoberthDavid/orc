@@ -124,6 +124,7 @@ class FormatacaoResumoCustoTotal(Formatacao):
         self.coluna = ''
         self.largura = 3.0 * self.modulo
 
+
 class FormatacaoResumoQuantidadeDesdobrada(Formatacao):
 
     def __init__( self, writer ) -> None:

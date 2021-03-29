@@ -1,16 +1,168 @@
 from formatacao_dados import Formatacao
 
 
+    # colunas = [
+    #             ( 'B:B', 01.0 * modulo, formato.codigo_composicao ), #
+    #             ( 'C:C', 01.0 * modulo, formato.grupo ), #
+    #             ( 'D:D', 01.0 * modulo, formato.codigo_insumo ), #
+    #             ( 'E:E', 12.0 * modulo, formato.descricao_insumo), #
+    #             ( 'F:F', 01.5 * modulo, formato.transportado_insumo ), #
+    #             ( 'G:G', 01.0 * modulo, formato.dmt_insumo ), #
+    #             ( 'H:H', 01.0 * modulo, formato.unidade_insumo ), #
+    #             ( 'I:I', 01.0 * modulo, formato.quantidade_insumo ), #
+    #             ( 'J:J', 01.0 * modulo, formato.utilizacao_insumo ), #
+    #             ( 'K:K', 02.6 * modulo, formato.custo_produtivo_insumo ), #
+    #             ( 'L:L', 02.6 * modulo, formato.custo_improdutivo_insumo ), #
+    #             ( 'M:M', 02.6 * modulo, formato.preco_unitario_insumo ), #
+    #             ( 'N:N', 02.6 * modulo, formato.custo_total_insumo ), #
+    #         ]
+
+class FormatacaoComposicaoCodigoPrincipal(Formatacao):
+
+    def __init__( self, writer ) -> None:
+        super().__init__( writer )
+        obj_formatacao = Formatacao( writer )
+        obj_formatacao.alinhamento_centro()
+        self.coluna = 'B:B'
+        self.largura = 2.0 * self.modulo
+        self.formatado = obj_formatacao.aplicar_formatacao()
+
+
+class FormatacaoComposicaoGrupo(Formatacao):
+
+    def __init__( self, writer ) -> None:
+        super().__init__( writer )
+        obj_formatacao = Formatacao( writer )
+        obj_formatacao.alinhamento_centro()
+        self.coluna = 'C:C'
+        self.largura = 1.0 * self.modulo
+        self.formatado = obj_formatacao.aplicar_formatacao()
+
+
+class FormatacaoComposicaoCodigoInsumo(Formatacao):
+
+    def __init__( self, writer ) -> None:
+        super().__init__( writer )
+        obj_formatacao = Formatacao( writer )
+        obj_formatacao.alinhamento_centro()
+        self.coluna = 'D:D'
+        self.largura = 1.0 * self.modulo
+        self.formatado = obj_formatacao.aplicar_formatacao()
+
+
+class FormatacaoComposicaoDescricaoInsumo(Formatacao):
+
+    def __init__( self, writer ) -> None:
+        super().__init__( writer )
+        obj_formatacao = Formatacao( writer )
+        obj_formatacao.alinhamento_esquerda()
+        self.coluna = 'E:E'
+        self.largura = 12.0 * self.modulo
+        self.formatado = obj_formatacao.aplicar_formatacao()
+
+
+class FormatacaoComposicaoItemTransportado(Formatacao):
+
+    def __init__( self, writer ) -> None:
+        super().__init__( writer )
+        obj_formatacao = Formatacao( writer )
+        obj_formatacao.alinhamento_centro()
+        self.coluna = 'F:F'
+        self.largura = 1.7 * self.modulo
+        self.formatado = obj_formatacao.aplicar_formatacao()
+
+
 class FormatacaoComposicaoDMT(Formatacao):
 
     def __init__( self, writer ) -> None:
         super().__init__( writer )
         obj_formatacao = Formatacao( writer )
         obj_formatacao.algarismo_significativo(1)
+        self.coluna = 'G:G'
+        self.largura = 1.5 * self.modulo
         self.formatado = obj_formatacao.aplicar_formatacao()
 
 
-class FormatacaoComposicaoOnerado(Formatacao):
+class FormatacaoComposicaoUnidade(Formatacao):
+
+    def __init__( self, writer ) -> None:
+        super().__init__( writer )
+        obj_formatacao = Formatacao( writer )
+        obj_formatacao.alinhamento_centro()
+        self.coluna = 'H:H'
+        self.largura = 1.0 * self.modulo
+        self.formatado = obj_formatacao.aplicar_formatacao()
+
+
+class FormatacaoComposicaoQuantidade(Formatacao):
+
+    def __init__( self, writer ) -> None:
+        super().__init__( writer )
+        obj_formatacao = Formatacao( writer )
+        obj_formatacao.algarismo_significativo(5)
+        self.coluna = 'I:I'
+        self.largura = 1.0 * self.modulo
+        self.formatado = obj_formatacao.aplicar_formatacao()
+
+
+class FormatacaoComposicaoUtilizacao(Formatacao):
+
+    def __init__( self, writer ) -> None:
+        super().__init__( writer )
+        obj_formatacao = Formatacao( writer )
+        obj_formatacao.algarismo_significativo(2)
+        self.coluna = 'J:J'
+        self.largura = 1.0 * self.modulo
+        self.formatado = obj_formatacao.aplicar_formatacao()
+
+
+class FormatacaoComposicaoCustoProdutivo(Formatacao):
+
+    def __init__( self, writer ) -> None:
+        super().__init__( writer )
+        obj_formatacao = Formatacao( writer )
+        obj_formatacao.algarismo_significativo(4)
+        self.coluna = 'K:K'
+        self.largura = 2.7 * self.modulo
+        self.formatado = obj_formatacao.aplicar_formatacao()
+
+
+class FormatacaoComposicaoCustoImrodutivo(Formatacao):
+
+    def __init__( self, writer ) -> None:
+        super().__init__( writer )
+        obj_formatacao = Formatacao( writer )
+        obj_formatacao.algarismo_significativo(4)
+        self.coluna = 'L:L'
+        self.largura = 2.7 * self.modulo
+        self.formatado = obj_formatacao.aplicar_formatacao()
+
+
+class FormatacaoComposicaoPrecoUnitario(Formatacao):
+
+    def __init__( self, writer ) -> None:
+        super().__init__( writer )
+        obj_formatacao = Formatacao( writer )
+        obj_formatacao.algarismo_significativo(4)
+        self.coluna = 'M:M'
+        self.largura = 2.7 * self.modulo
+        self.formatado = obj_formatacao.aplicar_formatacao()
+
+
+class FormatacaoComposicaoCustoTotal(Formatacao):
+
+    def __init__( self, writer ) -> None:
+        super().__init__( writer )
+        obj_formatacao = Formatacao( writer )
+        obj_formatacao.algarismo_significativo(4)
+        self.coluna = 'N:N'
+        self.largura = 2.7 * self.modulo
+        self.formatado = obj_formatacao.aplicar_formatacao()
+
+
+############
+
+class FormatacaoCabecalhoComposicaoOnerado(Formatacao):
 
     def __init__( self, writer ) -> None:
         super().__init__( writer )
@@ -19,6 +171,7 @@ class FormatacaoComposicaoOnerado(Formatacao):
         obj_formatacao.negrito()
         obj_formatacao.italico()
         obj_formatacao.cor_letra( 'red' )
+        self.coluna = 'N'
         self.formatado = obj_formatacao.aplicar_formatacao()
 
 
@@ -31,7 +184,7 @@ class FormatacaoComposicaoNaoMostrar(Formatacao):
         self.formatado = obj_formatacao.aplicar_formatacao()
 
 
-class FormatacaoComposicaoProdutividade(Formatacao):
+class FormatacaoCabecalhoComposicaoProdutividade(Formatacao):
 
     def __init__( self, writer ) -> None:
         super().__init__( writer )
@@ -40,10 +193,11 @@ class FormatacaoComposicaoProdutividade(Formatacao):
         obj_formatacao.negrito()
         obj_formatacao.italico()
         obj_formatacao.algarismo_significativo(5)
+        self.coluna = 'L'
         self.formatado = obj_formatacao.aplicar_formatacao()
 
 
-class FormatacaoComposicaoDescricaoComposicao(Formatacao):
+class FormatacaoCabecalhoComposicaoUnidade(Formatacao):
 
     def __init__( self, writer ) -> None:
         super().__init__( writer )
@@ -51,55 +205,11 @@ class FormatacaoComposicaoDescricaoComposicao(Formatacao):
         obj_formatacao.alinhamento_esquerda()
         obj_formatacao.negrito()
         obj_formatacao.italico()
+        self.coluna = 'M'
         self.formatado = obj_formatacao.aplicar_formatacao()
 
 
-class FormatacaoComposicaoDescricaoInsumo(Formatacao):
-
-    def __init__( self, writer ) -> None:
-        super().__init__( writer )
-        obj_formatacao = Formatacao( writer )
-        obj_formatacao.alinhamento_esquerda()
-        self.formatado = obj_formatacao.aplicar_formatacao()
-
-
-class FormatacaoComposicaoCusto(Formatacao):
-
-    def __init__( self, writer ) -> None:
-        super().__init__( writer )
-        obj_formatacao = Formatacao( writer )
-        obj_formatacao.algarismo_significativo(4)
-        self.formatado = obj_formatacao.aplicar_formatacao()
-
-
-class FormatacaoComposicaoUtilizacao(Formatacao):
-
-    def __init__( self, writer ) -> None:
-        super().__init__( writer )
-        obj_formatacao = Formatacao( writer )
-        obj_formatacao.algarismo_significativo(2)
-        self.formatado = obj_formatacao.aplicar_formatacao()
-
-
-class FormatacaoComposicaoConsumoDesdobrado(Formatacao):
-
-    def __init__( self, writer ) -> None:
-        super().__init__( writer )
-        obj_formatacao = Formatacao( writer )
-        obj_formatacao.algarismo_significativo(10)
-        self.formatado = obj_formatacao.aplicar_formatacao()
-
-
-class FormatacaoComposicaoQuantidade(Formatacao):
-
-    def __init__( self, writer ) -> None:
-        super().__init__( writer )
-        obj_formatacao = Formatacao( writer )
-        obj_formatacao.algarismo_significativo(5)
-        self.formatado = obj_formatacao.aplicar_formatacao()
-
-
-class FormatacaoComposicaoUnidadeComposicao(Formatacao):
+class FormatacaoCabecalhoComposicaoDescricao(Formatacao):
 
     def __init__( self, writer ) -> None:
         super().__init__( writer )
@@ -107,10 +217,11 @@ class FormatacaoComposicaoUnidadeComposicao(Formatacao):
         obj_formatacao.alinhamento_esquerda()
         obj_formatacao.negrito()
         obj_formatacao.italico()
+        self.coluna = 'E'
         self.formatado = obj_formatacao.aplicar_formatacao()
 
 
-class FormatacaoComposicaoCodigoComposicao(Formatacao):
+class FormatacaoCabecalhoComposicaoCodigo(Formatacao):
 
     def __init__( self, writer ) -> None:
         super().__init__( writer )
@@ -118,15 +229,7 @@ class FormatacaoComposicaoCodigoComposicao(Formatacao):
         obj_formatacao.negrito()
         obj_formatacao.italico()
         obj_formatacao.alinhamento_centro()
-        self.formatado = obj_formatacao.aplicar_formatacao()
-
-
-class FormatacaoComposicaoCodigoInsumo(Formatacao):
-
-    def __init__( self, writer ) -> None:
-        super().__init__( writer )
-        obj_formatacao = Formatacao( writer )
-        obj_formatacao.alinhamento_centro()
+        self.coluna = 'D'
         self.formatado = obj_formatacao.aplicar_formatacao()
 
 
@@ -181,33 +284,25 @@ class FormatacaoComposicaoPrecoUnitarioTotal(Formatacao):
 class FormatacaoComposicao:
 
     def __init__( self, writer ) -> None:
-        obj_formato_nao_mostrar = FormatacaoComposicaoNaoMostrar( writer )
-        obj_formato_codigo_composicao = FormatacaoComposicaoCodigoComposicao( writer )
-        obj_formato_descricao_composicao = FormatacaoComposicaoDescricaoComposicao( writer )
-        obj_formato_produtividade_composicao = FormatacaoComposicaoProdutividade( writer )
-        obj_formato_unidade_composicao = FormatacaoComposicaoUnidadeComposicao( writer )
-        obj_formato_onerado_composicao = FormatacaoComposicaoOnerado( writer )
-        obj_formato_codigo_insumo = FormatacaoComposicaoCodigoInsumo( writer )
-        obj_formato_descricao_insumo = FormatacaoComposicaoDescricaoInsumo( writer )
-        obj_formato_utilizacao_insumo = FormatacaoComposicaoUtilizacao( writer )
-        obj_formato_quantidade_insumo = FormatacaoComposicaoQuantidade( writer )
-        obj_formato_custo_insumo = FormatacaoComposicaoCusto( writer )
-        obj_formato_custo_horario_total = FormatacaoComposicaoCustoHorarioTotal( writer )
-        obj_formato_custo_unitario_total = FormatacaoComposicaoCustoUnitarioTotal( writer )
-        obj_formato_custo_unitario_direto_total = FormatacaoComposicaoCustoUnitarioDiretoTotal( writer )
-        obj_formato_preco_unitario_total = FormatacaoComposicaoPrecoUnitarioTotal( writer )
-        self.nao_mostrar = obj_formato_nao_mostrar.formatado
-        self.codigo_composicao = obj_formato_codigo_composicao.formatado
-        self.descricao_composicao = obj_formato_descricao_composicao.formatado
-        self.produtividade_composicao = obj_formato_produtividade_composicao.formatado
-        self.unidade_composicao = obj_formato_unidade_composicao.formatado
-        self.onerado_composicao = obj_formato_onerado_composicao.formatado
-        self.codigo_insumo = obj_formato_codigo_insumo.formatado
-        self.descricao_insumo = obj_formato_descricao_insumo.formatado
-        self.utilizacao_insumo = obj_formato_utilizacao_insumo.formatado
-        self.quantidade_insumo = obj_formato_quantidade_insumo.formatado
-        self.custo_insumo = obj_formato_custo_insumo.formatado
-        self.custo_horario_total = obj_formato_custo_horario_total.formatado
-        self.custo_unitario_total = obj_formato_custo_unitario_total.formatado
-        self.custo_unitario_direto_total = obj_formato_custo_unitario_direto_total.formatado
-        self.preco_unitario_total = obj_formato_preco_unitario_total.formatado
+        self.obj_formato_composicao_principal = FormatacaoComposicaoCodigoPrincipal( writer )
+        self.obj_formato_composicao_grupo = FormatacaoComposicaoGrupo( writer )
+        self.obj_formato_composicao_codigo_insumo = FormatacaoComposicaoCodigoInsumo( writer )
+        self.obj_formato_composicao_descricao_insumo = FormatacaoComposicaoDescricaoInsumo( writer )
+        self.obj_formato_composicao_item_transportado = FormatacaoComposicaoItemTransportado( writer )
+        self.obj_formato_composicao_dmt = FormatacaoComposicaoDMT( writer )
+        self.obj_formato_composicao_unidade_insumo = FormatacaoComposicaoUnidade( writer )
+        self.obj_formato_composicao_quantidade = FormatacaoComposicaoQuantidade( writer )
+        self.obj_formato_composicao_utilizacao = FormatacaoComposicaoUtilizacao( writer )
+        self.obj_formato_composicao_custo_produtivo = FormatacaoComposicaoCustoProdutivo( writer )
+        self.obj_formato_composicao_custo_improdutivo = FormatacaoComposicaoCustoImrodutivo( writer )
+        self.obj_formato_composicao_preco_unitario = FormatacaoComposicaoPrecoUnitario( writer )
+        self.obj_formato_composicao_custo_total = FormatacaoComposicaoCustoTotal( writer )
+
+class FormatoComposicaoCabecalho:
+
+    def __init__( self, writer ) -> None:
+        self.obj_formato_codigo = FormatacaoCabecalhoComposicaoCodigo( writer )
+        self.obj_formato_descricao = FormatacaoCabecalhoComposicaoDescricao( writer )
+        self.obj_formato_produtividade = FormatacaoCabecalhoComposicaoProdutividade( writer )
+        self.obj_formato_unidade = FormatacaoCabecalhoComposicaoUnidade( writer )
+        self.obj_formato_onerado = FormatacaoCabecalhoComposicaoOnerado( writer )
