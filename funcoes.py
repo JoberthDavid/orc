@@ -12,6 +12,7 @@ from estrutura_dados import (
 from formatacao_dados import (
                         Codigo,
                         Escrita,
+                        ConfiguraDataFrame,
                     )
 from escrita_resumo import (
                         FormatacaoEscritaCustoEquipamento,
@@ -25,29 +26,16 @@ from escrita_resumo import (
                     )
 from escrita_composicao import  (
                         FormatacaoComposicao,
-                        FormatoComposicaoCabecalho,
+                        FormatacaoComposicaoCabecalho,
                     )
 
 
-def configurar_impressao(worksheet, area_de_impressao, numero_de_composicoes):
-    # definindo a área de impressão
-    worksheet.print_area( area_de_impressao )
-    # dimensionando as páginas largura por extensão
-    worksheet.fit_to_pages(1, numero_de_composicoes)
-    # rotacionando a página
-    worksheet.set_landscape()
-    # definindo papel
-    worksheet.set_paper(9) # índice 9 (papel A4) vem da documentação da biblioteca xlsxwriter
-    # centralizando horizontalmente a tabela na página
-    worksheet.center_horizontally()
-
 def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linhas_na_composicao):
-    obj_codigo = Codigo()
+    # obj_codigo = Codigo()
     dicionario = projeto.obter_dfr_composicao()
     numero_de_composicoes = len( dicionario )
     numero_linhas = numero_de_composicoes * maximo_linhas_na_composicao
-    area_de_impressao = '$D${}:$N${}'.format(1, numero_de_composicoes * maximo_linhas_na_composicao )
-    area_formatacao_condicional = '$D${}:$N${}'.format(1, numero_de_composicoes * maximo_linhas_na_composicao )
+    # area_formatacao_condicional = '$D${}:$N${}'.format(1, numero_de_composicoes * maximo_linhas_na_composicao )
 
     # contador para as linhas das composições
     linha_inicio = 1
@@ -56,26 +44,27 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
     writer = pd.ExcelWriter( '.'.join( (arquivo,'xlsx' ) ) , engine='xlsxwriter' )
 
     formato = FormatacaoComposicao( writer )
-    formato_cabecalho = FormatoComposicaoCabecalho( writer )
+    cabecalho = FormatacaoComposicaoCabecalho( writer )
 
     for _df in dicionario.values():
-        # dfr_insumo
-        _df.dfr_insumo.to_excel( writer, startrow=( linha_inicio ), sheet_name='composicao', index=True )
-        
-        configurar_impressao( writer.sheets['composicao'], area_de_impressao, numero_de_composicoes )
+
+        obj_configura_data_frame = ConfiguraDataFrame( _df.dfr_insumo, formato, linha_inicio)
 
         # acrescentando a linha com dados da composição
         parametros = [ 
-                ( formato_cabecalho.obj_formato_codigo.coluna, _df.composicao.codigo, formato_cabecalho.obj_formato_codigo.formatado ),
-                ( formato_cabecalho.obj_formato_descricao.coluna, _df.composicao.descricao, formato_cabecalho.obj_formato_descricao.formatado ),
-                ( formato_cabecalho.obj_formato_produtividade.coluna, _df.composicao.produtividade, formato_cabecalho.obj_formato_produtividade.formatado ),
-                ( formato_cabecalho.obj_formato_unidade.coluna, _df.composicao.unidade, formato_cabecalho.obj_formato_unidade.formatado ),
-                ( formato_cabecalho.obj_formato_onerado.coluna, complemento, formato_cabecalho.obj_formato_onerado.formatado ),
+                ( cabecalho.obj_formato_codigo.coluna, _df.composicao.codigo, cabecalho.obj_formato_codigo.formatado ),
+                ( cabecalho.obj_formato_descricao.coluna, _df.composicao.descricao, cabecalho.obj_formato_descricao.formatado ),
+                ( cabecalho.obj_formato_produtividade.coluna, _df.composicao.produtividade, cabecalho.obj_formato_produtividade.formatado ),
+                ( cabecalho.obj_formato_unidade.coluna, _df.composicao.unidade, cabecalho.obj_formato_unidade.formatado ),
+                ( cabecalho.obj_formato_onerado.coluna, complemento, cabecalho.obj_formato_onerado.formatado ),
             ]
         for par in parametros:
-            writer.sheets['composicao'].write( ''.join( (par[0], str(linha_inicio)) ), par[1], par[2] )
+            writer.sheets[ formato.nome_tabela ].write( ''.join( (par[0], str(linha_inicio)) ), par[1], par[2] )
+
+        _df.dfr_insumo = obj_configura_data_frame.obter_data_frame_configurado()
 
         linha_inicio = linha_inicio + maximo_linhas_na_composicao
+
 
     # formatando colunas
     colunas = [
@@ -94,7 +83,10 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
                 formato.obj_formato_composicao_custo_total,
             ]
     for col in colunas:
-        writer.sheets['composicao'].set_column( col.coluna, col.largura, col.formatado )
+        writer.sheets[ formato.nome_tabela ].set_column( col.coluna, col.largura, col.formatado )
+
+    obj_escrita = Escrita( formato, numero_linhas, numero_de_composicoes )
+    writer = obj_escrita.obter_escritor_configurado()
 
     # # formatando as linhas de custos horários e unitários
     # criterios = [
@@ -122,59 +114,59 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
     
 
     # ##### começa a escrever custos de equipamentos das composições ###################################
-   
-    dfr_equipamento_custo = projeto.obter_dfr_equipamento()
     obj_format = FormatacaoEscritaCustoEquipamento( writer )
-    obj_escrita = Escrita( dfr_equipamento_custo, obj_format )
+    obj_configura_data_frame = ConfiguraDataFrame( projeto.obter_dfr_equipamento(), obj_format)
+    dfr_equipamento_custo = obj_configura_data_frame.obter_data_frame_configurado()
+    obj_escrita = Escrita( obj_format, dfr_equipamento_custo.shape[0] )
     writer = obj_escrita.obter_escritor_configurado()
 
-    # ##### começa a escrever custos de mão de obra das composições ###################################
-
-    dfr_mao_de_obra_custo = projeto.obter_dfr_mao_de_obra()
+    ##### começa a escrever custos de mão de obra das composições ###################################
     obj_format = FormatacaoEscritaCustoMaoDeObra( writer )
-    obj_escrita = Escrita( dfr_mao_de_obra_custo, obj_format )
+    obj_configura_data_frame = ConfiguraDataFrame( projeto.obter_dfr_mao_de_obra(), obj_format)
+    dfr_mao_de_obra_custo = obj_configura_data_frame.obter_data_frame_configurado()    
+    obj_escrita = Escrita( obj_format, dfr_mao_de_obra_custo.shape[0] )
     writer = obj_escrita.obter_escritor_configurado()
 
    # ##### começa a escrever custos de materiais das composições ###################################
-
-    dfr_material_custo = projeto.obter_dfr_material()
     obj_format = FormatacaoEscritaCustoMaterial( writer )
-    obj_escrita = Escrita( dfr_material_custo, obj_format )
+    obj_configura_data_frame = ConfiguraDataFrame( projeto.obter_dfr_material(), obj_format)
+    dfr_material_custo = obj_configura_data_frame.obter_data_frame_configurado()    
+    obj_escrita = Escrita( obj_format, dfr_material_custo.shape[0] )
     writer = obj_escrita.obter_escritor_configurado()
 
    # ##### começa a escrever utilizações de transportes das composições ###################################
-
-    dfr_transporte_utilizacao = projeto.obter_dfr_transportes_servicos()
     obj_format = FormatacaoEscritaResumoTransporte( writer )
-    obj_escrita = Escrita( dfr_transporte_utilizacao, obj_format )
+    obj_configura_data_frame = ConfiguraDataFrame( projeto.obter_dfr_transportes_servicos(), obj_format)
+    dfr_transporte_utilizacao = obj_configura_data_frame.obter_data_frame_configurado()    
+    obj_escrita = Escrita( obj_format, dfr_transporte_utilizacao.shape[0] )
     writer = obj_escrita.obter_escritor_configurado()
 
   # ##### começa a escrever utilizações de equipamentos das composições ###################################
-
-    dfr_equipamento_utilizacao = projeto.obter_dfr_equipamentos_servicos()
     obj_format = FormatacaoEscritaResumoEquipamento( writer )
-    obj_escrita = Escrita( dfr_equipamento_utilizacao, obj_format )
+    obj_configura_data_frame = ConfiguraDataFrame( projeto.obter_dfr_equipamentos_servicos(), obj_format)
+    dfr_equipamento_utilizacao = obj_configura_data_frame.obter_data_frame_configurado()    
+    obj_escrita = Escrita( obj_format, dfr_equipamento_utilizacao.shape[0] )
     writer = obj_escrita.obter_escritor_configurado()
 
 # ##### começa a escrever utilizações de mão de obra das composições ###################################
-
-    dfr_mao_de_obra_utilizacao = projeto.obter_dfr_mao_de_obra_servicos()
     obj_format = FormatacaoEscritaResumoMaoDeObra( writer )
-    obj_escrita = Escrita( dfr_mao_de_obra_utilizacao, obj_format )
+    obj_configura_data_frame = ConfiguraDataFrame( projeto.obter_dfr_mao_de_obra_servicos(), obj_format)
+    dfr_mao_de_obra_utilizacao = obj_configura_data_frame.obter_data_frame_configurado()    
+    obj_escrita = Escrita( obj_format, dfr_mao_de_obra_utilizacao.shape[0] )
     writer = obj_escrita.obter_escritor_configurado()
 
 # ##### começa a escrever utilizações de materiais das composições ###################################
-
-    dfr_material_utilizacao = projeto.obter_dfr_materiais_servicos()
     obj_format = FormatacaoEscritaResumoMaterial( writer )
-    obj_escrita = Escrita( dfr_material_utilizacao, obj_format )
+    obj_configura_data_frame = ConfiguraDataFrame( projeto.obter_dfr_materiais_servicos(), obj_format)
+    dfr_material_utilizacao = obj_configura_data_frame.obter_data_frame_configurado()    
+    obj_escrita = Escrita( obj_format, dfr_material_utilizacao.shape[0] )
     writer = obj_escrita.obter_escritor_configurado()
 
 # ##### começa a escrever resumo de serviços do projeto ###################################
-
-    dfr_servico_resumo = projeto.obter_dfr_servicos_projeto()
     obj_format = FormatacaoEscritaResumoServico( writer )
-    obj_escrita = Escrita( dfr_servico_resumo, obj_format )
+    obj_configura_data_frame = ConfiguraDataFrame( projeto.obter_dfr_servicos_projeto(), obj_format)
+    dfr_servico_resumo = obj_configura_data_frame.obter_data_frame_configurado()    
+    obj_escrita = Escrita( obj_format, dfr_servico_resumo.shape[0] )
     writer = obj_escrita.obter_escritor_configurado()
 
     writer.save()

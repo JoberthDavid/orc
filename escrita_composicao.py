@@ -1,22 +1,6 @@
 from formatacao_dados import Formatacao
 
 
-    # colunas = [
-    #             ( 'B:B', 01.0 * modulo, formato.codigo_composicao ), #
-    #             ( 'C:C', 01.0 * modulo, formato.grupo ), #
-    #             ( 'D:D', 01.0 * modulo, formato.codigo_insumo ), #
-    #             ( 'E:E', 12.0 * modulo, formato.descricao_insumo), #
-    #             ( 'F:F', 01.5 * modulo, formato.transportado_insumo ), #
-    #             ( 'G:G', 01.0 * modulo, formato.dmt_insumo ), #
-    #             ( 'H:H', 01.0 * modulo, formato.unidade_insumo ), #
-    #             ( 'I:I', 01.0 * modulo, formato.quantidade_insumo ), #
-    #             ( 'J:J', 01.0 * modulo, formato.utilizacao_insumo ), #
-    #             ( 'K:K', 02.6 * modulo, formato.custo_produtivo_insumo ), #
-    #             ( 'L:L', 02.6 * modulo, formato.custo_improdutivo_insumo ), #
-    #             ( 'M:M', 02.6 * modulo, formato.preco_unitario_insumo ), #
-    #             ( 'N:N', 02.6 * modulo, formato.custo_total_insumo ), #
-    #         ]
-
 class FormatacaoComposicaoCodigoPrincipal(Formatacao):
 
     def __init__( self, writer ) -> None:
@@ -57,7 +41,7 @@ class FormatacaoComposicaoDescricaoInsumo(Formatacao):
         obj_formatacao = Formatacao( writer )
         obj_formatacao.alinhamento_esquerda()
         self.coluna = 'E:E'
-        self.largura = 12.0 * self.modulo
+        self.largura = 14.0 * self.modulo
         self.formatado = obj_formatacao.aplicar_formatacao()
 
 
@@ -68,7 +52,7 @@ class FormatacaoComposicaoItemTransportado(Formatacao):
         obj_formatacao = Formatacao( writer )
         obj_formatacao.alinhamento_centro()
         self.coluna = 'F:F'
-        self.largura = 1.7 * self.modulo
+        self.largura = 1.5 * self.modulo
         self.formatado = obj_formatacao.aplicar_formatacao()
 
 
@@ -79,7 +63,7 @@ class FormatacaoComposicaoDMT(Formatacao):
         obj_formatacao = Formatacao( writer )
         obj_formatacao.algarismo_significativo(1)
         self.coluna = 'G:G'
-        self.largura = 1.5 * self.modulo
+        self.largura = 1.0 * self.modulo
         self.formatado = obj_formatacao.aplicar_formatacao()
 
 
@@ -284,6 +268,9 @@ class FormatacaoComposicaoPrecoUnitarioTotal(Formatacao):
 class FormatacaoComposicao:
 
     def __init__( self, writer ) -> None:
+        self.writer = writer
+        self.nome_tabela = 'composicao_orcamento'
+        self.entrada_area_de_impressao = '$D${}:$N${}'
         self.obj_formato_composicao_principal = FormatacaoComposicaoCodigoPrincipal( writer )
         self.obj_formato_composicao_grupo = FormatacaoComposicaoGrupo( writer )
         self.obj_formato_composicao_codigo_insumo = FormatacaoComposicaoCodigoInsumo( writer )
@@ -297,8 +284,25 @@ class FormatacaoComposicao:
         self.obj_formato_composicao_custo_improdutivo = FormatacaoComposicaoCustoImrodutivo( writer )
         self.obj_formato_composicao_preco_unitario = FormatacaoComposicaoPrecoUnitario( writer )
         self.obj_formato_composicao_custo_total = FormatacaoComposicaoCustoTotal( writer )
+        self.lista_entrada_formatacao = [ 
+                self.obj_formato_composicao_principal,
+                self.obj_formato_composicao_grupo,
+                self.obj_formato_composicao_codigo_insumo,
+                self.obj_formato_composicao_descricao_insumo,
+                self.obj_formato_composicao_item_transportado,
+                self.obj_formato_composicao_dmt,
+                self.obj_formato_composicao_unidade_insumo,
+                self.obj_formato_composicao_quantidade,
+                self.obj_formato_composicao_utilizacao,
+                self.obj_formato_composicao_custo_produtivo,
+                self.obj_formato_composicao_custo_improdutivo,
+                self.obj_formato_composicao_preco_unitario,
+                self.obj_formato_composicao_custo_total,
+            ]
+        self.orientacao_retrato = False
 
-class FormatoComposicaoCabecalho:
+
+class FormatacaoComposicaoCabecalho:
 
     def __init__( self, writer ) -> None:
         self.obj_formato_codigo = FormatacaoCabecalhoComposicaoCodigo( writer )

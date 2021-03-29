@@ -195,7 +195,7 @@ class FormatacaoEscritaCustoEquipamento(FormatacaoEscrita):
                 self.obj_formatacao_unidade,
                 self.obj_formatacao_preco_unitario,
             ]
-        self.orientacao_retrato = True
+        self.orientacao_retrato = False
 
 
 class FormatacaoEscritaCustoMaoDeObra(FormatacaoEscrita):
@@ -223,7 +223,7 @@ class FormatacaoEscritaCustoMaoDeObra(FormatacaoEscrita):
                 self.obj_formatacao_unidade,
                 self.obj_formatacao_preco_unitario,
             ]
-        self.orientacao_retrato = True
+        self.orientacao_retrato = False
 
 
 class FormatacaoEscritaCustoMaterial(FormatacaoEscrita):
@@ -251,7 +251,7 @@ class FormatacaoEscritaCustoMaterial(FormatacaoEscrita):
                 self.obj_formatacao_unidade,
                 self.obj_formatacao_preco_unitario,
             ]
-        self.orientacao_retrato = True
+        self.orientacao_retrato = False
 
 
 class FormatacaoEscritaResumoTransporte(FormatacaoEscrita):
@@ -276,7 +276,7 @@ class FormatacaoEscritaResumoTransporte(FormatacaoEscrita):
                 self.obj_formatacao_codigo,
                 self.obj_formatacao_quantidade_desdobrada,
             ]
-        self.orientacao_retrato = True
+        self.orientacao_retrato = False
 
 
 class FormatacaoEscritaResumoEquipamento(FormatacaoEscrita):
@@ -302,7 +302,7 @@ class FormatacaoEscritaResumoEquipamento(FormatacaoEscrita):
                 self.obj_formatacao_preco_unitario,
                 self.obj_formatacao_custo_total_desdobrado,
             ]
-        self.orientacao_retrato = True
+        self.orientacao_retrato = False
 
 
 class FormatacaoEscritaResumoMaoDeObra(FormatacaoEscrita):
@@ -326,7 +326,7 @@ class FormatacaoEscritaResumoMaoDeObra(FormatacaoEscrita):
                 self.obj_formatacao_quantidade_desdobrada,
                 self.obj_formatacao_custo_total_desdobrado,
             ]
-        self.orientacao_retrato = True
+        self.orientacao_retrato = False
 
 
 class FormatacaoEscritaResumoMaterial(FormatacaoEscrita):
@@ -350,7 +350,7 @@ class FormatacaoEscritaResumoMaterial(FormatacaoEscrita):
                 self.obj_formatacao_quantidade_desdobrada,
                 self.obj_formatacao_custo_total_desdobrado,
             ]
-        self.orientacao_retrato = True
+        self.orientacao_retrato = False
 
 
 class FormatacaoEscritaResumoServico(FormatacaoEscrita):

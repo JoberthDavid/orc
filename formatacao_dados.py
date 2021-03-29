@@ -1,3 +1,6 @@
+from arquivos import marca_dnit
+
+
 class Precisao:
     
     def __init__( self ) -> None:
@@ -49,9 +52,9 @@ class Formatacao:
                     'pink' : '#FF00FF',
                     'purple' : '#800080',
                     'red' : '#FF0000',
-                    'light-gray' : '#DCDCDC',
-                    'dark-gray' : '#A9A9A9',
-                    'light-blue' : '#B0C4DE',
+                    'light-gray' : '#DCDCDC',#BFC3C6 #DCDCDC
+                    'dark-gray' : '#A9A9A9', #58636B #A9A9A9
+                    'light-blue' : '#B0C4DE',#0087CC #B0C4DE
                     'white' : 'white',
                     'yellow' : '#FFFF00',
                     }
@@ -110,24 +113,42 @@ class Formatacao:
         return self.workbook.add_format( self.dicionario_formatacao )
 
 
-class Escrita:
+class ConfiguraDataFrame:
 
-    def __init__( self, data_frame, formatacao ):
+    def __init__( self, data_frame, formatacao, linha_inicio=0 ):
         self.dfr = data_frame
         self.configurar_indice_iniciando_com_um()
+        self.dfr.to_excel( formatacao.writer, startrow=( linha_inicio ), sheet_name=formatacao.nome_tabela, index=True )
+
+    def configurar_indice_iniciando_com_um( self ):
+        self.dfr['Item'] = [ x for x in range( 1, len( self.dfr ) + 1 ) ]
+        self.dfr.set_index('Item', drop=True, inplace=True)
+
+    def obter_data_frame_configurado( self ):
+        return self.dfr
+
+class Escrita:
+
+    def __init__( self, formatacao, tamanho, numero_de_composicoes=0 ):
         self.writer = formatacao.writer
         self.formatacao = formatacao
         self.nome_tabela = self.formatacao.nome_tabela
         self.entrada_area_de_impressao = self.formatacao.entrada_area_de_impressao
-        self.dfr.to_excel( self.writer, index=True, sheet_name=self.nome_tabela )
-        self.tamanho = self.dfr.shape[0]
+        self.tamanho = tamanho
+        self.numero_de_composicoes = numero_de_composicoes
 
     def configurar_area_impressao( self ):
         area_de_impressao = self.entrada_area_de_impressao.format(1, self.tamanho )
         self.writer.sheets[ self.nome_tabela ].print_area( area_de_impressao )
 
     def configurar_escala_para_largura_pagina( self ):
-        self.writer.sheets[ self.nome_tabela ].fit_to_pages( 1, self.tamanho )
+        if self.numero_de_composicoes > 0:
+            self.writer.sheets[ self.nome_tabela ].fit_to_pages(1, self.numero_de_composicoes)
+        else:
+            self.writer.sheets[ self.nome_tabela ].fit_to_pages( 1, self.tamanho )
+            self.configurar_cabecalho()
+            self.configurar_repeticao_primeira_linha_tabela()
+            self.configurar_linhas_de_grade()
         
     def configurar_orientacao_papel( self ):
         if self.formatacao.orientacao_retrato == True:
@@ -142,16 +163,20 @@ class Escrita:
     def configurar_tabela_centro_pagina( self ):
         self.writer.sheets[ self.nome_tabela ].center_horizontally()
 
-    def configurar_primeira_linha_tabela( self ):
+    def configurar_repeticao_primeira_linha_tabela( self ):
         self.writer.sheets[ self.nome_tabela ].repeat_rows(0)
 
     def configurar_formatacao_coluna_tabela( self ):
         for obj_entrada in self.formatacao.lista_entrada_formatacao:
             self.writer.sheets[ self.nome_tabela ].set_column( obj_entrada.coluna, obj_entrada.largura, obj_entrada.formatado )
 
-    def configurar_indice_iniciando_com_um( self ):
-        self.dfr['Item'] = [ x for x in range( 1, len( self.dfr ) + 1 ) ]
-        self.dfr.set_index('Item', drop=True, inplace=True)
+    def configurar_linhas_de_grade( self ):
+        self.writer.sheets[ self.nome_tabela ].hide_gridlines(option=0)
+
+    def configurar_cabecalho( self ):
+        self.writer.sheets[ self.nome_tabela ].set_header('&LDepartamento Nacional de Infraestrutura de Transportes')
+        # self.writer.sheets[ self.nome_tabela ].set_margins(top=1.3)
+        # self.writer.sheets[ self.nome_tabela ].set_header('&L&G', {'image_left': marca_dnit})
 
     def obter_escritor_configurado( self ):
         self.configurar_area_impressao()
@@ -159,7 +184,6 @@ class Escrita:
         self.configurar_orientacao_papel()
         self.configurar_papel_a4()
         self.configurar_tabela_centro_pagina()
-        self.configurar_primeira_linha_tabela()
         self.configurar_formatacao_coluna_tabela()
         return self.writer
 
