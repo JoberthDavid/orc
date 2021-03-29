@@ -127,6 +127,7 @@ class ConfiguraDataFrame:
     def obter_data_frame_configurado( self ):
         return self.dfr
 
+
 class Escrita:
 
     def __init__( self, formatacao, tamanho, numero_de_composicoes=0 ):
@@ -185,6 +186,24 @@ class Escrita:
         self.configurar_papel_a4()
         self.configurar_tabela_centro_pagina()
         self.configurar_formatacao_coluna_tabela()
+        return self.writer
+
+
+class EscritaCabecalho:
+
+    def __init__( self, formatacao, linha_inicio ):
+        self.writer = formatacao.writer
+        self.formatacao = formatacao
+        self.nome_tabela = formatacao.nome_tabela
+        self.lista_entrada_formatacao = formatacao.lista_entrada_formatacao
+        self.linha_inicio = linha_inicio
+
+    def configurar_cabecalho( self ):
+        for obj_entrada in self.lista_entrada_formatacao:
+            self.writer.sheets[ self.formatacao.nome_tabela ].write( ''.join( ( obj_entrada.coluna, str(self.linha_inicio)) ), obj_entrada.conteudo, obj_entrada.formatado )
+
+    def obter_escritor_configurado( self ):
+        self.configurar_cabecalho()
         return self.writer
 
 

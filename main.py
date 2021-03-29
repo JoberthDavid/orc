@@ -8,7 +8,7 @@ from arquivos import (
                         arq_apr_in,
                         arq_cto_in
                     )
-                    
+
 from funcoes import escrever_arquivo_excel
 from projeto import BaseDF, Servico, BonificacaoDespesasIndiretas, Projeto
 

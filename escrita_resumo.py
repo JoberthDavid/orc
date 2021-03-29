@@ -174,7 +174,7 @@ class FormatacaoEscritaCustoEquipamento(FormatacaoEscrita):
 
     def __init__( self, writer ):
         super().__init__( writer )
-        self.nome_tabela = 'resumo_equipamento_custo'
+        self.nome_tabela = 'resumo_custo_equipamento'
         self.entrada_area_de_impressao = '$A${}:$J${}'
         self.obj_formatacao_grupo.coluna = 'B:B'
         self.obj_formatacao_origem.coluna = 'C:C'
@@ -202,7 +202,7 @@ class FormatacaoEscritaCustoMaoDeObra(FormatacaoEscrita):
 
     def __init__( self, writer ):
         super().__init__( writer )
-        self.nome_tabela = 'resumo_mao_de_obra_custo'
+        self.nome_tabela = 'resumo_custo_mao_de_obra'
         self.entrada_area_de_impressao = '$A${}:$I${}'
         self.obj_formatacao_grupo.coluna = 'B:B'
         self.obj_formatacao_origem.coluna = 'C:C'
@@ -230,7 +230,7 @@ class FormatacaoEscritaCustoMaterial(FormatacaoEscrita):
 
     def __init__( self, writer ):
         super().__init__( writer )
-        self.nome_tabela = 'resumo_material_custo'
+        self.nome_tabela = 'resumo_custo_material'
         self.entrada_area_de_impressao = '$A${}:$I${}'
         self.obj_formatacao_grupo.coluna = 'B:B'
         self.obj_formatacao_origem.coluna = 'C:C'
@@ -258,7 +258,7 @@ class FormatacaoEscritaResumoTransporte(FormatacaoEscrita):
 
     def __init__( self, writer ):
         super().__init__( writer )
-        self.nome_tabela = 'resumo_transporte_utilizado'
+        self.nome_tabela = 'resumo_utilizacao_transporte'
         self.entrada_area_de_impressao = '$A${}:$H${}'
         self.obj_formatacao_servico.coluna = 'B:B'
         self.obj_formatacao_composicao.coluna = 'C:D'
@@ -283,7 +283,7 @@ class FormatacaoEscritaResumoEquipamento(FormatacaoEscrita):
 
     def __init__( self, writer ):
         super().__init__( writer )
-        self.nome_tabela = 'resumo_equipamento_utilizado'
+        self.nome_tabela = 'resumo_utilizacao_equipamento'
         self.entrada_area_de_impressao = '$A${}:$J${}'
         self.obj_formatacao_servico.coluna = 'B:B'
         self.obj_formatacao_composicao.coluna = 'C:C'
@@ -309,7 +309,7 @@ class FormatacaoEscritaResumoMaoDeObra(FormatacaoEscrita):
 
     def __init__( self, writer ):
         super().__init__( writer )
-        self.nome_tabela = 'resumo_mao_de_obra_utilizado'
+        self.nome_tabela = 'resumo_utilizacao_mao_de_obra'
         self.entrada_area_de_impressao = '$A${}:$G${}'
         self.obj_formatacao_servico.coluna = 'B:B'
         self.obj_formatacao_composicao.coluna = 'C:C'
@@ -333,7 +333,7 @@ class FormatacaoEscritaResumoMaterial(FormatacaoEscrita):
 
     def __init__( self, writer ):
         super().__init__( writer )
-        self.nome_tabela = 'resumo_material_utilizado'
+        self.nome_tabela = 'resumo_utilizacao_material'
         self.entrada_area_de_impressao = '$A${}:$G${}'
         self.obj_formatacao_servico.coluna = 'B:B'
         self.obj_formatacao_composicao.coluna = 'C:C'
@@ -357,7 +357,7 @@ class FormatacaoEscritaResumoServico(FormatacaoEscrita):
 
     def __init__( self, writer ):
         super().__init__( writer )
-        self.nome_tabela = 'resumo_servico'
+        self.nome_tabela = 'resumo_orcamento'
         self.entrada_area_de_impressao = '$A${}:$G${}'
         self.obj_formatacao_servico.coluna = 'B:B'
         self.obj_formatacao_descricao.coluna = 'C:C'
