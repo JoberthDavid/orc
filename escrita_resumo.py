@@ -20,7 +20,7 @@ class FormatacaoResumoGrupo(Formatacao):
         obj_formatacao.alinhamento_centro()
         self.formatado = obj_formatacao.aplicar_formatacao()
         self.coluna = ''
-        self.largura = 1.2 * self.modulo
+        self.largura = 0.8 * self.modulo
 
 
 class FormatacaoResumoOrigem(Formatacao):
@@ -31,7 +31,7 @@ class FormatacaoResumoOrigem(Formatacao):
         obj_formatacao.alinhamento_centro()
         self.formatado = obj_formatacao.aplicar_formatacao()
         self.coluna = ''
-        self.largura = 1.2 * self.modulo
+        self.largura = 1.0 * self.modulo
 
 
 class FormatacaoResumoEstado(Formatacao):
@@ -42,7 +42,7 @@ class FormatacaoResumoEstado(Formatacao):
         obj_formatacao.alinhamento_centro()
         self.formatado = obj_formatacao.aplicar_formatacao()
         self.coluna = ''
-        self.largura = 1.2 * self.modulo
+        self.largura = 1.0 * self.modulo
 
 
 class FormatacaoResumoPublicacao(Formatacao):
@@ -53,7 +53,7 @@ class FormatacaoResumoPublicacao(Formatacao):
         obj_formatacao.alinhamento_centro()
         self.formatado = obj_formatacao.aplicar_formatacao()
         self.coluna = ''
-        self.largura = 1.2 * self.modulo
+        self.largura = 1.0 * self.modulo
 
 
 class FormatacaoResumoCodigo(Formatacao):
@@ -64,7 +64,7 @@ class FormatacaoResumoCodigo(Formatacao):
         obj_formatacao.alinhamento_centro()
         self.formatado = obj_formatacao.aplicar_formatacao()
         self.coluna = ''
-        self.largura = 2.0 * self.modulo
+        self.largura = 1.8 * self.modulo
 
 
 class FormatacaoResumoDescricao(Formatacao):
@@ -75,7 +75,7 @@ class FormatacaoResumoDescricao(Formatacao):
         obj_formatacao.alinhamento_esquerda()
         self.formatado = obj_formatacao.aplicar_formatacao()
         self.coluna = ''
-        self.largura = 14.0 * self.modulo
+        self.largura = 15.0 * self.modulo
 
 
 class FormatacaoResumoUnidade(Formatacao):
@@ -86,7 +86,7 @@ class FormatacaoResumoUnidade(Formatacao):
         obj_formatacao.alinhamento_centro()
         self.formatado = obj_formatacao.aplicar_formatacao()
         self.coluna = ''
-        self.largura = 1.0 * self.modulo
+        self.largura = 0.8 * self.modulo
 
 
 class FormatacaoResumoQuantidade(Formatacao):
@@ -98,7 +98,7 @@ class FormatacaoResumoQuantidade(Formatacao):
         obj_formatacao.algarismo_significativo(4)
         self.formatado = obj_formatacao.aplicar_formatacao()
         self.coluna = ''
-        self.largura = 2.5 * self.modulo
+        self.largura = 2.0 * self.modulo
 
 
 class FormatacaoResumoPrecoUnitario(Formatacao):
@@ -110,7 +110,7 @@ class FormatacaoResumoPrecoUnitario(Formatacao):
         obj_formatacao.algarismo_significativo(4)
         self.formatado = obj_formatacao.aplicar_formatacao()
         self.coluna = ''
-        self.largura = 3.0 * self.modulo
+        self.largura = 2.6 * self.modulo
 
 
 class FormatacaoResumoCustoTotal(Formatacao):
@@ -122,7 +122,7 @@ class FormatacaoResumoCustoTotal(Formatacao):
         obj_formatacao.algarismo_significativo(2)
         self.formatado = obj_formatacao.aplicar_formatacao()
         self.coluna = ''
-        self.largura = 3.0 * self.modulo
+        self.largura = 2.6 * self.modulo
 
 
 class FormatacaoResumoQuantidadeDesdobrada(Formatacao):
@@ -134,7 +134,7 @@ class FormatacaoResumoQuantidadeDesdobrada(Formatacao):
         obj_formatacao.algarismo_significativo(10)
         self.formatado = obj_formatacao.aplicar_formatacao()
         self.coluna = ''
-        self.largura = 2.5 * self.modulo
+        self.largura = 2.6 * self.modulo
 
 
 class FormatacaoResumoCustoTotalDesdobrado(Formatacao):
@@ -146,7 +146,7 @@ class FormatacaoResumoCustoTotalDesdobrado(Formatacao):
         obj_formatacao.algarismo_significativo(10)
         self.formatado = obj_formatacao.aplicar_formatacao()
         self.coluna = ''
-        self.largura = 3.0 * self.modulo
+        self.largura = 2.6 * self.modulo
 
 
 class FormatacaoEscrita:
@@ -174,7 +174,7 @@ class FormatacaoEscritaCustoEquipamento(FormatacaoEscrita):
 
     def __init__( self, writer ):
         super().__init__( writer )
-        self.nome_tabela = 'resumo_custo_equipamento'
+        self.nome_tabela = 'CUSTO EQUIPAMENTO'
         self.entrada_area_de_impressao = '$A${}:$J${}'
         self.obj_formatacao_grupo.coluna = 'B:B'
         self.obj_formatacao_origem.coluna = 'C:C'
@@ -184,6 +184,7 @@ class FormatacaoEscritaCustoEquipamento(FormatacaoEscrita):
         self.obj_formatacao_descricao.coluna = 'G:G'
         self.obj_formatacao_unidade.coluna = 'H:H'
         self.obj_formatacao_preco_unitario.coluna = 'I:J'
+        self.obj_formatacao_descricao.largura = 13.0 * self.obj_formatacao_descricao.modulo
         self.lista_entrada_formatacao = [ 
                 self.obj_formatacao_id,
                 self.obj_formatacao_grupo,
@@ -202,7 +203,7 @@ class FormatacaoEscritaCustoMaoDeObra(FormatacaoEscrita):
 
     def __init__( self, writer ):
         super().__init__( writer )
-        self.nome_tabela = 'resumo_custo_mao_de_obra'
+        self.nome_tabela = 'CUSTO MÃO DE OBRA'
         self.entrada_area_de_impressao = '$A${}:$I${}'
         self.obj_formatacao_grupo.coluna = 'B:B'
         self.obj_formatacao_origem.coluna = 'C:C'
@@ -230,7 +231,7 @@ class FormatacaoEscritaCustoMaterial(FormatacaoEscrita):
 
     def __init__( self, writer ):
         super().__init__( writer )
-        self.nome_tabela = 'resumo_custo_material'
+        self.nome_tabela = 'CUSTO MATERIAL'
         self.entrada_area_de_impressao = '$A${}:$I${}'
         self.obj_formatacao_grupo.coluna = 'B:B'
         self.obj_formatacao_origem.coluna = 'C:C'
@@ -258,7 +259,7 @@ class FormatacaoEscritaResumoTransporte(FormatacaoEscrita):
 
     def __init__( self, writer ):
         super().__init__( writer )
-        self.nome_tabela = 'resumo_utilizacao_transporte'
+        self.nome_tabela = 'UTILIZAÇÃO TRANSPORTE'
         self.entrada_area_de_impressao = '$A${}:$H${}'
         self.obj_formatacao_servico.coluna = 'B:B'
         self.obj_formatacao_composicao.coluna = 'C:D'
@@ -283,7 +284,7 @@ class FormatacaoEscritaResumoEquipamento(FormatacaoEscrita):
 
     def __init__( self, writer ):
         super().__init__( writer )
-        self.nome_tabela = 'resumo_utilizacao_equipamento'
+        self.nome_tabela = 'UTILIZAÇÃO EQUIPAMENTO'
         self.entrada_area_de_impressao = '$A${}:$J${}'
         self.obj_formatacao_servico.coluna = 'B:B'
         self.obj_formatacao_composicao.coluna = 'C:C'
@@ -292,6 +293,7 @@ class FormatacaoEscritaResumoEquipamento(FormatacaoEscrita):
         self.obj_formatacao_quantidade_desdobrada.coluna = 'F:G'
         self.obj_formatacao_preco_unitario.coluna = 'H:I'
         self.obj_formatacao_custo_total_desdobrado.coluna = 'J:J'
+        self.obj_formatacao_descricao.largura = 7.0 * self.obj_formatacao_descricao.modulo
         self.lista_entrada_formatacao = [ 
                 self.obj_formatacao_id,
                 self.obj_formatacao_servico,
@@ -309,7 +311,7 @@ class FormatacaoEscritaResumoMaoDeObra(FormatacaoEscrita):
 
     def __init__( self, writer ):
         super().__init__( writer )
-        self.nome_tabela = 'resumo_utilizacao_mao_de_obra'
+        self.nome_tabela = 'UTILIZAÇÃO MÃO DE OBRA'
         self.entrada_area_de_impressao = '$A${}:$G${}'
         self.obj_formatacao_servico.coluna = 'B:B'
         self.obj_formatacao_composicao.coluna = 'C:C'
@@ -333,7 +335,7 @@ class FormatacaoEscritaResumoMaterial(FormatacaoEscrita):
 
     def __init__( self, writer ):
         super().__init__( writer )
-        self.nome_tabela = 'resumo_utilizacao_material'
+        self.nome_tabela = 'UTILIZAÇÃO MATERIAL'
         self.entrada_area_de_impressao = '$A${}:$G${}'
         self.obj_formatacao_servico.coluna = 'B:B'
         self.obj_formatacao_composicao.coluna = 'C:C'
@@ -357,7 +359,7 @@ class FormatacaoEscritaResumoServico(FormatacaoEscrita):
 
     def __init__( self, writer ):
         super().__init__( writer )
-        self.nome_tabela = 'resumo_orcamento'
+        self.nome_tabela = 'RESUMO ORÇAMENTO'
         self.entrada_area_de_impressao = '$A${}:$G${}'
         self.obj_formatacao_servico.coluna = 'B:B'
         self.obj_formatacao_descricao.coluna = 'C:C'

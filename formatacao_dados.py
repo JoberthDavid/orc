@@ -1,5 +1,7 @@
 from arquivos import marca_dnit
+from datetime import datetime
 
+import locale
 
 class Precisao:
     
@@ -29,6 +31,48 @@ class Precisao:
 
     def utilizacao_mao_de_obra( self, valor: float ) -> float:
         return round( valor, self._10_algarismos )
+
+
+class Mes:
+
+    def __init__(self, mes: str):
+        self.MES_COMPLETO = {
+                1:'janeiro',
+                2:'fevereiro',
+                3:u'março',
+                4:'abril',
+                5:'maio',
+                6:'junho',
+                7:'julho',
+                8:'agosto',
+                9:'setembro',
+                10:'outubro',
+                11:'novembro',
+                12:'dezembro'
+            }
+        self.MES = {
+                1:'jan',
+                2:'fev',
+                3:'mar',
+                4:'abr',
+                5:'mai',
+                6:'jun',
+                7:'jul',
+                8:'ago',
+                9:'set',
+                10:'out',
+                11:'nov',
+                12:'dez'
+            }
+        self.mes = int( mes )
+        self.completo = self.mes_completo()
+        self.abreviado = self.mes_abreviado()
+
+    def mes_completo( self ):
+        return self.MES_COMPLETO[ self.mes ]
+
+    def mes_abreviado( self ):
+        return self.MES[ self.mes ]
 
 
 class Formatacao:
@@ -135,7 +179,7 @@ class Escrita:
         self.formatacao = formatacao
         self.nome_tabela = self.formatacao.nome_tabela
         self.entrada_area_de_impressao = self.formatacao.entrada_area_de_impressao
-        self.tamanho = tamanho
+        self.tamanho = tamanho + 1
         self.numero_de_composicoes = numero_de_composicoes
 
     def configurar_area_impressao( self ):
@@ -144,10 +188,13 @@ class Escrita:
 
     def configurar_escala_para_largura_pagina( self ):
         if self.numero_de_composicoes > 0:
+            self.writer.sheets[ self.nome_tabela ].set_margins(top=2.0)
             self.writer.sheets[ self.nome_tabela ].fit_to_pages(1, self.numero_de_composicoes)
         else:
-            self.writer.sheets[ self.nome_tabela ].fit_to_pages( 1, self.tamanho )
+            self.writer.sheets[ self.nome_tabela ].set_margins(top=2.0)
+            self.writer.sheets[ self.nome_tabela ].set_print_scale(50)
             self.configurar_cabecalho()
+            self.configurar_rodape()
             self.configurar_repeticao_primeira_linha_tabela()
             self.configurar_linhas_de_grade()
         
@@ -175,9 +222,26 @@ class Escrita:
         self.writer.sheets[ self.nome_tabela ].hide_gridlines(option=0)
 
     def configurar_cabecalho( self ):
-        self.writer.sheets[ self.nome_tabela ].set_header('&LDepartamento Nacional de Infraestrutura de Transportes')
-        # self.writer.sheets[ self.nome_tabela ].set_margins(top=1.3)
-        # self.writer.sheets[ self.nome_tabela ].set_header('&L&G', {'image_left': marca_dnit})
+        sigla = 'DNIT\n'
+        sigla_formatada = '"Arial Black, Bold, Italic"&36&K003770{}'.format( sigla )
+        guia = 'A'
+        guia_formatada = '"Open sans"&14&K003770&{}\n'.format( guia )
+        rodovia = 'BR-000'
+        trecho = 'Div XX/XX - Div XX/XX'
+        subtrecho = 'Acreúna - Rio Verde'
+        segmento = 'KM 0,00 - KM 0,00'
+        snv = '000BGO0000 - 000BGO0000'
+        versao_snv = '2020abcd'
+        objeto = 'Rodovia: {}\nTrecho: {}\nSubtrecho: {}\nSegmento: {}\nSNV: {}\nVersão SNV: {}\n'.format( rodovia, trecho, subtrecho, segmento, snv, versao_snv )
+        objeto_formatado = '"Open sans"&12&K003770{}\n'.format( objeto )
+        cabecalho = '&L&{}&C&{}&L&{}'.format( sigla_formatada, guia_formatada, objeto_formatado )
+        self.writer.sheets[ self.nome_tabela ].set_header( cabecalho, {'scale_with_doc': False} )
+
+    def configurar_rodape( self ):
+        agora = datetime.now()
+        mes = Mes( agora.strftime("%m") )
+        conteudo_rodape = '&C&"Open sans"&11&K003770{}/{}'.format( mes.completo, agora.strftime("%Y") )
+        self.writer.sheets[ self.nome_tabela ].set_footer( conteudo_rodape, {'scale_with_doc': False})
 
     def obter_escritor_configurado( self ):
         self.configurar_area_impressao()

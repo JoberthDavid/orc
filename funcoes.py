@@ -42,7 +42,7 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
     linha_inicio = 1
 
     # cria um objeto Excel
-    writer = pd.ExcelWriter( '.'.join( (arquivo,'xlsx' ) ) , engine='xlsxwriter' )
+    writer = pd.ExcelWriter( '{}.{}'.format( arquivo, 'xlsx' ), engine='xlsxwriter' )
 
     formato = FormatacaoComposicao( writer )
 

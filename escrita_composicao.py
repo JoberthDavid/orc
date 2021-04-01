@@ -280,7 +280,7 @@ class FormatacaoComposicao:
 
     def __init__( self, writer ) -> None:
         self.writer = writer
-        self.nome_tabela = 'composicao_preco_unitario'
+        self.nome_tabela = 'CCU'
         self.entrada_area_de_impressao = '$D${}:$N${}'
         self.obj_formato_composicao_principal = FormatacaoComposicaoCodigoPrincipal( writer )
         self.obj_formato_composicao_grupo = FormatacaoComposicaoGrupo( writer )
@@ -317,7 +317,7 @@ class FormatacaoCabecalho:
 
     def __init__( self, writer, composicao ) -> None:
         self.writer = writer
-        self.nome_tabela = 'composicao_preco_unitario'
+        self.nome_tabela = 'CCU'
         self.obj_formato_codigo = FormatacaoCabecalhoComposicaoCodigo( self.writer, composicao )
         self.obj_formato_descricao = FormatacaoCabecalhoComposicaoDescricao( self.writer, composicao )
         self.obj_formato_produtividade = FormatacaoCabecalhoComposicaoProdutividade( self.writer, composicao )
