@@ -81,6 +81,7 @@ class Formatacao:
         self.modulo = 10
         self.workbook = writer.book
         self.dicionario_formatacao = dict()
+        self.tipo_letra()
         self.dicionario_formatacao['italic'] = False
         self.dicionario_formatacao['bold'] = False
         self.dicionario_cor = {
@@ -96,12 +97,23 @@ class Formatacao:
                     'pink' : '#FF00FF',
                     'purple' : '#800080',
                     'red' : '#FF0000',
-                    'light-gray' : '#DCDCDC',#BFC3C6 #DCDCDC
-                    'dark-gray' : '#A9A9A9', #58636B #A9A9A9
-                    'light-blue' : '#B0C4DE',#0087CC #B0C4DE
+                    'light-gray' : '#DCDCDC',
+                    'dark-gray' : '#A9A9A9',
+                    'light-blue' : '#B0C4DE',
+                    'cinza-claro-dnit': '#BFC3C6',
+                    'cinza-escuro-dnit': '#58636B',
+                    'amarelo-escuro-dnit': '#FBBE5E',
+                    'azul-escuro-dnit' : '#003770',
+                    'azul-claro-dnit' : '#70b6ff',
                     'white' : 'white',
                     'yellow' : '#FFFF00',
                     }
+
+    def tipo_letra( self ):
+        self.dicionario_formatacao.update( {'font_name': 'Open sans'} )
+
+    def tamanho_letra( self ):
+        self.dicionario_formatacao.update( {'font_size': 14} )
 
     def alinhamento_centro( self ):
         self.dicionario_formatacao.update( {'align':'center'} )
@@ -189,6 +201,7 @@ class Escrita:
     def configurar_escala_para_largura_pagina( self ):
         if self.numero_de_composicoes > 0:
             self.writer.sheets[ self.nome_tabela ].set_margins(top=2.0)
+            self.configurar_cabecalho()
             self.writer.sheets[ self.nome_tabela ].fit_to_pages(1, self.numero_de_composicoes)
         else:
             self.writer.sheets[ self.nome_tabela ].set_margins(top=2.0)

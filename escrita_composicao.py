@@ -244,7 +244,7 @@ class FormatacaoComposicaoCustoUnitarioTotal(Formatacao):
     def __init__( self, writer ) -> None:
         super().__init__( writer )
         obj_formatacao = Formatacao( writer )
-        obj_formatacao.cor_fundo( 'light-gray' )
+        obj_formatacao.cor_fundo( 'cinza-claro-dnit' )
         obj_formatacao.negrito()
         obj_formatacao.linha_grade_inferior()
         obj_formatacao.linha_grade_superior()
@@ -256,8 +256,9 @@ class FormatacaoComposicaoCustoUnitarioDiretoTotal(Formatacao):
     def __init__( self, writer ) -> None:
         super().__init__( writer )
         obj_formatacao = Formatacao( writer )
+        obj_formatacao.tamanho_letra()
         obj_formatacao.negrito()
-        obj_formatacao.cor_fundo( 'dark-gray' )
+        obj_formatacao.cor_fundo('azul-claro-dnit')
         obj_formatacao.linha_grade_inferior()
         obj_formatacao.linha_grade_superior()
         self.formatado = obj_formatacao.aplicar_formatacao()
@@ -268,9 +269,9 @@ class FormatacaoComposicaoPrecoUnitarioTotal(Formatacao):
     def __init__( self, writer ) -> None:
         super().__init__( writer )
         obj_formatacao = Formatacao( writer )
-        obj_formatacao
+        obj_formatacao.tamanho_letra()
         obj_formatacao.negrito()
-        obj_formatacao.cor_fundo( 'light-blue' )
+        obj_formatacao.cor_fundo('amarelo-escuro-dnit')
         obj_formatacao.linha_grade_inferior()
         obj_formatacao.linha_grade_superior()
         self.formatado = obj_formatacao.aplicar_formatacao()
@@ -280,7 +281,7 @@ class FormatacaoComposicao:
 
     def __init__( self, writer ) -> None:
         self.writer = writer
-        self.nome_tabela = 'CCU'
+        self.nome_tabela = 'CCU - data base julho 2019'
         self.entrada_area_de_impressao = '$D${}:$N${}'
         self.obj_formato_composicao_principal = FormatacaoComposicaoCodigoPrincipal( writer )
         self.obj_formato_composicao_grupo = FormatacaoComposicaoGrupo( writer )
@@ -317,7 +318,7 @@ class FormatacaoCabecalho:
 
     def __init__( self, writer, composicao ) -> None:
         self.writer = writer
-        self.nome_tabela = 'CCU'
+        self.nome_tabela = 'CCU - data base julho 2019'
         self.obj_formato_codigo = FormatacaoCabecalhoComposicaoCodigo( self.writer, composicao )
         self.obj_formato_descricao = FormatacaoCabecalhoComposicaoDescricao( self.writer, composicao )
         self.obj_formato_produtividade = FormatacaoCabecalhoComposicaoProdutividade( self.writer, composicao )
@@ -329,4 +330,55 @@ class FormatacaoCabecalho:
                 self.obj_formato_produtividade,
                 self.obj_formato_unidade,
                 self.obj_formato_onerado,
+            ]
+
+
+class ObjetoCondicionalCustoHorarioTotal:
+
+    def __init__( self, writer, codigo ) -> None:
+        self.codigo = codigo.horario
+        formatacao_condicional = FormatacaoComposicaoCustoHorarioTotal( writer )
+        self.formatacao_condicional = formatacao_condicional.formatado
+
+
+class ObjetoCondicionalCustoUnitarioTotal:
+
+    def __init__( self, writer, codigo ) -> None:
+        self.codigo = codigo.unitario
+        formatacao_condicional = FormatacaoComposicaoCustoUnitarioTotal( writer )
+        self.formatacao_condicional = formatacao_condicional.formatado
+
+
+class ObjetoCondicionalCustoUnitarioDiretoTotal:
+
+    def __init__( self, writer, codigo ) -> None:
+        self.codigo = codigo.direto_total
+        formatacao_condicional = FormatacaoComposicaoCustoUnitarioDiretoTotal( writer )
+        self.formatacao_condicional = formatacao_condicional.formatado
+
+
+class ObjetoCondicionalPrecoUnitarioTotal:
+
+    def __init__( self, writer, codigo ) -> None:
+        self.codigo = codigo.preco_unitario
+        formatacao_condicional = FormatacaoComposicaoPrecoUnitarioTotal( writer )
+        self.formatacao_condicional = formatacao_condicional.formatado
+
+
+class FormatacaoComposicaoCondicional:
+
+    def __init__( self, writer, codigo, numero_linhas ) -> None:
+        self.writer = writer
+        self.numero_linhas = numero_linhas
+        self.nome_tabela = 'CCU - data base julho 2019'
+        self.entrada_area_formatacao = '$E$1:$N${}'.format( self.numero_linhas )
+        self.obj_formato_composicao_custo_horario_total = ObjetoCondicionalCustoHorarioTotal( writer, codigo )
+        self.obj_formato_composicao_custo_unitario_total = ObjetoCondicionalCustoUnitarioTotal( writer, codigo )
+        self.obj_formato_composicao_custo_unitario_direto_total = ObjetoCondicionalCustoUnitarioDiretoTotal( writer, codigo )
+        self.obj_formato_composicao_preco_unitario_total = ObjetoCondicionalPrecoUnitarioTotal( writer, codigo )
+        self.lista_entrada_formatacao = [ 
+                self.obj_formato_composicao_custo_horario_total,
+                self.obj_formato_composicao_custo_unitario_total,
+                self.obj_formato_composicao_custo_unitario_direto_total,
+                self.obj_formato_composicao_preco_unitario_total,
             ]

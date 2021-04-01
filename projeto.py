@@ -82,7 +82,7 @@ class BaseDF:
         return dfr_db.tratar_dfr( obj_col_ct_in.obter_lista() )
 
     def max_apr( self ) -> int:
-        quantidade_linhas_fixas = 21
+        quantidade_linhas_fixas = 20
         obj_col_db_ap = ListaColunaApropriacaoDB()
         return quantidade_linhas_fixas + self.dfr_apropriacao_in.groupby( obj_col_db_ap.composicao_principal ).size().max()
 
