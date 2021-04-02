@@ -29,6 +29,7 @@ from escrita_composicao import  (
                         FormatacaoComposicao,
                         FormatacaoCabecalho,
                         FormatacaoComposicaoCondicional,
+                        FormatacaoComposicaoCondicionalNaoMostrar,
                     )
 
 
@@ -103,7 +104,6 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
     obj_escrita = Escrita( obj_format, dfr_material_utilizacao.shape[0] )
     writer = obj_escrita.obter_escritor_configurado()
 
-
     for _df in dicionario.values():
         obj_configura_data_frame = ConfiguraDataFrame( _df.dfr_insumo, formato, linha_inicio)
         obj_formatacao_cabecalho = FormatacaoCabecalho( writer, _df.composicao )
@@ -115,23 +115,13 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
     obj_escrita = Escrita( formato, numero_linhas, numero_de_composicoes )
     writer = obj_escrita.obter_escritor_configurado()
 
-    obj_formatacao_condicional = FormatacaoComposicaoCondicional( writer, obj_codigo, numero_linhas )
     # formatando as linhas de custos horários e unitários
-    for criterio in obj_formatacao_condicional.lista_entrada_formatacao:     
-        token = 'INDEX($B${inicio}:$N${fim},ROW(),3)={token}'.format(inicio=1, fim=obj_formatacao_condicional.numero_linhas, token='"{}"'.format( criterio.codigo ) )
-        writer.sheets[ formato.nome_tabela ].conditional_format( obj_formatacao_condicional.entrada_area_formatacao, {'type':'formula','criteria': token,'format':criterio.formatacao_condicional} )
-
-    # formatação condicional código com ho, un e un_dt
-    # token = '$D${inicio}:$D${fim}'.format(inicio=1, fim=numero_linhas)
-    # condicoes = [ 
-    #             ( obj_codigo.horario, formato.nao_mostrar ),
-    #             ( obj_codigo.direto_total, formato.nao_mostrar ),
-    #             ( obj_codigo.execucao, formato.nao_mostrar ),
-    #             ( obj_codigo.unitario, formato.nao_mostrar ),
-    #             ( obj_codigo.preco_unitario, formato.nao_mostrar)
-    #         ]
-    # for con in condicoes:
-    #     writer.sheets[ formato.nome_tabela ].conditional_format( token, {'type':'text','criteria':'containing','value': con[0],'format':con[1]} )
-    
+    obj_formatacao_condicional = FormatacaoComposicaoCondicional( writer, obj_codigo, numero_linhas )
+    for item in obj_formatacao_condicional.lista_entrada_formatacao:
+        writer.sheets[ formato.nome_tabela ].conditional_format( obj_formatacao_condicional.entrada_area_formatacao, {'type':'formula','criteria': item.criterio,'format': item.formatacao_condicional} )
+    # formatando os códigos que não devem ser mostrados
+    obj_formatacao_condicional_n_mostrar = FormatacaoComposicaoCondicionalNaoMostrar( writer, obj_codigo, numero_linhas )
+    for item in obj_formatacao_condicional_n_mostrar.lista_entrada_formatacao:
+        writer.sheets[ formato.nome_tabela ].conditional_format( obj_formatacao_condicional_n_mostrar.entrada_area_formatacao, {'type':'text','criteria':'containing','value': item.codigo,'format': item.formatacao_condicional} )
 
     writer.save()

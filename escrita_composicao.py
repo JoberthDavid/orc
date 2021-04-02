@@ -239,6 +239,17 @@ class FormatacaoComposicaoCustoHorarioTotal(Formatacao):
         self.formatado = obj_formatacao.aplicar_formatacao()
 
 
+class FormatacaoComposicaoHorarioExecucao(Formatacao):
+
+    def __init__( self, writer ) -> None:
+        super().__init__( writer )
+        obj_formatacao = Formatacao( writer )
+        obj_formatacao.negrito()
+        obj_formatacao.linha_grade_inferior()
+        obj_formatacao.linha_grade_superior()
+        self.formatado = obj_formatacao.aplicar_formatacao()
+
+
 class FormatacaoComposicaoCustoUnitarioTotal(Formatacao):
 
     def __init__( self, writer ) -> None:
@@ -335,34 +346,45 @@ class FormatacaoCabecalho:
 
 class ObjetoCondicionalCustoHorarioTotal:
 
-    def __init__( self, writer, codigo ) -> None:
+    def __init__( self, writer, codigo, numero_linhas ) -> None:
         self.codigo = codigo.horario
         formatacao_condicional = FormatacaoComposicaoCustoHorarioTotal( writer )
         self.formatacao_condicional = formatacao_condicional.formatado
+        self.criterio = 'INDEX($B${inicio}:$N${fim},ROW(),3)={token}'.format( inicio=1, fim=numero_linhas, token='"{}"'.format( self.codigo ) )
+
+class ObjetoCondicionalCustoHorarioExecucao:
+
+    def __init__( self, writer, codigo, numero_linhas ) -> None:
+        self.codigo = codigo.execucao
+        formatacao_condicional = FormatacaoComposicaoHorarioExecucao( writer )
+        self.formatacao_condicional = formatacao_condicional.formatado
+        self.criterio = 'INDEX($B${inicio}:$N${fim},ROW(),3)={token}'.format( inicio=1, fim=numero_linhas, token='"{}"'.format( self.codigo ) )
 
 
 class ObjetoCondicionalCustoUnitarioTotal:
 
-    def __init__( self, writer, codigo ) -> None:
+    def __init__( self, writer, codigo, numero_linhas ) -> None:
         self.codigo = codigo.unitario
         formatacao_condicional = FormatacaoComposicaoCustoUnitarioTotal( writer )
         self.formatacao_condicional = formatacao_condicional.formatado
-
+        self.criterio = 'INDEX($B${inicio}:$N${fim},ROW(),3)={token}'.format( inicio=1, fim=numero_linhas, token='"{}"'.format( self.codigo ) )
 
 class ObjetoCondicionalCustoUnitarioDiretoTotal:
 
-    def __init__( self, writer, codigo ) -> None:
+    def __init__( self, writer, codigo, numero_linhas ) -> None:
         self.codigo = codigo.direto_total
         formatacao_condicional = FormatacaoComposicaoCustoUnitarioDiretoTotal( writer )
         self.formatacao_condicional = formatacao_condicional.formatado
+        self.criterio = 'INDEX($B${inicio}:$N${fim},ROW(),3)={token}'.format( inicio=1, fim=numero_linhas, token='"{}"'.format( self.codigo ) )
 
 
 class ObjetoCondicionalPrecoUnitarioTotal:
 
-    def __init__( self, writer, codigo ) -> None:
+    def __init__( self, writer, codigo, numero_linhas ) -> None:
         self.codigo = codigo.preco_unitario
         formatacao_condicional = FormatacaoComposicaoPrecoUnitarioTotal( writer )
         self.formatacao_condicional = formatacao_condicional.formatado
+        self.criterio = 'INDEX($B${inicio}:$N${fim},ROW(),3)={token}'.format( inicio=1, fim=numero_linhas, token='"{}"'.format( self.codigo ) )
 
 
 class FormatacaoComposicaoCondicional:
@@ -371,14 +393,67 @@ class FormatacaoComposicaoCondicional:
         self.writer = writer
         self.numero_linhas = numero_linhas
         self.nome_tabela = 'CCU - data base julho 2019'
-        self.entrada_area_formatacao = '$E$1:$N${}'.format( self.numero_linhas )
-        self.obj_formato_composicao_custo_horario_total = ObjetoCondicionalCustoHorarioTotal( writer, codigo )
-        self.obj_formato_composicao_custo_unitario_total = ObjetoCondicionalCustoUnitarioTotal( writer, codigo )
-        self.obj_formato_composicao_custo_unitario_direto_total = ObjetoCondicionalCustoUnitarioDiretoTotal( writer, codigo )
-        self.obj_formato_composicao_preco_unitario_total = ObjetoCondicionalPrecoUnitarioTotal( writer, codigo )
+        self.entrada_area_formatacao = '$E$1:$N${}'.format( numero_linhas )
+        self.obj_formato_composicao_custo_horario_total = ObjetoCondicionalCustoHorarioTotal( writer, codigo, numero_linhas )
+        self.obj_formato_composicao_custo_horario_execucao = ObjetoCondicionalCustoHorarioExecucao( writer, codigo, numero_linhas )
+        self.obj_formato_composicao_custo_unitario_total = ObjetoCondicionalCustoUnitarioTotal( writer, codigo, numero_linhas )
+        self.obj_formato_composicao_custo_unitario_direto_total = ObjetoCondicionalCustoUnitarioDiretoTotal( writer, codigo, numero_linhas )
+        self.obj_formato_composicao_preco_unitario_total = ObjetoCondicionalPrecoUnitarioTotal( writer, codigo, numero_linhas )
         self.lista_entrada_formatacao = [ 
                 self.obj_formato_composicao_custo_horario_total,
+                self.obj_formato_composicao_custo_horario_execucao,
                 self.obj_formato_composicao_custo_unitario_total,
                 self.obj_formato_composicao_custo_unitario_direto_total,
                 self.obj_formato_composicao_preco_unitario_total,
+            ]
+
+class ObjetoCondicionalNaoMostrarCustoHorarioTotal:
+
+    def __init__( self, writer, codigo ) -> None:
+        self.codigo = codigo.horario
+        formatacao_condicional = FormatacaoComposicaoNaoMostrar( writer )
+        self.formatacao_condicional = formatacao_condicional.formatado
+
+
+class ObjetoCondicionalNaoMostrarCustoUnitarioTotal:
+
+    def __init__( self, writer, codigo ) -> None:
+        self.codigo = codigo.unitario
+        formatacao_condicional = FormatacaoComposicaoNaoMostrar( writer )
+        self.formatacao_condicional = formatacao_condicional.formatado
+
+
+class ObjetoCondicionalNaoMostrarCustoUnitarioDiretoTotal:
+
+    def __init__( self, writer, codigo ) -> None:
+        self.codigo = codigo.direto_total
+        formatacao_condicional = FormatacaoComposicaoNaoMostrar( writer )
+        self.formatacao_condicional = formatacao_condicional.formatado
+
+
+class ObjetoCondicionalNaoMostrarPrecoUnitarioTotal:
+
+    def __init__( self, writer, codigo ) -> None:
+        self.codigo = codigo.preco_unitario
+        formatacao_condicional = FormatacaoComposicaoNaoMostrar( writer )
+        self.formatacao_condicional = formatacao_condicional.formatado
+        
+
+class FormatacaoComposicaoCondicionalNaoMostrar:
+
+    def __init__( self, writer, codigo, numero_linhas ) -> None:
+        self.writer = writer
+        self.numero_linhas = numero_linhas
+        self.nome_tabela = 'CCU - data base julho 2019'
+        # self.criterio = 'INDEX($B${inicio}:$N${fim},ROW(),3)={token}'.format( inicio=1, fim=numero_linhas, token='"{}"'.format( codigo ) )
+        self.entrada_area_formatacao = '$D$1:$D${}'.format( numero_linhas )
+        self.obj_formato_composicao_n_mostrar_custo_horario_total = ObjetoCondicionalNaoMostrarCustoHorarioTotal( writer, codigo )
+        self.obj_formato_composicao_n_mostrar_custo_unitario_total = ObjetoCondicionalNaoMostrarCustoUnitarioTotal( writer, codigo )
+        self.obj_formato_composicao_n_mostrar_custo_unitario_direto_total = ObjetoCondicionalNaoMostrarCustoUnitarioDiretoTotal( writer, codigo )
+        self.obj_formato_composicao_n_mostrar_preco_unitario_total = ObjetoCondicionalNaoMostrarPrecoUnitarioTotal( writer, codigo )
+        self.lista_entrada_formatacao = [ 
+                self.obj_formato_composicao_n_mostrar_custo_horario_total,
+                self.obj_formato_composicao_n_mostrar_custo_unitario_total,
+                self.obj_formato_composicao_n_mostrar_custo_unitario_direto_total,
+                self.obj_formato_composicao_n_mostrar_preco_unitario_total,
             ]
