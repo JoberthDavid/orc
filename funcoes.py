@@ -38,7 +38,6 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
     dicionario = projeto.obter_dfr_composicao()
     numero_de_composicoes = len( dicionario )
     numero_linhas = numero_de_composicoes * maximo_linhas_na_composicao
-    # area_formatacao_condicional = '$D${}:$N${}'.format(1, numero_de_composicoes * maximo_linhas_na_composicao )
 
     # contador para as linhas das composições
     linha_inicio = 1
