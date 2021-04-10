@@ -249,7 +249,8 @@ class Escrita:
 
     def configurar_rodape( self ):
         agora = Data()
-        conteudo_rodape = '&C&"Open sans"&11&K003770{}'.format( agora.data_completa )
+        data_base = '10-2020'
+        conteudo_rodape = '&C&"Open sans"&11&K003770data base {}\n{}'.format( data_base, agora.data_completa )
         self.writer.sheets[ self.nome_tabela ].set_footer( conteudo_rodape, {'scale_with_doc': False})
 
     def obter_escritor_configurado( self ):
@@ -328,8 +329,9 @@ class ListaColuna:
 
     def __init__( self ) -> None:
         self.codigo = 'Código'
-        self.composicao_principal = 'Composicao_principal'
-        self.grupo = 'Grupo_x'
+        self.composicao_principal = 'Composição'
+        self.servico_orcamento = 'Serviço orçamento'
+        self.grupo = 'Grupo'
         self.descricao = 'Descrição'
         self.item_transporte = 'Item transportado'
         self.preco_unitario = 'Preço unitário'
@@ -341,7 +343,7 @@ class ListaColuna:
         self.estado = 'Estado'
         self.fic = 'FIC'
         self.produtividade = 'Produtividade'
-        self.publicacao = 'Publicacao'
+        self.publicacao = 'Publicação'
         self.tipo = 'Tipo'
         self.origem = 'Origem'
         self.custo_imp_desonerado = 'Custo improdutivo desonerado'
@@ -350,6 +352,21 @@ class ListaColuna:
         self.custo_pro_desonerado = 'Custo produtivo desonerado'
         self.custo_pro_onerado = 'Custo produtivo onerado'
         self.custo_produtivo = 'Custo produtivo'
+
+
+    def configurar_custo_produtivo( self, onerado: bool ) -> str:
+        if onerado:
+            situacao = self.custo_pro_onerado
+        else:
+            situacao = self.custo_pro_desonerado
+        return situacao
+
+    def configurar_custo_improdutivo( self, onerado: bool ) -> str:
+        if onerado:
+            situacao = self.custo_imp_onerado
+        else:
+            situacao = self.custo_imp_desonerado
+        return situacao
 
 
 class ListaColunaOrigemCP(ListaColuna):
@@ -435,7 +452,8 @@ class ListaColunaComposicaoDF(ListaColuna):
     def obter_lista( self ) -> list:
         return [ 
                     self.composicao_principal,
-                    self.grupo, self.codigo,
+                    self.grupo,
+                    self.codigo,
                     self.descricao,
                     self.item_transporte,
                     self.dmt,
@@ -446,18 +464,4 @@ class ListaColunaComposicaoDF(ListaColuna):
                     self.custo_improdutivo,
                     self.preco_unitario,
                     self.custo_total
-                ]
-
-    def configurar_custo_produtivo( self, onerado: bool ) -> str:
-        if onerado:
-            situacao = self.custo_pro_onerado
-        else:
-            situacao = self.custo_pro_desonerado
-        return situacao
-
-    def configurar_custo_improdutivo( self, onerado: bool ) -> str:
-        if onerado:
-            situacao = self.custo_imp_onerado
-        else:
-            situacao = self.custo_imp_desonerado
-        return situacao
+                ]       

@@ -151,7 +151,7 @@ class FormatacaoResumoCustoTotalDesdobrado(Formatacao):
 
 class FormatacaoEscrita:
 
-    def __init__( self, writer ):
+    def __init__( self, writer, data_base ) -> None:
         self.writer = writer
         self.obj_formatacao_id = FormatacaoResumoID( writer )
         self.obj_formatacao_grupo = FormatacaoResumoGrupo( writer )
@@ -172,8 +172,8 @@ class FormatacaoEscrita:
 
 class FormatacaoEscritaCustoEquipamento(FormatacaoEscrita):
 
-    def __init__( self, writer ):
-        super().__init__( writer )
+    def __init__( self, writer, data_base ) -> None:
+        super().__init__( writer, data_base )
         self.nome_tabela = 'CUSTO EQUIPAMENTO'
         self.entrada_area_de_impressao = '$A${}:$J${}'
         self.obj_formatacao_grupo.coluna = 'B:B'
@@ -201,8 +201,8 @@ class FormatacaoEscritaCustoEquipamento(FormatacaoEscrita):
 
 class FormatacaoEscritaCustoMaoDeObra(FormatacaoEscrita):
 
-    def __init__( self, writer ):
-        super().__init__( writer )
+    def __init__( self, writer, data_base ) -> None:
+        super().__init__( writer, data_base )
         self.nome_tabela = 'CUSTO MÃO DE OBRA'
         self.entrada_area_de_impressao = '$A${}:$I${}'
         self.obj_formatacao_grupo.coluna = 'B:B'
@@ -229,8 +229,8 @@ class FormatacaoEscritaCustoMaoDeObra(FormatacaoEscrita):
 
 class FormatacaoEscritaCustoMaterial(FormatacaoEscrita):
 
-    def __init__( self, writer ):
-        super().__init__( writer )
+    def __init__( self, writer, data_base ) -> None:
+        super().__init__( writer, data_base )
         self.nome_tabela = 'CUSTO MATERIAL'
         self.entrada_area_de_impressao = '$A${}:$I${}'
         self.obj_formatacao_grupo.coluna = 'B:B'
@@ -257,8 +257,8 @@ class FormatacaoEscritaCustoMaterial(FormatacaoEscrita):
 
 class FormatacaoEscritaResumoTransporte(FormatacaoEscrita):
 
-    def __init__( self, writer ):
-        super().__init__( writer )
+    def __init__( self, writer, data_base ) -> None:
+        super().__init__( writer, data_base )
         self.nome_tabela = 'UTILIZAÇÃO TRANSPORTE'
         self.entrada_area_de_impressao = '$A${}:$H${}'
         self.obj_formatacao_servico.coluna = 'B:B'
@@ -282,8 +282,8 @@ class FormatacaoEscritaResumoTransporte(FormatacaoEscrita):
 
 class FormatacaoEscritaResumoEquipamento(FormatacaoEscrita):
 
-    def __init__( self, writer ):
-        super().__init__( writer )
+    def __init__( self, writer, data_base ) -> None:
+        super().__init__( writer, data_base )
         self.nome_tabela = 'UTILIZAÇÃO EQUIPAMENTO'
         self.entrada_area_de_impressao = '$A${}:$J${}'
         self.obj_formatacao_servico.coluna = 'B:B'
@@ -309,8 +309,8 @@ class FormatacaoEscritaResumoEquipamento(FormatacaoEscrita):
 
 class FormatacaoEscritaResumoMaoDeObra(FormatacaoEscrita):
 
-    def __init__( self, writer ):
-        super().__init__( writer )
+    def __init__( self, writer, data_base ) -> None:
+        super().__init__( writer, data_base )
         self.nome_tabela = 'UTILIZAÇÃO MÃO DE OBRA'
         self.entrada_area_de_impressao = '$A${}:$G${}'
         self.obj_formatacao_servico.coluna = 'B:B'
@@ -333,8 +333,8 @@ class FormatacaoEscritaResumoMaoDeObra(FormatacaoEscrita):
 
 class FormatacaoEscritaResumoMaterial(FormatacaoEscrita):
 
-    def __init__( self, writer ):
-        super().__init__( writer )
+    def __init__( self, writer, data_base ) -> None:
+        super().__init__( writer, data_base )
         self.nome_tabela = 'UTILIZAÇÃO MATERIAL'
         self.entrada_area_de_impressao = '$A${}:$G${}'
         self.obj_formatacao_servico.coluna = 'B:B'
@@ -357,8 +357,8 @@ class FormatacaoEscritaResumoMaterial(FormatacaoEscrita):
 
 class FormatacaoEscritaResumoServico(FormatacaoEscrita):
 
-    def __init__( self, writer ):
-        super().__init__( writer )
+    def __init__( self, writer, data_base ) -> None:
+        super().__init__( writer, data_base )
         self.nome_tabela = 'RESUMO ORÇAMENTO'
         self.entrada_area_de_impressao = '$A${}:$G${}'
         self.obj_formatacao_servico.coluna = 'B:B'

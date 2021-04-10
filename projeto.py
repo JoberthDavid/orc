@@ -399,13 +399,13 @@ class ComposicaoDF:
         return auxiliar[ self.obj_col_cp.produtividade ].values[0]
 
     def associar_dfr_dados_basicos_apropriacoes_insumos( self ) -> pd.core.frame.DataFrame:
-        return pd.merge( self.obter_dfr_apropriacoes_insumos(), self.base.dfr_dados_in, on=self.obj_col_dfr.codigo, how='left' )
+        return pd.merge( self.obter_dfr_apropriacoes_insumos(), self.base.dfr_dados_in, on=self.obj_col_dfr.codigo, how='left', suffixes=[None,'_y'] )
 
     def inserir_col_dmt( self ) -> None:
         self.dfr_insumo[ self.obj_col_dfr.dmt ] = ''
 
     def associar_dfr_custos_apropriacoes_insumos( self ) -> pd.core.frame.DataFrame:
-        return pd.merge( self.associar_dfr_dados_basicos_apropriacoes_insumos(), self.dfr_custo_in, on=self.obj_col_dfr.codigo, how='left')
+        return pd.merge( self.associar_dfr_dados_basicos_apropriacoes_insumos(), self.dfr_custo_in, on=self.obj_col_dfr.codigo, how='left', suffixes=[None,'_y'] )
 
     def calcular_sre_custo_equipamento( self ) -> pd.core.series.Series:
         quantidade = self.dfr_insumo[ self.obj_col_dfr.quantidade ]
@@ -684,9 +684,9 @@ class ComposicaoDF:
 
     def obter_lis_tr( self ):
         dfr_aa = self.obter_lis_aa( self.composicao.codigo )
-        lista_aa = dfr_aa[ ['Composicao_principal','Código','Quantidade'] ].to_dict( orient='records' )
+        lista_aa = dfr_aa[ ['Composição','Código','Quantidade'] ].to_dict( orient='records' )
         # for item in lista_aa:
-            # print( str( item['Composicao_principal'] ) + ' ; ' + str( item['Código'] ) + ' ; ' + str( item['Quantidade'] ) )
+            # print( str( item['Composição'] ) + ' ; ' + str( item['Código'] ) + ' ; ' + str( item['Quantidade'] ) )
 
 
 class Servico:
@@ -791,46 +791,46 @@ class Projeto:
     
     def obter_dfr_equipamento( self ) -> pd.core.frame.DataFrame:
         dfr_equipamento = pd.DataFrame( {self.obj_col_dfr.codigo: self.custo_equipamento_projeto} )
-        dfr_equipamento = pd.merge( dfr_equipamento, self.baseDF.dfr_dados_in, on=self.obj_col_dfr.codigo, how='left' )
-        dfr_equipamento = pd.merge( dfr_equipamento, self.baseDF.dfr_custo_in, on=self.obj_col_dfr.codigo, how='left' )
+        dfr_equipamento = pd.merge( dfr_equipamento, self.baseDF.dfr_dados_in, on=self.obj_col_dfr.codigo, how='left', suffixes=[None,'_y'] )
+        dfr_equipamento = pd.merge( dfr_equipamento, self.baseDF.dfr_custo_in, on=self.obj_col_dfr.codigo, how='left', suffixes=[None,'_y'] )
         lista_colunas_eq = [
-                            'Grupo',
-                            'Origem_x',
-                            'Estado_x',
-                            'Publicacao_x',
+                            self.obj_col_dfr.grupo,
+                            self.obj_col_dfr.origem,
+                            self.obj_col_dfr.estado,
+                            self.obj_col_dfr.publicacao,
                             self.obj_col_dfr.codigo,
                             self.obj_col_dfr.descricao,
                             self.obj_col_dfr.unidade,
-                            'Custo produtivo desonerado',
-                            'Custo improdutivo desonerado'
+                            self.obj_col_dfr.custo_produtivo,
+                            self.obj_col_dfr.custo_improdutivo,
                             ]
         return dfr_equipamento[ lista_colunas_eq ]
     
     def obter_dfr_mao_de_obra( self ) -> pd.core.frame.DataFrame:
         dfr_mao_de_obra = pd.DataFrame( {self.obj_col_dfr.codigo: self.custo_mao_de_obra_projeto} )
-        dfr_mao_de_obra = pd.merge( dfr_mao_de_obra, self.baseDF.dfr_dados_in, on=self.obj_col_dfr.codigo, how='left' )
-        dfr_mao_de_obra = pd.merge( dfr_mao_de_obra, self.baseDF.dfr_custo_in, on=self.obj_col_dfr.codigo, how='left' )
+        dfr_mao_de_obra = pd.merge( dfr_mao_de_obra, self.baseDF.dfr_dados_in, on=self.obj_col_dfr.codigo, how='left', suffixes=[None,'_y'] )
+        dfr_mao_de_obra = pd.merge( dfr_mao_de_obra, self.baseDF.dfr_custo_in, on=self.obj_col_dfr.codigo, how='left', suffixes=[None,'_y'] )
         lista_colunas_mo = [
-                            'Grupo',
-                            'Origem_x',
-                            'Estado_x',
-                            'Publicacao_x',
+                            self.obj_col_dfr.grupo,
+                            self.obj_col_dfr.origem,
+                            self.obj_col_dfr.estado,
+                            self.obj_col_dfr.publicacao,
                             self.obj_col_dfr.codigo,
                             self.obj_col_dfr.descricao,
                             self.obj_col_dfr.unidade,
-                            'Custo produtivo desonerado'
-                            ]
+                            self.obj_col_dfr.custo_produtivo
+                            ]#'Custo produtivo desonerado'
         return dfr_mao_de_obra[ lista_colunas_mo ]
     
     def obter_dfr_material( self ) -> pd.core.frame.DataFrame:
         dfr_material = pd.DataFrame( {self.obj_col_dfr.codigo: self.custo_material_projeto} )
-        dfr_material = pd.merge( dfr_material, self.baseDF.dfr_dados_in, on=self.obj_col_dfr.codigo, how='left' )
-        dfr_material = pd.merge( dfr_material, self.baseDF.dfr_custo_in, on=self.obj_col_dfr.codigo, how='left' )
+        dfr_material = pd.merge( dfr_material, self.baseDF.dfr_dados_in, on=self.obj_col_dfr.codigo, how='left', suffixes=[None,'_y'] )
+        dfr_material = pd.merge( dfr_material, self.baseDF.dfr_custo_in, on=self.obj_col_dfr.codigo, how='left', suffixes=[None,'_y'] )
         lista_colunas_ma = [
-                            'Grupo',
-                            'Origem_x',
-                            'Estado_x',
-                            'Publicacao_x',
+                            self.obj_col_dfr.grupo,
+                            self.obj_col_dfr.origem,
+                            self.obj_col_dfr.estado,
+                            self.obj_col_dfr.publicacao,
                             self.obj_col_dfr.codigo,
                             self.obj_col_dfr.descricao,
                             self.obj_col_dfr.unidade,
@@ -860,9 +860,9 @@ class Projeto:
 
     def obter_dfr_transportes_servicos( self ) -> pd.core.frame.DataFrame:
         dfr_transportes = pd.DataFrame( self.transportes_projeto )
-        dfr_transportes = pd.merge( dfr_transportes, self.baseDF.dfr_dados_in, on=self.obj_col_dfr.codigo, how='left' )
+        dfr_transportes = pd.merge( dfr_transportes, self.baseDF.dfr_dados_in, on=self.obj_col_dfr.codigo, how='left', suffixes=[None,'_y'] )
         lista_colunas_tr = [ 
-                            "Serviço orçamento",
+                            self.obj_col_dfr.servico_orcamento,
                             self.obj_col_dfr.composicao_principal,
                             self.obj_col_dfr.codigo,
                             'Descrição',
@@ -898,14 +898,14 @@ class Projeto:
         dicionario_transportes[ self.obj_col_dfr.item_transporte ] = lista_item_transportado
         dicionario_transportes[ self.obj_col_dfr.codigo ] = lista_transporte
         dicionario_transportes[ self.obj_col_dfr.composicao_principal ] = lista_composicao_principal
-        dicionario_transportes[ "Serviço orçamento" ] = lista_servico
+        dicionario_transportes[ self.obj_col_dfr.servico_orcamento ] = lista_servico
 
         return dicionario_transportes
     
     def obter_lista_equipamentos_composicao( self, codigo: str ) -> list:
         consulta = self.baseDF.dfr_apropriacao_in.query( "{} == '{}' & Grupo == {}".format( self.obj_col_dfr.composicao_principal, codigo, self.obj_grupo.insumo_equipamento ) )
-        consulta = pd.merge( consulta, self.baseDF.dfr_dados_in, on=self.obj_col_dfr.codigo, how='left' )
-        consulta = pd.merge( consulta, self.baseDF.dfr_custo_in, on=self.obj_col_dfr.codigo, how='left' )
+        consulta = pd.merge( consulta, self.baseDF.dfr_dados_in, on=self.obj_col_dfr.codigo, how='left', suffixes=[None,'_y'] )
+        consulta = pd.merge( consulta, self.baseDF.dfr_custo_in, on=self.obj_col_dfr.codigo, how='left', suffixes=[None,'_y'] )
         consulta = consulta[ [
                                 self.obj_col_dfr.composicao_principal,
                                 self.obj_col_dfr.codigo,
@@ -920,7 +920,7 @@ class Projeto:
     def obter_dfr_equipamentos_servicos( self ) -> pd.core.frame.DataFrame:
         dfr_equipamentos = pd.DataFrame( self.equipamento_projeto )
         lista_colunas_eq = [ 
-                            "Serviço orçamento",
+                            self.obj_col_dfr.servico_orcamento,
                             self.obj_col_dfr.composicao_principal,
                             self.obj_col_dfr.codigo,
                             self.obj_col_in.descricao,
@@ -974,7 +974,7 @@ class Projeto:
         dicionario_equipamentos[ "Quantidade produtiva" ] = lista_quantidade_produtiva
         dicionario_equipamentos[ self.obj_col_dfr.codigo ] = lista_equipamento
         dicionario_equipamentos[ self.obj_col_dfr.composicao_principal ] = lista_composicao_principal
-        dicionario_equipamentos[ "Serviço orçamento" ] = lista_servico
+        dicionario_equipamentos[ self.obj_col_dfr.servico_orcamento ] = lista_servico
         dicionario_equipamentos[ self.obj_col_in.descricao ] = lista_descricao
         dicionario_equipamentos[ self.obj_col_dfr.custo_produtivo ] = lista_preco_produtivo
         dicionario_equipamentos[ self.obj_col_dfr.custo_improdutivo ] = lista_preco_improdutivo
@@ -984,8 +984,8 @@ class Projeto:
 
     def obter_lista_mao_de_obra_composicao( self, codigo: str ) -> list:
         consulta = self.baseDF.dfr_apropriacao_in.query( "{} == '{}' & Grupo == {}".format( self.obj_col_dfr.composicao_principal, codigo, self.obj_grupo.insumo_mao_de_obra) )
-        consulta = pd.merge( consulta, self.baseDF.dfr_dados_in, on=self.obj_col_dfr.codigo, how='left' )
-        consulta = pd.merge( consulta, self.baseDF.dfr_custo_in, on=self.obj_col_dfr.codigo, how='left' )
+        consulta = pd.merge( consulta, self.baseDF.dfr_dados_in, on=self.obj_col_dfr.codigo, how='left', suffixes=[None,'_y'] )
+        consulta = pd.merge( consulta, self.baseDF.dfr_custo_in, on=self.obj_col_dfr.codigo, how='left', suffixes=[None,'_y'] )
         consulta = consulta[ [
                                 self.obj_col_dfr.composicao_principal,
                                 self.obj_col_dfr.codigo,
@@ -999,7 +999,7 @@ class Projeto:
     def obter_dfr_mao_de_obra_servicos( self ) -> pd.core.frame.DataFrame:
         dfr_mao_de_obra = pd.DataFrame( self.mao_de_obra_projeto )
         lista_colunas_mo = [
-                            "Serviço orçamento",
+                            self.obj_col_dfr.servico_orcamento,
                             self.obj_col_dfr.composicao_principal,
                             self.obj_col_dfr.codigo,
                             self.obj_col_in.descricao,
@@ -1040,7 +1040,7 @@ class Projeto:
         dicionario_mao_de_obra[ self.obj_col_dfr.quantidade ] = lista_quantidade
         dicionario_mao_de_obra[ self.obj_col_dfr.codigo ] = lista_mao_de_obra
         dicionario_mao_de_obra[ self.obj_col_dfr.composicao_principal ] = lista_composicao_principal
-        dicionario_mao_de_obra[ "Serviço orçamento" ] = lista_servico
+        dicionario_mao_de_obra[ self.obj_col_dfr.servico_orcamento ] = lista_servico
         dicionario_mao_de_obra[ self.obj_col_in.descricao ] = lista_descricao
         dicionario_mao_de_obra[ self.obj_col_dfr.custo_total ] = lista_preco
 
@@ -1048,8 +1048,8 @@ class Projeto:
 
     def obter_lista_materiais_composicao( self, codigo: str ) -> list:
         consulta = self.baseDF.dfr_apropriacao_in.query( "{} == '{}' & Grupo == {}".format( self.obj_col_dfr.composicao_principal, codigo, self.obj_grupo.insumo_material ) )
-        consulta = pd.merge( consulta, self.baseDF.dfr_dados_in, on=self.obj_col_dfr.codigo, how='left' )
-        consulta = pd.merge( consulta, self.baseDF.dfr_custo_in, on=self.obj_col_dfr.codigo, how='left' )
+        consulta = pd.merge( consulta, self.baseDF.dfr_dados_in, on=self.obj_col_dfr.codigo, how='left', suffixes=[None,'_y'] )
+        consulta = pd.merge( consulta, self.baseDF.dfr_custo_in, on=self.obj_col_dfr.codigo, how='left', suffixes=[None,'_y'] )
         consulta = consulta[ [
                             self.obj_col_dfr.composicao_principal,
                             self.obj_col_dfr.codigo,
@@ -1063,7 +1063,7 @@ class Projeto:
     def obter_dfr_materiais_servicos( self ) -> pd.core.frame.DataFrame:
         dfr_materiais = pd.DataFrame( self.material_projeto )
         lista_colunas_ma = [ 
-                            "Serviço orçamento",
+                            self.obj_col_dfr.servico_orcamento,
                             self.obj_col_dfr.composicao_principal,
                             self.obj_col_dfr.codigo,
                             self.obj_col_in.descricao,
@@ -1100,7 +1100,7 @@ class Projeto:
         dicionario_materiais[ self.obj_col_dfr.quantidade ] = lista_quantidade
         dicionario_materiais[ self.obj_col_dfr.codigo ] = lista_material
         dicionario_materiais[ self.obj_col_dfr.composicao_principal ] = lista_composicao_principal
-        dicionario_materiais[ "Serviço orçamento" ] = lista_servico
+        dicionario_materiais[ self.obj_col_dfr.servico_orcamento ] = lista_servico
         dicionario_materiais[ self.obj_col_in.descricao ] = lista_descricao
         dicionario_materiais[ self.obj_col_dfr.custo_total ] = lista_preco
 
@@ -1110,7 +1110,7 @@ class Projeto:
     def obter_dfr_servicos_projeto( self ) -> pd.core.frame.DataFrame:
         dfr_servicos = pd.DataFrame( self.obter_servicos_projeto() )
         lista_colunas_se = [
-                            "Serviço",
+                            self.obj_col_dfr.servico_orcamento,
                             self.obj_col_in.descricao,
                             self.obj_col_in.unidade,
                             self.obj_col_dfr.quantidade,
@@ -1142,7 +1142,7 @@ class Projeto:
             ct = obj_precisao.monetario( pu * quantidade )
             lista_preco_total.append( ct )
     
-        dicionario_servicos[ "Serviço" ] = lista_codigo
+        dicionario_servicos[ self.obj_col_dfr.servico_orcamento] = lista_codigo
         dicionario_servicos[ self.obj_col_dfr.quantidade ] = lista_quantidade
         dicionario_servicos[ self.obj_col_in.descricao ] = lista_descricao
         dicionario_servicos[ self.obj_col_dfr.unidade ] = lista_unidade

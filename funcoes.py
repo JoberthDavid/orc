@@ -48,56 +48,56 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
     formato = FormatacaoComposicao( writer, data_base )
 
     ##### escreve resumo de serviços do projeto
-    obj_format = FormatacaoEscritaResumoServico( writer )
+    obj_format = FormatacaoEscritaResumoServico( writer, data_base )
     obj_configura_data_frame = ConfiguraDataFrame( projeto.obter_dfr_servicos_projeto(), obj_format)
     dfr_servico_resumo = obj_configura_data_frame.obter_data_frame_configurado()    
     obj_escrita = Escrita( obj_format, dfr_servico_resumo.shape[0] )
     writer = obj_escrita.obter_escritor_configurado()
 
     ##### escreve custos de equipamentos das composições
-    obj_format = FormatacaoEscritaCustoEquipamento( writer )
+    obj_format = FormatacaoEscritaCustoEquipamento( writer, data_base )
     obj_configura_data_frame = ConfiguraDataFrame( projeto.obter_dfr_equipamento(), obj_format)
     dfr_equipamento_custo = obj_configura_data_frame.obter_data_frame_configurado()
     obj_escrita = Escrita( obj_format, dfr_equipamento_custo.shape[0] )
     writer = obj_escrita.obter_escritor_configurado()
 
     ##### escreve custos de mão de obra das composições
-    obj_format = FormatacaoEscritaCustoMaoDeObra( writer )
+    obj_format = FormatacaoEscritaCustoMaoDeObra( writer, data_base )
     obj_configura_data_frame = ConfiguraDataFrame( projeto.obter_dfr_mao_de_obra(), obj_format)
     dfr_mao_de_obra_custo = obj_configura_data_frame.obter_data_frame_configurado()    
     obj_escrita = Escrita( obj_format, dfr_mao_de_obra_custo.shape[0] )
     writer = obj_escrita.obter_escritor_configurado()
 
     ##### escreve custos de materiais das composições
-    obj_format = FormatacaoEscritaCustoMaterial( writer )
+    obj_format = FormatacaoEscritaCustoMaterial( writer, data_base )
     obj_configura_data_frame = ConfiguraDataFrame( projeto.obter_dfr_material(), obj_format)
     dfr_material_custo = obj_configura_data_frame.obter_data_frame_configurado()    
     obj_escrita = Escrita( obj_format, dfr_material_custo.shape[0] )
     writer = obj_escrita.obter_escritor_configurado()
 
     ##### escreve utilizações de transportes das composições
-    obj_format = FormatacaoEscritaResumoTransporte( writer )
+    obj_format = FormatacaoEscritaResumoTransporte( writer, data_base )
     obj_configura_data_frame = ConfiguraDataFrame( projeto.obter_dfr_transportes_servicos(), obj_format)
     dfr_transporte_utilizacao = obj_configura_data_frame.obter_data_frame_configurado()    
     obj_escrita = Escrita( obj_format, dfr_transporte_utilizacao.shape[0] )
     writer = obj_escrita.obter_escritor_configurado()
 
     ##### escreve utilizações de equipamentos das composições
-    obj_format = FormatacaoEscritaResumoEquipamento( writer )
+    obj_format = FormatacaoEscritaResumoEquipamento( writer, data_base )
     obj_configura_data_frame = ConfiguraDataFrame( projeto.obter_dfr_equipamentos_servicos(), obj_format)
     dfr_equipamento_utilizacao = obj_configura_data_frame.obter_data_frame_configurado()    
     obj_escrita = Escrita( obj_format, dfr_equipamento_utilizacao.shape[0] )
     writer = obj_escrita.obter_escritor_configurado()
 
     ##### escreve utilizações de mão de obra das composições
-    obj_format = FormatacaoEscritaResumoMaoDeObra( writer )
+    obj_format = FormatacaoEscritaResumoMaoDeObra( writer, data_base )
     obj_configura_data_frame = ConfiguraDataFrame( projeto.obter_dfr_mao_de_obra_servicos(), obj_format)
     dfr_mao_de_obra_utilizacao = obj_configura_data_frame.obter_data_frame_configurado()    
     obj_escrita = Escrita( obj_format, dfr_mao_de_obra_utilizacao.shape[0] )
     writer = obj_escrita.obter_escritor_configurado()
 
     ##### escreve utilizações de materiais das composições
-    obj_format = FormatacaoEscritaResumoMaterial( writer )
+    obj_format = FormatacaoEscritaResumoMaterial( writer, data_base )
     obj_configura_data_frame = ConfiguraDataFrame( projeto.obter_dfr_materiais_servicos(), obj_format)
     dfr_material_utilizacao = obj_configura_data_frame.obter_data_frame_configurado()    
     obj_escrita = Escrita( obj_format, dfr_material_utilizacao.shape[0] )
