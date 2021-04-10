@@ -685,8 +685,8 @@ class ComposicaoDF:
     def obter_lis_tr( self ):
         dfr_aa = self.obter_lis_aa( self.composicao.codigo )
         lista_aa = dfr_aa[ ['Composicao_principal','Código','Quantidade'] ].to_dict( orient='records' )
-        for item in lista_aa:
-            print( str( item['Composicao_principal'] ) + ' ; ' + str( item['Código'] ) + ' ; ' + str( item['Quantidade'] ) )
+        # for item in lista_aa:
+            # print( str( item['Composicao_principal'] ) + ' ; ' + str( item['Código'] ) + ' ; ' + str( item['Quantidade'] ) )
 
 
 class Servico:
@@ -1149,7 +1149,7 @@ class Projeto:
         dicionario_servicos[ self.obj_col_dfr.preco_unitario ] = lista_preco_unitario        
         dicionario_servicos[ self.obj_col_dfr.custo_total ] = lista_preco_total
     
-        print(dicionario_servicos)
+        # print(dicionario_servicos)
         
         return dicionario_servicos
             

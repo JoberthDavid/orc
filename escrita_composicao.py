@@ -284,9 +284,9 @@ class FormatacaoComposicaoPrecoUnitarioTotal(Formatacao):
 
 class FormatacaoComposicao:
 
-    def __init__( self, writer ) -> None:
+    def __init__( self, writer, data_base ) -> None:
         self.writer = writer
-        self.nome_tabela = 'CCU - data base julho 2019'
+        self.nome_tabela = 'CCU data base {}'.format( data_base )
         self.entrada_area_de_impressao = '$D${}:$N${}'
         self.obj_formato_composicao_principal = FormatacaoComposicaoCodigoPrincipal( writer )
         self.obj_formato_composicao_grupo = FormatacaoComposicaoGrupo( writer )
@@ -321,9 +321,9 @@ class FormatacaoComposicao:
 
 class FormatacaoCabecalho:
 
-    def __init__( self, writer, composicao ) -> None:
+    def __init__( self, writer, composicao, nome_tabela ) -> None:
         self.writer = writer
-        self.nome_tabela = 'CCU - data base julho 2019'
+        self.nome_tabela = nome_tabela
         self.obj_formato_codigo = FormatacaoCabecalhoComposicaoCodigo( self.writer, composicao )
         self.obj_formato_descricao = FormatacaoCabecalhoComposicaoDescricao( self.writer, composicao )
         self.obj_formato_produtividade = FormatacaoCabecalhoComposicaoProdutividade( self.writer, composicao )
@@ -383,10 +383,10 @@ class ObjetoCondicionalPrecoUnitarioTotal:
 
 class FormatacaoComposicaoCondicional:
 
-    def __init__( self, writer, codigo, numero_linhas ) -> None:
+    def __init__( self, writer, codigo, numero_linhas, nome_tabela ) -> None:
         self.writer = writer
         self.numero_linhas = numero_linhas
-        self.nome_tabela = 'CCU - data base julho 2019'
+        self.nome_tabela = nome_tabela
         self.entrada_area_formatacao = '$E$1:$N${}'.format( numero_linhas )
         self.obj_formato_composicao_custo_horario_total = ObjetoCondicionalCustoHorarioTotal( writer, codigo, numero_linhas )
         self.obj_formato_composicao_custo_horario_execucao = ObjetoCondicionalCustoHorarioExecucao( writer, codigo, numero_linhas )
@@ -491,10 +491,10 @@ class ObjetoCondicionalNaoMostrarPrecoUnitarioTotal:
 
 class FormatacaoComposicaoCondicionalNaoMostrar:
 
-    def __init__( self, writer, codigo, numero_linhas ) -> None:
+    def __init__( self, writer, codigo, numero_linhas, nome_tabela ) -> None:
         self.writer = writer
         self.numero_linhas = numero_linhas
-        self.nome_tabela = 'CCU - data base julho 2019'
+        self.nome_tabela = nome_tabela
         self.entrada_area_formatacao = '$D$1:$D${}'.format( numero_linhas )
         self.obj_formato_composicao_n_mostrar_custo_horario_total = ObjetoCondicionalNaoMostrarCustoHorarioTotal( writer, codigo )
         self.obj_formato_composicao_n_mostrar_custo_horario_execucao = ObjetoCondicionalNaoMostrarCustoHorarioExecucao( writer, codigo )

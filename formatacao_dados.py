@@ -32,9 +32,10 @@ class Precisao:
         return round( valor, self._10_algarismos )
 
 
-class Mes:
+class Data:
 
-    def __init__(self, mes: str):
+    def __init__( self, data=datetime.now() ):
+        self.data = data
         self.MES_COMPLETO = {
                 1:'janeiro',
                 2:'fevereiro',
@@ -63,15 +64,12 @@ class Mes:
                 11:'nov',
                 12:'dez'
             }
-        self.mes = int( mes )
-        self.completo = self.mes_completo()
-        self.abreviado = self.mes_abreviado()
-
-    def mes_completo( self ):
-        return self.MES_COMPLETO[ self.mes ]
-
-    def mes_abreviado( self ):
-        return self.MES[ self.mes ]
+        self.mes = int( self.data.strftime("%m") )
+        self.ano = self.data.strftime("%Y")
+        self.mes_completo = self.MES_COMPLETO[ self.mes ]
+        self.mes_abreviado = self.MES[ self.mes ]
+        self.data_completa = '{}-{}'.format( self.mes_completo, self.ano )
+        self.data_abreviada = '{}-{}'.format( self.mes_abreviado, self.ano )
 
 
 class Formatacao:
@@ -250,9 +248,8 @@ class Escrita:
         self.writer.sheets[ self.nome_tabela ].set_header( cabecalho, {'scale_with_doc': False} )
 
     def configurar_rodape( self ):
-        agora = datetime.now()
-        mes = Mes( agora.strftime("%m") )
-        conteudo_rodape = '&C&"Open sans"&11&K003770{}/{}'.format( mes.completo, agora.strftime("%Y") )
+        agora = Data()
+        conteudo_rodape = '&C&"Open sans"&11&K003770{}'.format( agora.data_completa )
         self.writer.sheets[ self.nome_tabela ].set_footer( conteudo_rodape, {'scale_with_doc': False})
 
     def obter_escritor_configurado( self ):

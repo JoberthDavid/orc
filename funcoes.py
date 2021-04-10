@@ -33,7 +33,7 @@ from escrita_composicao import  (
                     )
 
 
-def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linhas_na_composicao):
+def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linhas_na_composicao, data_base ):
     obj_codigo = Codigo()
     dicionario = projeto.obter_dfr_composicao()
     numero_de_composicoes = len( dicionario )
@@ -45,7 +45,7 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
     # cria um objeto Excel
     writer = pd.ExcelWriter( '{}.{}'.format( arquivo, 'xlsx' ), engine='xlsxwriter' )
 
-    formato = FormatacaoComposicao( writer )
+    formato = FormatacaoComposicao( writer, data_base )
 
     ##### escreve resumo de serviços do projeto
     obj_format = FormatacaoEscritaResumoServico( writer )
@@ -105,7 +105,7 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
 
     for _df in dicionario.values():
         obj_configura_data_frame = ConfiguraDataFrame( _df.dfr_insumo, formato, linha_inicio)
-        obj_formatacao_cabecalho = FormatacaoCabecalho( writer, _df.composicao )
+        obj_formatacao_cabecalho = FormatacaoCabecalho( writer, _df.composicao, formato.nome_tabela )
         obj_escrita = EscritaCabecalho( obj_formatacao_cabecalho, linha_inicio )
         writer = obj_escrita.obter_escritor_configurado()
         _df.dfr_insumo = obj_configura_data_frame.obter_data_frame_configurado()
@@ -115,11 +115,11 @@ def escrever_arquivo_excel( arquivo, complemento, projeto: Projeto, maximo_linha
     writer = obj_escrita.obter_escritor_configurado()
 
     # formatando as linhas de custos horários e unitários
-    obj_formatacao_condicional = FormatacaoComposicaoCondicional( writer, obj_codigo, numero_linhas )
+    obj_formatacao_condicional = FormatacaoComposicaoCondicional( writer, obj_codigo, numero_linhas, formato.nome_tabela )
     for item in obj_formatacao_condicional.lista_entrada_formatacao:
         writer.sheets[ formato.nome_tabela ].conditional_format( obj_formatacao_condicional.entrada_area_formatacao, {'type':'formula','criteria': item.criterio,'format': item.formatacao_condicional} )
     # formatando os códigos que não devem ser mostrados
-    obj_formatacao_condicional_n_mostrar = FormatacaoComposicaoCondicionalNaoMostrar( writer, obj_codigo, numero_linhas )
+    obj_formatacao_condicional_n_mostrar = FormatacaoComposicaoCondicionalNaoMostrar( writer, obj_codigo, numero_linhas, formato.nome_tabela )
     for item in obj_formatacao_condicional_n_mostrar.lista_entrada_formatacao:
         writer.sheets[ formato.nome_tabela ].conditional_format( obj_formatacao_condicional_n_mostrar.entrada_area_formatacao, {'type':'text','criteria':'containing','value': item.codigo,'format': item.formatacao_condicional} )
 

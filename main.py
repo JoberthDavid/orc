@@ -12,6 +12,8 @@ from arquivos import (
 from funcoes import escrever_arquivo_excel
 from projeto import BaseDF, Servico, BonificacaoDespesasIndiretas, Projeto
 
+from formatacao_dados import Data
+
 baseDF = BaseDF( arq_db_cp, arq_db_in, arq_apr_in, arq_cto_in )
 
 codigos_servicos_projeto = ['308321', '408031', '606841', '705371', '804215', '909621', '1108055', '2009619', '3009090', '4011287', '5213385', '6106188', '7119788']
@@ -27,16 +29,25 @@ onerado = False #True #
 bdi = BonificacaoDespesasIndiretas(0.267, 0.150, onerado)
 projeto = Projeto(servicos_projeto, baseDF, bdi)
 
-complemento = 'onerado'
+COMPLEMENTO = 'ONERADO'
 custo_produtivo = 'Custo produtivo onerado'
 custo_improdutivo = 'Custo improdutivo onerado'
 
 if not onerado:
-    complemento = 'desonerado'
+    COMPLEMENTO = 'DESONERADO'
     custo_produtivo = 'Custo produtivo desonerado'
     custo_improdutivo = 'Custo improdutivo desonerado'
 
-arquivo = '_'.join( ('SICRO_TO_07_2019_composicoes_montadas', complemento) )
+UF = 'GO'
+
+DATA_BASE = '10-2020'
+
+hoje = Data()
+print( type(hoje.data) )
+DATA_ELABORACAO = hoje.data_completa
 
 
-escrever_arquivo_excel( arquivo, complemento, projeto, baseDF.max_apr() )
+arquivo = '-'.join( ('ORCAMENTO', UF, DATA_BASE, COMPLEMENTO, DATA_ELABORACAO) )
+
+
+escrever_arquivo_excel( arquivo, COMPLEMENTO, projeto, baseDF.max_apr(), DATA_BASE )
