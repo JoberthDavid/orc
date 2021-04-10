@@ -1,4 +1,3 @@
-from arquivos import marca_dnit
 from datetime import datetime
 
 import locale
@@ -354,7 +353,6 @@ class ListaColuna:
         self.custo_pro_desonerado = 'Custo produtivo desonerado'
         self.custo_pro_onerado = 'Custo produtivo onerado'
         self.custo_produtivo = 'Custo produtivo'
-        self.none = 'NONE'
 
 
 class ListaColunaOrigemCP(ListaColuna):
@@ -381,7 +379,6 @@ class ListaColunaComposicaoDB(ListaColuna):
                     self.fic,
                     self.produtividade,
                     self.tipo,
-                    self.none
                 ]
 
 
@@ -395,7 +392,6 @@ class ListaColunaInsumoDB(ListaColuna):
                     self.codigo,
                     self.descricao,
                     self.unidade,
-                    self.none
                 ]
 
 
@@ -412,7 +408,6 @@ class ListaColunaApropriacaoDB(ListaColuna):
                     self.utilizacao,
                     self.item_transporte,
                     'Grupo',
-                    self.none
                 ]
 
 
@@ -430,7 +425,6 @@ class ListaColunaCustoInsumoCT(ListaColuna):
                     self.custo_imp_desonerado,
                     self.preco_unitario,
                     'Grupo',
-                    self.none
                 ]
 
 

@@ -34,14 +34,11 @@ class GeradorDF:
         self.dfr = self.carregar_dados( arquivo )
 
     def carregar_dados( self, arquivo ) -> pd.core.frame.DataFrame:
-        return pd.read_csv( arquivo, encoding=ENCODING, sep=',' )
+        return pd.read_csv( arquivo, encoding=ENCODING, sep=';' )
 
     def tratar_dfr( self, lista=list() ) -> pd.core.frame.DataFrame:
         obj_col_origem = ListaColunaOrigemCP()
         self.dfr.columns = obj_col_origem.obter_lista() + lista
-        obj_col_origem.none
-        if lista[-1] == obj_col_origem.none:
-            self.dfr.pop( obj_col_origem.none )
         return self.dfr
 
 

@@ -103,13 +103,13 @@ class TestComposicaoDB(unittest.TestCase):
         self.assertIsInstance( self.obj_ComposicaoDB, ComposicaoDB )
     
     def test_result_of_calcular_custo_horario_execucao( self ):
-        resultado = round( self.obj_ComposicaoDB.custo_horario_equipamento + self.obj_ComposicaoDB.custo_horario_mao_de_obra, self.obj_precisao.d4 )
+        resultado = round( self.obj_ComposicaoDB.custo_horario_equipamento + self.obj_ComposicaoDB.custo_horario_mao_de_obra, self.obj_precisao._04_algarismos )
         esperado = self.obj_ComposicaoDB.configurar_custo_execucao()
         self.assertEqual( resultado, esperado )
         self.assertIsInstance( resultado, float )
 
     def test_result_of_calcular_custo_unitario_execucao( self ):
-        resultado = round( self.obj_ComposicaoDB.configurar_custo_unitario_execucao(), self.obj_precisao.d4 )
+        resultado = round( self.obj_ComposicaoDB.configurar_custo_unitario_execucao(), self.obj_precisao._04_algarismos )
         esperado = self.obj_ComposicaoDB.custo_unitario_execucao
         self.assertEqual( resultado, esperado )
         self.assertIsInstance( resultado, float )
@@ -117,13 +117,13 @@ class TestComposicaoDB(unittest.TestCase):
     def test_result_of_calcular_custo_unitario_total( self ):
         custo_insumos = self.obj_ComposicaoDB.custo_unitario_execucao + self.obj_ComposicaoDB.custo_unitario_material
         custo_servicos = self.obj_ComposicaoDB.custo_fic + self.obj_ComposicaoDB.custo_fit + self.obj_ComposicaoDB.custo_total_atividade_auxiliar + self.obj_ComposicaoDB.custo_total_tempo_fixo + self.obj_ComposicaoDB.custo_total_transporte
-        resultado = round( custo_insumos + custo_servicos, self.obj_precisao.d4 )
+        resultado = round( custo_insumos + custo_servicos, self.obj_precisao._04_algarismos )
         esperado = self.obj_ComposicaoDB.configurar_custo_unitario_total()
         self.assertEqual( resultado, esperado )
         self.assertIsInstance( resultado, float )
 
     def test_result_of_calcular_preco_unitario_total( self ):
-        resultado = round( self.obj_ComposicaoDB.custo_bdi + self.obj_ComposicaoDB.custo_unitario_total, self.obj_precisao.d4 )
+        resultado = round( self.obj_ComposicaoDB.custo_bdi + self.obj_ComposicaoDB.custo_unitario_total, self.obj_precisao._04_algarismos )
         esperado = self.obj_ComposicaoDB.configurar_preco_unitario_total()
         self.assertEqual( resultado, esperado )
         self.assertIsInstance( resultado, float )
@@ -248,17 +248,17 @@ class TestComposicaoDF(unittest.TestCase):
 
     def test_result_of_obter_dfr_custo_equipamento( self ):
         resultado = self.obj_ComposicaoDF.dfr_insumo.query( '{} == {}'.format(self.obj_ComposicaoDF.obj_col_dfr.grupo, self.obj_grupo.insumo_equipamento ) )
-        esperado = [161.4524, 2.0687, 166.7428, 127.8386, 121.9713, 75.2449]
+        esperado = [169.9741, 2.0144, 165.7011, 126.1242, 127.226, 84.5544]
         self.assertListEqual( resultado[ self.obj_col_dfr.custo_total ].to_list(), esperado )
     
     def test_result_of_obter_dfr_custo_mao_de_obra( self ):
         resultado = self.obj_ComposicaoDF.dfr_insumo.query( '{} == {}'.format(self.obj_ComposicaoDF.obj_col_dfr.grupo, self.obj_grupo.insumo_mao_de_obra ) )
-        esperado = [90.6054]
+        esperado = [95.5608]
         self.assertListEqual( resultado[ self.obj_col_dfr.custo_total ].to_list(), esperado )
 
     def test_result_of_obter_dfr_custo_material( self ):
         resultado = self.obj_ComposicaoDF.dfr_insumo.query( '{} == {}'.format(self.obj_ComposicaoDF.obj_col_dfr.grupo, self.obj_grupo.insumo_material ) )
-        esperado = [39.2218]
+        esperado = [24.5580]
         self.assertListEqual( resultado[ self.obj_col_dfr.custo_total ].to_list(), esperado )
 
     def test_result_of_obter_dfr_equipamento( self ):
@@ -329,17 +329,17 @@ class TestComposicaoDF(unittest.TestCase):
 
     def test_result_of_calcular_subtotal_mao_de_obra( self ):
         _dfr_insumo = self.obj_ComposicaoDF.dfr_insumo.query( '{} == {}'.format(self.obj_ComposicaoDF.obj_col_dfr.grupo, self.obj_grupo.insumo_mao_de_obra ) )
-        resultado = round(_dfr_insumo[ self.obj_col_dfr.custo_total ].sum(), self.obj_precisao.d4)
+        resultado = round(_dfr_insumo[ self.obj_col_dfr.custo_total ].sum(), self.obj_precisao._04_algarismos)
         self.assertEqual( resultado, self.obj_ComposicaoDF.composicao.custo_horario_mao_de_obra)
 
     def test_result_of_calcular_custo_horario_execucao( self ):
         _dfr_insumo = self.obj_ComposicaoDF.dfr_insumo.query( '{} == {}'.format(self.obj_ComposicaoDF.obj_col_dfr.grupo, self.obj_grupo.subtotal_execucao ) )
-        resultado = round( _dfr_insumo[ self.obj_col_dfr.custo_total ].sum(), self.obj_precisao.d4)
+        resultado = round( _dfr_insumo[ self.obj_col_dfr.custo_total ].sum(), self.obj_precisao._04_algarismos)
         self.assertEqual( resultado, self.obj_ComposicaoDF.composicao.custo_execucao)
 
     def test_result_of_calcular_custo_unitario_execucao( self ):
         _dfr_insumo = self.obj_ComposicaoDF.dfr_insumo.query( '{} == {}'.format(self.obj_ComposicaoDF.obj_col_dfr.grupo, self.obj_grupo.subtotal_unitario_execucao ) )
-        resultado = round( _dfr_insumo[ self.obj_col_dfr.custo_total ].sum(), self.obj_precisao.d4)
+        resultado = round( _dfr_insumo[ self.obj_col_dfr.custo_total ].sum(), self.obj_precisao._04_algarismos)
         self.assertEqual( resultado, self.obj_ComposicaoDF.composicao.custo_unitario_execucao)
 
 
