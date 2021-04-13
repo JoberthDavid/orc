@@ -286,7 +286,7 @@ class FormatacaoComposicao:
 
     def __init__( self, writer, data_base ) -> None:
         self.writer = writer
-        self.nome_tabela = 'CCU data base {}'.format( data_base )
+        self.nome_tabela = 'CCU'
         self.entrada_area_de_impressao = '$D${}:$N${}'
         self.obj_formato_composicao_principal = FormatacaoComposicaoCodigoPrincipal( writer )
         self.obj_formato_composicao_grupo = FormatacaoComposicaoGrupo( writer )

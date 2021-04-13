@@ -639,14 +639,14 @@ class ComposicaoDF:
     def configurar_lis_insumo( self, consulta: pd.core.frame.DataFrame ) -> list:
         lista = list()
         obj_col_in = ListaColunaInsumoDB() 
-        if len( consulta[ ['Grupo', obj_col_in.codigo] ].values ) != 0:
-            for item in consulta[ ['Grupo', obj_col_in.codigo] ].values:
+        if len( consulta[ [ obj_col_in.grupo, obj_col_in.codigo] ].values ) != 0:
+            for item in consulta[ [ obj_col_in.grupo, obj_col_in.codigo] ].values:
                 lista.append( item )
         return lista
 
     def obter_lis_insumo( self, insumo: int ) -> list:
         operador = self.obter_operador_lis_insumo( insumo )
-        consulta = self.base.dfr_apropriacao_in.query( "{} == '{}' & Grupo {} {}".format( self.obj_col_dfr.composicao_principal, self.composicao.codigo, operador, insumo ) )
+        consulta = self.base.dfr_apropriacao_in.query( "{} == '{}' & {} {} {}".format( self.obj_col_dfr.composicao_principal, self.composicao.codigo, self.obj_col_dfr.grupo, operador, insumo ) )
         return self.configurar_lis_insumo( consulta )
 
     def obter_lis_atividade_auxiliar( self ) -> list:
@@ -679,12 +679,12 @@ class ComposicaoDF:
         self.dfr_insumo[ self.obj_col_dfr.composicao_principal ] = self.composicao.codigo
 
     def obter_lis_aa( self, codigo ):
-        consulta = self.base.dfr_apropriacao_in.query( "{} == '{}' & Grupo == {}".format( self.obj_col_dfr.composicao_principal, codigo, self.obj_grupo.insumo_atividade_auxiliar ) )
+        consulta = self.base.dfr_apropriacao_in.query( "{} == '{}' & {} == {}".format( self.obj_col_dfr.composicao_principal, codigo, self.obj_col_dfr.grupo, self.obj_grupo.insumo_atividade_auxiliar ) )
         return consulta
 
     def obter_lis_tr( self ):
         dfr_aa = self.obter_lis_aa( self.composicao.codigo )
-        lista_aa = dfr_aa[ ['Composição','Código','Quantidade'] ].to_dict( orient='records' )
+        lista_aa = dfr_aa[ [ self.obj_col_dfr.composicao_principal,self.obj_col_dfr.codigo,self.obj_col_dfr.quantidade ] ].to_dict( orient='records' )
         # for item in lista_aa:
             # print( str( item['Composição'] ) + ' ; ' + str( item['Código'] ) + ' ; ' + str( item['Quantidade'] ) )
 
@@ -723,8 +723,6 @@ class Projeto:
         self.equipamento_projeto = self.obter_dicionario_equipamentos_servicos_projeto()
         self.material_projeto = self.obter_dicionario_materiais_servicos_projeto()
         self.mao_de_obra_projeto = self.obter_dicionario_mao_de_obra_servicos_projeto()
-        # print( self.obter_dicionario_mao_de_obra_servicos_projeto() )
-
 
     def configurar_lista_composicoes_projeto( self ) -> None:
         for item in self.servicos:
@@ -839,7 +837,7 @@ class Projeto:
         return dfr_material[ lista_colunas_ma ]
 
     def obter_lista_transportes_composicao( self, codigo: str ) -> list:
-        consulta = self.baseDF.dfr_apropriacao_in.query( "{} == '{}' & Grupo == {}".format( self.obj_col_dfr.composicao_principal, codigo, self.obj_grupo.insumo_transporte ) )
+        consulta = self.baseDF.dfr_apropriacao_in.query( "{} == '{}' & {} == {}".format( self.obj_col_dfr.composicao_principal, codigo, self.obj_col_dfr.grupo, self.obj_grupo.insumo_transporte ) )
         consulta = consulta[ [
                             self.obj_col_dfr.composicao_principal,
                             self.obj_col_dfr.codigo,
@@ -865,8 +863,8 @@ class Projeto:
                             self.obj_col_dfr.servico_orcamento,
                             self.obj_col_dfr.composicao_principal,
                             self.obj_col_dfr.codigo,
-                            'Descrição',
-                            'Unidade',
+                            self.obj_col_dfr.descricao,
+                            self.obj_col_dfr.unidade,
                             self.obj_col_dfr.item_transporte,
                             self.obj_col_dfr.utilizacao
                             ]
@@ -903,7 +901,7 @@ class Projeto:
         return dicionario_transportes
     
     def obter_lista_equipamentos_composicao( self, codigo: str ) -> list:
-        consulta = self.baseDF.dfr_apropriacao_in.query( "{} == '{}' & Grupo == {}".format( self.obj_col_dfr.composicao_principal, codigo, self.obj_grupo.insumo_equipamento ) )
+        consulta = self.baseDF.dfr_apropriacao_in.query( "{} == '{}' & {} == {}".format( self.obj_col_dfr.composicao_principal, codigo, self.obj_col_dfr.grupo, self.obj_grupo.insumo_equipamento ) )
         consulta = pd.merge( consulta, self.baseDF.dfr_dados_in, on=self.obj_col_dfr.codigo, how='left', suffixes=[None,'_y'] )
         consulta = pd.merge( consulta, self.baseDF.dfr_custo_in, on=self.obj_col_dfr.codigo, how='left', suffixes=[None,'_y'] )
         consulta = consulta[ [
@@ -924,8 +922,8 @@ class Projeto:
                             self.obj_col_dfr.composicao_principal,
                             self.obj_col_dfr.codigo,
                             self.obj_col_in.descricao,
-                            'Quantidade produtiva',
-                            'Quantidade improdutiva',
+                            self.obj_col_dfr.quantidade_produtiva,
+                            self.obj_col_dfr.quantidade_improdutiva,
                             self.obj_col_dfr.custo_produtivo,
                             self.obj_col_dfr.custo_improdutivo,
                             self.obj_col_dfr.custo_total
@@ -955,6 +953,7 @@ class Projeto:
                     comp = self.dic_db_projeto[ compstr.codigo ]
                     
                     sub[2] =  subitem[1] * sub[2] * ( 1 + comp.fic )
+                    
                     qi = obj_precisao.utilizacao_equipamento( sub[2] * (1 - sub[3]) / comp.produtividade )
                     lista_quantidade_improdutiva.append( qi )
                     qp = obj_precisao.utilizacao_equipamento( sub[2] * sub[3] / comp.produtividade )
@@ -970,8 +969,8 @@ class Projeto:
                     lista_preco_improdutivo.append( pi )
                     lista_preco_total.append( pt )
 
-        dicionario_equipamentos[ "Quantidade improdutiva" ] = lista_quantidade_improdutiva
-        dicionario_equipamentos[ "Quantidade produtiva" ] = lista_quantidade_produtiva
+        dicionario_equipamentos[ self.obj_col_dfr.quantidade_improdutiva ] = lista_quantidade_improdutiva
+        dicionario_equipamentos[ self.obj_col_dfr.quantidade_produtiva ] = lista_quantidade_produtiva
         dicionario_equipamentos[ self.obj_col_dfr.codigo ] = lista_equipamento
         dicionario_equipamentos[ self.obj_col_dfr.composicao_principal ] = lista_composicao_principal
         dicionario_equipamentos[ self.obj_col_dfr.servico_orcamento ] = lista_servico
@@ -983,7 +982,7 @@ class Projeto:
         return dicionario_equipamentos
 
     def obter_lista_mao_de_obra_composicao( self, codigo: str ) -> list:
-        consulta = self.baseDF.dfr_apropriacao_in.query( "{} == '{}' & Grupo == {}".format( self.obj_col_dfr.composicao_principal, codigo, self.obj_grupo.insumo_mao_de_obra) )
+        consulta = self.baseDF.dfr_apropriacao_in.query( "{} == '{}' & {} == {}".format( self.obj_col_dfr.composicao_principal, codigo, self.obj_col_dfr.grupo, self.obj_grupo.insumo_mao_de_obra) )
         consulta = pd.merge( consulta, self.baseDF.dfr_dados_in, on=self.obj_col_dfr.codigo, how='left', suffixes=[None,'_y'] )
         consulta = pd.merge( consulta, self.baseDF.dfr_custo_in, on=self.obj_col_dfr.codigo, how='left', suffixes=[None,'_y'] )
         consulta = consulta[ [
@@ -1047,7 +1046,7 @@ class Projeto:
         return dicionario_mao_de_obra
 
     def obter_lista_materiais_composicao( self, codigo: str ) -> list:
-        consulta = self.baseDF.dfr_apropriacao_in.query( "{} == '{}' & Grupo == {}".format( self.obj_col_dfr.composicao_principal, codigo, self.obj_grupo.insumo_material ) )
+        consulta = self.baseDF.dfr_apropriacao_in.query( "{} == '{}' & {} == {}".format( self.obj_col_dfr.composicao_principal, codigo, self.obj_col_dfr.grupo, self.obj_grupo.insumo_material ) )
         consulta = pd.merge( consulta, self.baseDF.dfr_dados_in, on=self.obj_col_dfr.codigo, how='left', suffixes=[None,'_y'] )
         consulta = pd.merge( consulta, self.baseDF.dfr_custo_in, on=self.obj_col_dfr.codigo, how='left', suffixes=[None,'_y'] )
         consulta = consulta[ [

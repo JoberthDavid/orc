@@ -144,7 +144,7 @@ class Arvore:
         self.lista = list()
 
     def obter_lista_atividades_auxiliares_composicao( self, codigo: str ) -> list:
-        consulta = self.baseDF.dfr_apropriacao_in.query( "{} == '{}' & ( Grupo == {} | Grupo == {} )".format( self.obj_col_dfr.composicao_principal, codigo, self.obj_grupo.insumo_atividade_auxiliar, self.obj_grupo.insumo_tempo_fixo ) )
+        consulta = self.baseDF.dfr_apropriacao_in.query( "{} == '{}' & ( {} == {} | {} == {} )".format( self.obj_col_dfr.composicao_principal, codigo, self.obj_col_dfr.grupo, self.obj_grupo.insumo_atividade_auxiliar, self.obj_col_dfr.grupo, self.obj_grupo.insumo_tempo_fixo ) )
         consulta = consulta[[self.obj_col_dfr.composicao_principal, self.obj_col_dfr.codigo, self.obj_col_dfr.quantidade]].values.tolist()
         return consulta
 

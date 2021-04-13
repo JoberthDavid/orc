@@ -8,16 +8,18 @@ class Precisao:
         self._02_algarismos = 2
         self._04_algarismos = 4
         self._05_algarismos = 5
+        self._06_algarismos = 6
+        self._08_algarismos = 8
         self._10_algarismos = 10
 
     def custo( self, valor: float ) -> float:
-        return round( valor, self._04_algarismos )
+        return round( valor, self._05_algarismos )
 
     def monetario( self, valor: float ) -> float:
         return round( valor, self._02_algarismos )
 
     def utilizacao( self, valor: float ) -> float:
-        return round( valor, self._05_algarismos )
+        return round( valor, self._06_algarismos )
 
     def utilizacao_transporte( self, valor: float ) -> float:
         return round( valor, self._10_algarismos )
@@ -34,8 +36,8 @@ class Precisao:
 
 class Data:
 
-    def __init__( self, data=datetime.now() ):
-        self.data = data
+    def __init__( self, mes=0, ano=0 ):
+        self.data = datetime.now()
         self.MES_COMPLETO = {
                 1:'janeiro',
                 2:'fevereiro',
@@ -64,12 +66,19 @@ class Data:
                 11:'nov',
                 12:'dez'
             }
-        self.mes = int( self.data.strftime("%m") )
-        self.ano = self.data.strftime("%Y")
+        self.configurar_mes_ano( mes, ano )
         self.mes_completo = self.MES_COMPLETO[ self.mes ]
         self.mes_abreviado = self.MES[ self.mes ]
         self.data_completa = '{}-{}'.format( self.mes_completo, self.ano )
         self.data_abreviada = '{}-{}'.format( self.mes_abreviado, self.ano )
+
+    def configurar_mes_ano( self, mes: int, ano: int ):
+        if ( mes == 0 ) or ( ano == 0 ):
+            self.mes = int( self.data.strftime("%m") )
+            self.ano = self.data.strftime("%Y")
+        else:
+            self.mes = mes
+            self.ano = ano
 
 
 class Formatacao:
@@ -199,6 +208,7 @@ class Escrita:
         if self.numero_de_composicoes > 0:
             self.writer.sheets[ self.nome_tabela ].set_margins(top=2.0)
             self.configurar_cabecalho()
+            self.configurar_rodape()
             self.writer.sheets[ self.nome_tabela ].fit_to_pages(1, self.numero_de_composicoes)
         else:
             self.writer.sheets[ self.nome_tabela ].set_margins(top=2.0)
@@ -249,8 +259,8 @@ class Escrita:
 
     def configurar_rodape( self ):
         agora = Data()
-        data_base = '10-2020'
-        conteudo_rodape = '&C&"Open sans"&11&K003770data base {}\n{}'.format( data_base, agora.data_completa )
+        data_base = Data(10,2020)
+        conteudo_rodape = '&C&"Open sans"&11&K003770data base {}\ncalculado em {}'.format( data_base.data_completa, agora.data_completa )
         self.writer.sheets[ self.nome_tabela ].set_footer( conteudo_rodape, {'scale_with_doc': False})
 
     def obter_escritor_configurado( self ):
@@ -336,6 +346,8 @@ class ListaColuna:
         self.item_transporte = 'Item transportado'
         self.preco_unitario = 'Preço unitário'
         self.quantidade = 'Quantidade'
+        self.quantidade_produtiva = 'Quantidade produtiva'
+        self.quantidade_improdutiva = 'Quantidade improdutiva'
         self.unidade = 'Unidade'
         self.utilizacao = 'Utilização'
         self.custo_total = 'Custo total'
@@ -421,7 +433,7 @@ class ListaColunaApropriacaoDB(ListaColuna):
                     self.quantidade,
                     self.utilizacao,
                     self.item_transporte,
-                    'Grupo',
+                    self.grupo,
                 ]
 
 
@@ -438,7 +450,7 @@ class ListaColunaCustoInsumoCT(ListaColuna):
                     self.custo_pro_desonerado,
                     self.custo_imp_desonerado,
                     self.preco_unitario,
-                    'Grupo',
+                    self.grupo,
                 ]
 
 

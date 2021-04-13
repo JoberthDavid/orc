@@ -43,7 +43,7 @@ UF = 'GO'
 DATA_BASE = '10-2020'
 
 hoje = Data()
-print( type(hoje.data) )
+
 DATA_ELABORACAO = hoje.data_completa
 
 
