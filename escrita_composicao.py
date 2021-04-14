@@ -85,7 +85,7 @@ class FormatacaoComposicaoQuantidade(Formatacao):
         obj_formatacao = Formatacao( writer )
         obj_formatacao.algarismo_significativo(5)
         self.coluna = 'I:I'
-        self.largura = 1.2 * self.modulo
+        self.largura = 2.5 * self.modulo
         self.formatado = obj_formatacao.aplicar_formatacao()
 
 

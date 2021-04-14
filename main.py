@@ -19,9 +19,9 @@ from formatacao_dados import Data, DadosProjeto
 
 baseDF = BaseDF( arq_db_cp, arq_db_in, arq_apr_in, arq_cto_in )
 
-codigos_servicos_projeto = ['9999100', '7119700', '308321', '408031', '606841', '705371', '804215', '909621', '1108055', '2009619', '3009090', '4011287', '5213385', '6106188', '7119788']
-quantidade_servicos_projeto = [12, 1, 1000.001, 2000.002, 3000.003, 4000.004, 5000.005, 6000.006, 7000.007, 8000.008, 9000.009, 11000.011, 12000.021, 13000.031, 14000.041]
-bdi_servicos_projeto = [ False, False, True, False, True, False, False, False, False, False, False, False, False, False, False]
+codigos_servicos_projeto = ['9999200', '9999100', '7119700', '308321', '408031', '606841', '705371', '804215', '909621', '1108055', '2009619', '3009090', '4011287', '5213385', '6106188', '7119788']
+quantidade_servicos_projeto = [ 24, 12, 1, 1000.001, 2000.002, 3000.003, 4000.004, 5000.005, 6000.006, 7000.007, 8000.008, 9000.009, 11000.011, 12000.021, 13000.031, 14000.041]
+bdi_servicos_projeto = [ False, False, False, True, False, True, False, False, False, False, False, False, False, False, False, False]
 
 lista_servicos_projeto = list()
 
