@@ -17,7 +17,7 @@ from projeto import BaseDF, Servico, BonificacaoDespesasIndiretas, Projeto
 
 from formatacao_dados import Data, DadosProjeto
 
-baseDF = BaseDF( arq_db_cp, arq_db_in, arq_apr_in, arq_cto_in, arq_db_al_an, arq_db_al_st, arq_apr_al )
+baseDF = BaseDF( arq_db_cp, arq_db_in, arq_apr_in, arq_cto_in )
 
 codigos_servicos_projeto = ['9999100', '7119700', '308321', '408031', '606841', '705371', '804215', '909621', '1108055', '2009619', '3009090', '4011287', '5213385', '6106188', '7119788']
 quantidade_servicos_projeto = [12, 1, 1000.001, 2000.002, 3000.003, 4000.004, 5000.005, 6000.006, 7000.007, 8000.008, 9000.009, 11000.011, 12000.021, 13000.031, 14000.041]

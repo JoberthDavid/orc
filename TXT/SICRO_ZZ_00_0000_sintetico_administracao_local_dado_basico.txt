@@ -1,4 +1,6 @@
-SICRO;ZZ;00-0000;9999100;Administração local com forma de pagamento mensal;mês
+SICRO;ZZ;00-0000;9999100;Administração local mensal com despesas diversas;mês
+SICRO;ZZ;00-0000;9999101;Administração local mensal;mês
+SICRO;ZZ;00-0000;9999102;Despesas diversas (5%);mês
 SICRO;ZZ;00-0000;9999110;Parcela fixa da administração local;mês
 SICRO;ZZ;00-0000;9999120;Parcela vinculada da administração local;mês
 SICRO;ZZ;00-0000;9999130;Parcela variável da administração local;mês

@@ -8750,7 +8750,10 @@ SICRO;GO;10-2020;M3936;Parafuso sextavado em aço inox de 1/2" X 1/2";un
 SICRO;GO;10-2020;M3939;Barra redonda de aço SAE 1020 - D = 1";m
 SICRO;GO;10-2020;M4412;Conjunto de consumíveis para corte a plasma em aço carbono;un
 SICRO;GO;10-2020;M4413;Eletrodo E70S6 diâmetro 0,9 mm;kg
-SICRO;ZZ;00-0000;9999100;Administração local com forma de pagamento mensal;mês
+
+SICRO;ZZ;00-0000;9999100;Administração local mensal com despesas diversas;mês
+SICRO;ZZ;00-0000;9999101;Administração local mensal;mês
+SICRO;ZZ;00-0000;9999102;Despesas diversas (5%);mês
 SICRO;ZZ;00-0000;9999110;Parcela fixa da administração local;mês
 SICRO;ZZ;00-0000;9999120;Parcela vinculada da administração local;mês
 SICRO;ZZ;00-0000;9999130;Parcela variável da administração local;mês
