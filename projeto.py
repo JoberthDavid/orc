@@ -52,23 +52,63 @@ class ComposicaoStr:
 class BaseDF:
     """Classe que reune a base de Data Frame necessários para o projeto"""
     
-    def __init__( self, arq_db_cp: str, arq_db_in: str, arq_apr_in: str, arq_cto_in: str ) -> None:
+    def __init__( self, arq_db_cp: str, arq_db_in: str, arq_apr_in: str, arq_cto_in: str, arq_db_al_an: str, arq_db_al_st: str, arq_apr_al: str ) -> None:
         dfr_db_cp = GeradorDF( arq_db_cp )
         dfr_db_in = GeradorDF( arq_db_in )
         dfr_apr_in = GeradorDF( arq_apr_in )
         dfr_cto_in = GeradorDF( arq_cto_in )
+
+        # dfr_db_al_an = GeradorDF( arq_db_al_an )
+        # dfr_db_al_st = GeradorDF( arq_db_al_st )
+        # dfr_apr_al = GeradorDF( arq_apr_al )
+
         self.dfr_dados_cp = self.tratar_dfr_dados_basicos_cp( dfr_db_cp )
+        # self.dfr_dados_al_st_aux = self.tratar_dfr_dados_basicos_al_st( self.dfr_dados_cp_aux, dfr_db_al_st )
+        # self.dfr_dados_cp = self.concatenar_dfr_cp_al( self.dfr_dados_cp_aux, self.dfr_dados_al_st_aux )
+
         self.dfr_dados_in = self.tratar_dfr_dados_basicos_in( dfr_db_in )
+        # self.dfr_dados_al_aux = self.tratar_dfr_dados_basicos_al_an( self.dfr_dados_in_aux, dfr_db_al_an )
+        # self.dfr_dados_in = self.concatenar_dfr_cp_al( self.dfr_dados_in_aux, self.dfr_dados_al_aux )
+
         self.dfr_apropriacao_in = self.tratar_dfr_apropriacao_in( dfr_apr_in )
+        # self.dfr_apropriacao_al_aux = self.tratar_dfr_apropriacao_al( self.dfr_apropriacao_in_aux, dfr_apr_al )
+        # self.dfr_apropriacao_in = self.concatenar_dfr_cp_al( self.dfr_apropriacao_in_aux, self.dfr_apropriacao_al_aux )
+        # print( self.dfr_apropriacao_in )
+
         self.dfr_custo_in = self.tratar_dfr_custo_in( dfr_cto_in )
+
+    def concatenar_dfr_cp_al( self, dfr_db_cp: pd.core.frame.DataFrame, dfr_db_al_an: pd.core.frame.DataFrame ) -> pd.core.frame.DataFrame:
+        dfr_aux = pd.concat( [ dfr_db_cp, dfr_db_al_an ] )
+        return dfr_aux.reset_index(drop=True)
 
     def tratar_dfr_dados_basicos_cp( self, dfr_db: pd.core.frame.DataFrame ) -> pd.core.frame.DataFrame:
         obj_col_db_cp = ListaColunaComposicaoDB()
         return dfr_db.tratar_dfr( obj_col_db_cp.obter_lista() )
 
+    def tratar_dfr_dados_basicos_al_st( self, dfr_db: pd.core.frame.DataFrame, dfr_db_al_st: pd.core.frame.DataFrame ) -> pd.core.frame.DataFrame:
+        obj_col_db_cp = ListaColunaComposicaoDB()
+        dfr_al = dfr_db_al_st.tratar_dfr( obj_col_db_cp.obter_lista() )
+        dfr_al[ obj_col_db_cp.estado ] = dfr_db[ obj_col_db_cp.estado ]
+        dfr_al[ obj_col_db_cp.publicacao ] = dfr_db[ obj_col_db_cp.publicacao ]
+        return dfr_al
+
     def tratar_dfr_dados_basicos_in( self, dfr_db: pd.core.frame.DataFrame ) -> pd.core.frame.DataFrame:
         obj_col_db_in = ListaColunaInsumoDB()
         return dfr_db.tratar_dfr( obj_col_db_in.obter_lista() )
+
+    def tratar_dfr_dados_basicos_al_an( self, dfr_db: pd.core.frame.DataFrame, dfr_db_al_an: pd.core.frame.DataFrame ) -> pd.core.frame.DataFrame:
+        obj_col_db_in = ListaColunaInsumoDB()
+        dfr_al = dfr_db_al_an.tratar_dfr( obj_col_db_in.obter_lista() )
+        dfr_al[ obj_col_db_in.estado ] = dfr_db[ obj_col_db_in.estado ]
+        dfr_al[ obj_col_db_in.publicacao ] = dfr_db[ obj_col_db_in.publicacao ]
+        return dfr_al
+
+    def tratar_dfr_apropriacao_al( self, dfr_db: pd.core.frame.DataFrame, dfr_db_al_an: pd.core.frame.DataFrame ) -> pd.core.frame.DataFrame:
+        obj_col_db_ap = ListaColunaApropriacaoDB()
+        dfr_al = dfr_db_al_an.tratar_dfr( obj_col_db_ap.obter_lista() )
+        dfr_al[ obj_col_db_ap.estado ] = dfr_db[ obj_col_db_ap.estado ]
+        dfr_al[ obj_col_db_ap.publicacao ] = dfr_db[ obj_col_db_ap.publicacao ]
+        return dfr_al
 
     def tratar_dfr_apropriacao_in( self, dfr_db: pd.core.frame.DataFrame ) -> pd.core.frame.DataFrame:
         obj_col_db_ap = ListaColunaApropriacaoDB()
@@ -384,6 +424,7 @@ class ComposicaoDF:
 
     def obter_descricao_composicao( self ) -> str:
         auxiliar = self.obter_dfr_dados_basicos_insumos()
+        print( auxiliar )
         return auxiliar[ self.obj_col_cp.descricao ].values[0]
 
     def obter_unidade_composicao( self ) -> str:

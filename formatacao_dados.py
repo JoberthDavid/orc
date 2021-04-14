@@ -13,13 +13,13 @@ class Precisao:
         self._10_algarismos = 10
 
     def custo( self, valor: float ) -> float:
-        return round( valor, self._05_algarismos )
+        return round( valor, self._04_algarismos )
 
     def monetario( self, valor: float ) -> float:
         return round( valor, self._02_algarismos )
 
     def utilizacao( self, valor: float ) -> float:
-        return round( valor, self._06_algarismos )
+        return round( valor, self._05_algarismos )
 
     def utilizacao_transporte( self, valor: float ) -> float:
         return round( valor, self._10_algarismos )
@@ -79,6 +79,46 @@ class Data:
         else:
             self.mes = mes
             self.ano = ano
+
+
+class DadosProjeto:
+
+    def __init__( self,
+                    unidade_federacao: str,
+                    rodovia: str,
+                    trecho_inicial: str,
+                    trecho_final: str,
+                    subtrecho_inicial: str,
+                    subtrecho_final: str,
+                    segmento_inicial: float,
+                    segmento_final: float,
+                    snv_inicial: str,
+                    snv_final: str,
+                    versao_snv: str,
+                    data_base: str,
+                    situacao_complementar: bool,
+                ) -> None:
+        self.unidade_federacao = unidade_federacao
+        self.rodovia = rodovia
+        self.trecho = self.configurar_inicial_final( trecho_inicial, trecho_final )
+        self.subtrecho = self.configurar_inicial_final( subtrecho_inicial, subtrecho_final )
+        self.segmento = self.configurar_segmento( segmento_inicial, segmento_final )
+        self.snv = self.configurar_inicial_final( snv_inicial, snv_final )
+        self.versao_snv = versao_snv
+        self.data_base = data_base
+        self.situacao_complementar = self.configurar_situacao( situacao_complementar )
+
+    def configurar_inicial_final( self, inicial: str, final: str ) -> str:
+        return '{} - {}'.format( inicial, final )
+
+    def configurar_segmento( self, inicial: float, final: float ) -> str:
+        return 'KM {} - KM {}'.format( str( inicial ), str( final ) )
+
+    def configurar_situacao( self, situacao_complementar: bool ) -> str:
+        descricao_complementar = 'ONERADO'
+        if not situacao_complementar:
+            descricao_complementar = 'DESONERADO'
+        return descricao_complementar
 
 
 class Formatacao:
@@ -192,11 +232,12 @@ class ConfiguraDataFrame:
 
 class Escrita:
 
-    def __init__( self, formatacao, tamanho, numero_de_composicoes=0 ):
+    def __init__( self, formatacao, dados_projeto: DadosProjeto, tamanho, numero_de_composicoes=0 ):
         self.writer = formatacao.writer
         self.formatacao = formatacao
         self.nome_tabela = self.formatacao.nome_tabela
         self.entrada_area_de_impressao = self.formatacao.entrada_area_de_impressao
+        self.dados_projeto = dados_projeto
         self.tamanho = tamanho + 1
         self.numero_de_composicoes = numero_de_composicoes
 
@@ -242,16 +283,16 @@ class Escrita:
         self.writer.sheets[ self.nome_tabela ].hide_gridlines(option=0)
 
     def configurar_cabecalho( self ):
-        sigla = 'DNIT\n'
-        sigla_formatada = '"Arial Black, Bold, Italic"&36&K003770{}'.format( sigla )
+        sigla = 'DNIT'
+        sigla_formatada = '"Arial Black, Bold, Italic"&36&K003770{}\n'.format( sigla )
         guia = 'A'
         guia_formatada = '"Open sans"&14&K003770&{}\n'.format( guia )
-        rodovia = 'BR-000'
-        trecho = 'Div XX/XX - Div XX/XX'
-        subtrecho = 'Acreúna - Rio Verde'
-        segmento = 'KM 0,00 - KM 0,00'
-        snv = '000BGO0000 - 000BGO0000'
-        versao_snv = '2020abcd'
+        rodovia = self.dados_projeto.rodovia
+        trecho = self.dados_projeto.trecho
+        subtrecho = self.dados_projeto.subtrecho
+        segmento = self.dados_projeto.segmento
+        snv = self.dados_projeto.snv
+        versao_snv = self.dados_projeto.versao_snv
         objeto = 'Rodovia: {}\nTrecho: {}\nSubtrecho: {}\nSegmento: {}\nSNV: {}\nVersão SNV: {}\n'.format( rodovia, trecho, subtrecho, segmento, snv, versao_snv )
         objeto_formatado = '"Open sans"&12&K003770{}\n'.format( objeto )
         cabecalho = '&L&{}&C&{}&L&{}'.format( sigla_formatada, guia_formatada, objeto_formatado )
@@ -259,8 +300,9 @@ class Escrita:
 
     def configurar_rodape( self ):
         agora = Data()
-        data_base = Data(10,2020)
-        conteudo_rodape = '&C&"Open sans"&11&K003770data base {}\ncalculado em {}'.format( data_base.data_completa, agora.data_completa )
+        data_base = self.dados_projeto.data_base
+        situacao_complementar = self.dados_projeto.situacao_complementar
+        conteudo_rodape = '&C&"Open sans"&11&K003770data base {} ( {} )\ncalculado em {}'.format( data_base.data_completa, situacao_complementar, agora.data_completa )
         self.writer.sheets[ self.nome_tabela ].set_footer( conteudo_rodape, {'scale_with_doc': False})
 
     def obter_escritor_configurado( self ):

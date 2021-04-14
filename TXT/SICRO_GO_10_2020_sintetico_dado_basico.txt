@@ -8750,3 +8750,19 @@ SICRO;GO;10-2020;M3936;Parafuso sextavado em aço inox de 1/2" X 1/2";un
 SICRO;GO;10-2020;M3939;Barra redonda de aço SAE 1020 - D = 1";m
 SICRO;GO;10-2020;M4412;Conjunto de consumíveis para corte a plasma em aço carbono;un
 SICRO;GO;10-2020;M4413;Eletrodo E70S6 diâmetro 0,9 mm;kg
+SICRO;ZZ;00-0000;9999100;Administração local com forma de pagamento mensal;mês
+SICRO;ZZ;00-0000;9999110;Parcela fixa da administração local;mês
+SICRO;ZZ;00-0000;9999120;Parcela vinculada da administração local;mês
+SICRO;ZZ;00-0000;9999130;Parcela variável da administração local;mês
+SICRO;ZZ;00-0000;9999111;Mão de obra geral da gerência técnica;mês
+SICRO;ZZ;00-0000;9999112;Mão de obra auxiliar da gerência técnica;mês
+SICRO;ZZ;00-0000;9999113;Equipamento geral da gerência técnica;mês
+SICRO;ZZ;00-0000;9999114;Equipamento auxiliar da gerência técnica;mês
+SICRO;ZZ;00-0000;9999115;Mão de obra geral da gerência administrativa;mês
+SICRO;ZZ;00-0000;9999116;Mão de obra auxiliar da gerência administrativa;mês
+SICRO;ZZ;00-0000;9999117;Equipamento geral da gerência administrativa;mês
+SICRO;ZZ;00-0000;9999118;Equipamento auxiliar da gerência administrativa;mês
+SICRO;ZZ;00-0000;9999121;Mão de obra da equipe de conservação;mês
+SICRO;ZZ;00-0000;9999122;Equipamento da equipe de conservação;mês
+SICRO;ZZ;00-0000;9999131;Mão de obra da equipe de controle tecnológico;mês
+SICRO;ZZ;00-0000;9999132;Equipamento da equipe de controle tecnológico;mês

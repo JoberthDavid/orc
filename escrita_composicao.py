@@ -85,7 +85,7 @@ class FormatacaoComposicaoQuantidade(Formatacao):
         obj_formatacao = Formatacao( writer )
         obj_formatacao.algarismo_significativo(5)
         self.coluna = 'I:I'
-        self.largura = 1.0 * self.modulo
+        self.largura = 1.2 * self.modulo
         self.formatado = obj_formatacao.aplicar_formatacao()
 
 
@@ -284,7 +284,7 @@ class FormatacaoComposicaoPrecoUnitarioTotal(Formatacao):
 
 class FormatacaoComposicao:
 
-    def __init__( self, writer, data_base ) -> None:
+    def __init__( self, writer ) -> None:
         self.writer = writer
         self.nome_tabela = 'CCU'
         self.entrada_area_de_impressao = '$D${}:$N${}'
