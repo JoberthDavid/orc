@@ -150,6 +150,31 @@ class FormatacaoResumoCustoTotalDesdobrado(Formatacao):
         self.largura = 2.5 * self.modulo
 
 
+class FormatacaoResumoPercentual(Formatacao):
+
+    def __init__( self, writer ) -> None:
+        super().__init__( writer )
+        obj_formatacao = Formatacao( writer )
+        obj_formatacao.alinhamento_direita()
+        obj_formatacao.algarismo_percentual()
+        self.formatado = obj_formatacao.aplicar_formatacao()
+        self.coluna = ''
+        self.largura = 2.5 * self.modulo
+
+
+class FormatacaoResumoPercentualAcumulado(Formatacao):
+
+    def __init__( self, writer ) -> None:
+        super().__init__( writer )
+        obj_formatacao = Formatacao( writer )
+        obj_formatacao.alinhamento_direita()
+        obj_formatacao.algarismo_percentual()
+        obj_formatacao.cor_fundo('orange')
+        self.formatado = obj_formatacao.aplicar_formatacao()
+        self.coluna = ''
+        self.largura = 2.5 * self.modulo
+
+
 class FormatacaoEscrita:
 
     def __init__( self, writer ) -> None:
@@ -172,13 +197,14 @@ class FormatacaoEscrita:
         self.obj_formatacao_momento_transporte_unitario = FormatacaoResumoQuantidadeDesdobrada( writer )
         self.obj_formatacao_momento_transporte_total = FormatacaoResumoQuantidadeDesdobrada( writer )
         self.obj_formatacao_custo_total_desdobrado = FormatacaoResumoCustoTotalDesdobrado( writer )
-
+        self.obj_formatacao_percentual = FormatacaoResumoPercentual( writer )
+        self.obj_formatacao_percentual_acumulado = FormatacaoResumoPercentualAcumulado( writer )
 
 class FormatacaoEscritaCustoEquipamento(FormatacaoEscrita):
 
     def __init__( self, writer ) -> None:
         super().__init__( writer )
-        self.nome_tabela = 'CUSTO EQUIPAMENTO'
+        self.nome_tabela = 'CUSTO UNITÁRIO EQUIPAMENTO'
         self.entrada_area_de_impressao = '$A${}:$J${}'
         self.obj_formatacao_grupo.coluna = 'B:B'
         self.obj_formatacao_origem.coluna = 'C:C'
@@ -207,7 +233,7 @@ class FormatacaoEscritaCustoMaoDeObra(FormatacaoEscrita):
 
     def __init__( self, writer ) -> None:
         super().__init__( writer )
-        self.nome_tabela = 'CUSTO MÃO DE OBRA'
+        self.nome_tabela = 'CUSTO UNITÁRIO MÃO DE OBRA'
         self.entrada_area_de_impressao = '$A${}:$I${}'
         self.obj_formatacao_grupo.coluna = 'B:B'
         self.obj_formatacao_origem.coluna = 'C:C'
@@ -236,7 +262,7 @@ class FormatacaoEscritaCustoMaterial(FormatacaoEscrita):
 
     def __init__( self, writer ) -> None:
         super().__init__( writer )
-        self.nome_tabela = 'CUSTO MATERIAL'
+        self.nome_tabela = 'CUSTO UNITÁRIO MATERIAL'
         self.entrada_area_de_impressao = '$A${}:$I${}'
         self.obj_formatacao_grupo.coluna = 'B:B'
         self.obj_formatacao_origem.coluna = 'C:C'
@@ -265,8 +291,8 @@ class FormatacaoEscritaResumoTransporte(FormatacaoEscrita):
 
     def __init__( self, writer ) -> None:
         super().__init__( writer )
-        self.nome_tabela = 'UTILIZAÇÃO TRANSPORTE'
-        self.entrada_area_de_impressao = '$A${}:$K${}'
+        self.nome_tabela = 'TRANSPORTE POR UNIDADE SERVIÇO'
+        self.entrada_area_de_impressao = '$A${}:$J${}'
         self.obj_formatacao_servico.coluna = 'B:B'
         self.obj_formatacao_composicao.coluna = 'C:D'
         self.obj_formatacao_descricao.coluna = 'E:E'
@@ -275,11 +301,9 @@ class FormatacaoEscritaResumoTransporte(FormatacaoEscrita):
         self.obj_formatacao_quantidade_desdobrada.coluna = 'H:H'
         self.obj_formatacao_dmt.coluna = 'I:I'
         self.obj_formatacao_momento_transporte_unitario.coluna = 'J:J' # momento de transporte unitário
-        self.obj_formatacao_momento_transporte_total.coluna = 'K:K' # momento de transporte total
         self.obj_formatacao_momento_transporte_unitario.largura = 2.5 * self.obj_formatacao_momento_transporte_unitario.modulo
-        self.obj_formatacao_momento_transporte_total.largura = 2.5 * self.obj_formatacao_momento_transporte_total.modulo
         self.obj_formatacao_dmt.largura = 1.0 * self.obj_formatacao_descricao.modulo
-        self.obj_formatacao_descricao.largura = 10.4 * self.obj_formatacao_descricao.modulo
+        self.obj_formatacao_descricao.largura = 12.9 * self.obj_formatacao_descricao.modulo
         self.lista_entrada_formatacao = [
                 self.obj_formatacao_id,
                 self.obj_formatacao_servico,
@@ -291,7 +315,6 @@ class FormatacaoEscritaResumoTransporte(FormatacaoEscrita):
                 self.obj_formatacao_quantidade_desdobrada,
                 self.obj_formatacao_dmt,
                 self.obj_formatacao_momento_transporte_unitario,
-                self.obj_formatacao_momento_transporte_total,
             ]
         self.orientacao_retrato = False
 
@@ -300,16 +323,16 @@ class FormatacaoEscritaResumoEquipamento(FormatacaoEscrita):
 
     def __init__( self, writer ) -> None:
         super().__init__( writer )
-        self.nome_tabela = 'UTILIZAÇÃO EQUIPAMENTO'
-        self.entrada_area_de_impressao = '$A${}:$K${}'
+        self.nome_tabela = 'EQUIPAMENTO POR UNIDADE SERVIÇO'
+        self.entrada_area_de_impressao = '$A${}:$J${}'
         self.obj_formatacao_servico.coluna = 'B:B'
         self.obj_formatacao_composicao.coluna = 'C:C'
         self.obj_formatacao_codigo.coluna = 'D:D'
         self.obj_formatacao_descricao.coluna = 'E:E'
         self.obj_formatacao_quantidade_desdobrada.coluna = 'F:G'
         self.obj_formatacao_preco_unitario.coluna = 'H:I'
-        self.obj_formatacao_custo_total_desdobrado.coluna = 'J:K'
-        self.obj_formatacao_descricao.largura = 6.5 * self.obj_formatacao_descricao.modulo
+        self.obj_formatacao_custo_total_desdobrado.coluna = 'J:J'
+        self.obj_formatacao_descricao.largura = 9 * self.obj_formatacao_descricao.modulo
         self.lista_entrada_formatacao = [ 
                 self.obj_formatacao_id,
                 self.obj_formatacao_servico,
@@ -318,7 +341,7 @@ class FormatacaoEscritaResumoEquipamento(FormatacaoEscrita):
                 self.obj_formatacao_descricao,
                 self.obj_formatacao_quantidade_desdobrada,
                 self.obj_formatacao_preco_unitario,
-                self.obj_formatacao_custo_total_desdobrado,
+                self.obj_formatacao_custo_total_desdobrado
             ]
         self.orientacao_retrato = False
 
@@ -327,16 +350,15 @@ class FormatacaoEscritaResumoMaoDeObra(FormatacaoEscrita):
 
     def __init__( self, writer ) -> None:
         super().__init__( writer )
-        self.nome_tabela = 'UTILIZAÇÃO MÃO DE OBRA'
-        self.entrada_area_de_impressao = '$A${}:$H${}'
+        self.nome_tabela = 'MÃO DE OBRA POR UNIDADE SERVIÇO'
+        self.entrada_area_de_impressao = '$A${}:$G${}'
         self.obj_formatacao_servico.coluna = 'B:B'
         self.obj_formatacao_composicao.coluna = 'C:C'
         self.obj_formatacao_codigo.coluna = 'D:D'
         self.obj_formatacao_descricao.coluna = 'E:E'
         self.obj_formatacao_quantidade_desdobrada.coluna = 'F:F'
         self.obj_formatacao_preco_unitario.coluna = 'G:G'
-        self.obj_formatacao_custo_total_desdobrado.coluna = 'H:H'
-        self.obj_formatacao_descricao.largura = 13.8 * self.obj_formatacao_descricao.modulo
+        self.obj_formatacao_descricao.largura = 16.5 * self.obj_formatacao_descricao.modulo
         self.lista_entrada_formatacao = [ 
                 self.obj_formatacao_id,
                 self.obj_formatacao_servico,
@@ -345,7 +367,6 @@ class FormatacaoEscritaResumoMaoDeObra(FormatacaoEscrita):
                 self.obj_formatacao_descricao,
                 self.obj_formatacao_quantidade_desdobrada,
                 self.obj_formatacao_preco_unitario,                
-                self.obj_formatacao_custo_total_desdobrado,
             ]
         self.orientacao_retrato = False
 
@@ -354,16 +375,15 @@ class FormatacaoEscritaResumoMaterial(FormatacaoEscrita):
 
     def __init__( self, writer ) -> None:
         super().__init__( writer )
-        self.nome_tabela = 'UTILIZAÇÃO MATERIAL'
-        self.entrada_area_de_impressao = '$A${}:$H${}'
+        self.nome_tabela = 'MATERIAL POR UNIDADE SERVIÇO'
+        self.entrada_area_de_impressao = '$A${}:$G${}'
         self.obj_formatacao_servico.coluna = 'B:B'
         self.obj_formatacao_composicao.coluna = 'C:C'
         self.obj_formatacao_codigo.coluna = 'D:D'
         self.obj_formatacao_descricao.coluna = 'E:E'
         self.obj_formatacao_quantidade_desdobrada.coluna = 'F:F'
         self.obj_formatacao_preco_unitario.coluna = 'G:G'
-        self.obj_formatacao_custo_total_desdobrado.coluna = 'H:H'
-        self.obj_formatacao_descricao.largura = 13.8 * self.obj_formatacao_descricao.modulo
+        self.obj_formatacao_descricao.largura = 16.5 * self.obj_formatacao_descricao.modulo
         self.lista_entrada_formatacao = [ 
                 self.obj_formatacao_id,
                 self.obj_formatacao_servico,
@@ -372,7 +392,6 @@ class FormatacaoEscritaResumoMaterial(FormatacaoEscrita):
                 self.obj_formatacao_descricao,
                 self.obj_formatacao_quantidade_desdobrada,
                 self.obj_formatacao_preco_unitario,
-                self.obj_formatacao_custo_total_desdobrado,
             ]
         self.orientacao_retrato = False
 
@@ -398,5 +417,28 @@ class FormatacaoEscritaResumoServico(FormatacaoEscrita):
                 self.obj_formatacao_quantidade,
                 self.obj_formatacao_preco_unitario,
                 self.obj_formatacao_custo_total 
+            ]
+        self.orientacao_retrato = False
+
+
+class FormatacaoEscritaResumoABCEquipamento(FormatacaoEscrita):
+
+    def __init__( self, writer ) -> None:
+        super().__init__( writer )
+        self.nome_tabela = 'ABC EQUIPAMENTO ORÇAMENTO'
+        self.entrada_area_de_impressao = '$A${}:$F${}'
+        self.obj_formatacao_codigo.coluna = 'B:B'
+        self.obj_formatacao_descricao.coluna = 'C:C'
+        self.obj_formatacao_custo_total.coluna = 'D:D'
+        self.obj_formatacao_percentual.coluna = 'E:E'
+        self.obj_formatacao_percentual_acumulado.coluna = 'F:F'
+        self.obj_formatacao_descricao.largura = 16.3 * self.obj_formatacao_descricao.modulo
+        self.lista_entrada_formatacao = [ 
+                self.obj_formatacao_id,
+                self.obj_formatacao_codigo,
+                self.obj_formatacao_descricao,
+                self.obj_formatacao_custo_total,
+                self.obj_formatacao_percentual,
+                self.obj_formatacao_percentual_acumulado,
             ]
         self.orientacao_retrato = False

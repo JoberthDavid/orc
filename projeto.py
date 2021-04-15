@@ -724,6 +724,7 @@ class Projeto:
         self.material_projeto = self.obter_dicionario_materiais_servicos_projeto()
         self.mao_de_obra_projeto = self.obter_dicionario_mao_de_obra_servicos_projeto()
 
+
     def configurar_lista_composicoes_projeto( self ) -> None:
         for item in self.servicos:
             obj_composicaostr = ComposicaoStr( item.codigo )
@@ -859,6 +860,9 @@ class Projeto:
     def obter_dfr_transportes_servicos( self ) -> pd.core.frame.DataFrame:
         dfr_transportes = pd.DataFrame( self.transportes_projeto )
         dfr_transportes = pd.merge( dfr_transportes, self.baseDF.dfr_dados_in, on=self.obj_col_dfr.codigo, how='left', suffixes=[None,'_y'] )
+        return dfr_transportes
+
+    def obter_dfr_transporte_utilizacao( self ) -> pd.core.frame.DataFrame:
         lista_colunas_tr = [ 
                             self.obj_col_dfr.servico_orcamento,
                             self.obj_col_dfr.composicao_principal,
@@ -869,12 +873,13 @@ class Projeto:
                             self.obj_col_dfr.utilizacao,
                             self.obj_col_dfr.dmt,
                             self.obj_col_dfr.momento_transporte_unitario,
-                            self.obj_col_dfr.momento_transporte_total,
                             ]
-        return dfr_transportes[ lista_colunas_tr ]
+        return self.obter_dfr_transportes_servicos()[ lista_colunas_tr ]
 
     def obter_dicionario_transportes_servicos_projeto( self ) -> dict:
-        obj_precisao = Precisao()
+        obj_precisao_utilizacao = Precisao()
+        obj_precisao_momento_unitario = Precisao()
+        obj_precisao_momento_total = Precisao()
         dicionario_transportes = dict()
         lista_servico = list()
         lista_composicao_principal = list()
@@ -898,17 +903,18 @@ class Projeto:
                 for sub in lista_auxiliar_sub:
                     obj_composicaostr = ComposicaoStr( str(sub[0]) )
                     obj_transportestr = ComposicaoStr( str(sub[1]) )
-                    dmt = 10
-                    sub[3] = obj_precisao.utilizacao_transporte( subitem[1] * sub[3] )
+                    dmt = 10 # valor travado para teste
+                    sub[3] = obj_precisao_utilizacao.utilizacao_transporte( subitem[1] * sub[3] )
                     lista_fator_utilizacao.append( sub[3] )
                     lista_item_transportado.append( sub[2] )
                     lista_transporte.append( obj_transportestr.codigo )
                     lista_composicao_principal.append( obj_composicaostr.codigo )
                     lista_servico.append( item[0][0] )
                     lista_dmt.append( dmt )
-                    momento_unitario = dmt * sub[3]
+                    momento_unitario = obj_precisao_momento_unitario.utilizacao_transporte( dmt * sub[3] )
                     lista_momento_transporte_unitario.append( momento_unitario )
-                    lista_momento_transporte_total.append( momento_unitario * quantidade_serv_principal )
+                    momento_total = obj_precisao_momento_total.utilizacao_transporte( momento_unitario * quantidade_serv_principal )
+                    lista_momento_transporte_total.append( momento_total )
 
         dicionario_transportes[ self.obj_col_dfr.dmt ] = lista_dmt
         dicionario_transportes[ self.obj_col_dfr.utilizacao ] = lista_fator_utilizacao
@@ -937,7 +943,9 @@ class Projeto:
         return consulta
 
     def obter_dfr_equipamentos_servicos( self ) -> pd.core.frame.DataFrame:
-        dfr_equipamentos = pd.DataFrame( self.equipamento_projeto )
+        return pd.DataFrame( self.equipamento_projeto )
+
+    def obter_dfr_equipamento_utilizacao( self ) -> pd.core.frame.DataFrame:
         lista_colunas_eq = [ 
                             self.obj_col_dfr.servico_orcamento,
                             self.obj_col_dfr.composicao_principal,
@@ -948,9 +956,8 @@ class Projeto:
                             self.obj_col_dfr.custo_produtivo,
                             self.obj_col_dfr.custo_improdutivo,
                             self.obj_col_dfr.custo_unitario_total,
-                            self.obj_col_dfr.custo_total
                             ]
-        return dfr_equipamentos[ lista_colunas_eq ]
+        return self.obter_dfr_equipamentos_servicos()[ lista_colunas_eq ]
 
     def obter_dicionario_equipamentos_servicos_projeto( self ) -> dict:
         obj_precisao = Precisao()
@@ -1029,7 +1036,9 @@ class Projeto:
         return consulta
 
     def obter_dfr_mao_de_obra_servicos( self ) -> pd.core.frame.DataFrame:
-        dfr_mao_de_obra = pd.DataFrame( self.mao_de_obra_projeto )
+        return pd.DataFrame( self.mao_de_obra_projeto )
+
+    def obter_dfr_mao_de_obra_utilizacao( self ) -> pd.core.frame.DataFrame:
         lista_colunas_mo = [
                             self.obj_col_dfr.servico_orcamento,
                             self.obj_col_dfr.composicao_principal,
@@ -1037,9 +1046,8 @@ class Projeto:
                             self.obj_col_in.descricao,
                             self.obj_col_dfr.utilizacao,
                             self.obj_col_dfr.custo_unitario_total,
-                            self.obj_col_dfr.custo_total,
                             ]
-        return dfr_mao_de_obra[ lista_colunas_mo ]
+        return self.obter_dfr_mao_de_obra_servicos()[ lista_colunas_mo ]
 
     def obter_dicionario_mao_de_obra_servicos_projeto( self ) -> dict:
         obj_precisao = Precisao()
@@ -1088,7 +1096,6 @@ class Projeto:
         dicionario_mao_de_obra[ self.obj_col_in.descricao ] = lista_descricao
         dicionario_mao_de_obra[ self.obj_col_dfr.custo_unitario_total ] = lista_preco_unitario_total
         dicionario_mao_de_obra[ self.obj_col_dfr.custo_total ] = lista_custo_total
-
         return dicionario_mao_de_obra
 
     def obter_lista_materiais_composicao( self, codigo: str ) -> list:
@@ -1106,7 +1113,9 @@ class Projeto:
         return consulta
 
     def obter_dfr_materiais_servicos( self ) -> pd.core.frame.DataFrame:
-        dfr_materiais = pd.DataFrame( self.material_projeto )
+        return pd.DataFrame( self.material_projeto )
+
+    def obter_dfr_material_utilizacao( self ) -> pd.core.frame.DataFrame:
         lista_colunas_ma = [ 
                             self.obj_col_dfr.servico_orcamento,
                             self.obj_col_dfr.composicao_principal,
@@ -1114,9 +1123,8 @@ class Projeto:
                             self.obj_col_in.descricao,
                             self.obj_col_dfr.utilizacao,
                             self.obj_col_dfr.custo_unitario_total,
-                            self.obj_col_dfr.custo_total
                             ]
-        return dfr_materiais[ lista_colunas_ma ]
+        return self.obter_dfr_materiais_servicos()[ lista_colunas_ma ]
 
     def obter_dicionario_materiais_servicos_projeto( self ) -> dict:
         obj_precisao = Precisao()
@@ -1160,8 +1168,22 @@ class Projeto:
         dicionario_materiais[ self.obj_col_in.descricao ] = lista_descricao
         dicionario_materiais[ self.obj_col_dfr.custo_unitario_total ] = lista_preco_unitario_total
         dicionario_materiais[ self.obj_col_dfr.custo_total ] = lista_custo_total
-
         return dicionario_materiais
+
+    def obter_dfr_curva_abc_equipamento( self ) -> pd.core.frame.DataFrame:
+        obj_precisao_percentual_total = Precisao()
+        obj_precisao_percentual_acumulado = Precisao()
+        curva_abc = self.obter_dfr_equipamentos_servicos().groupby( by=[ self.obj_col_dfr.codigo, self.obj_col_dfr.descricao ], as_index=False )[ self.obj_col_dfr.custo_total ].sum()
+        curva_abc.sort_values( by=[ self.obj_col_dfr.custo_total ], inplace=True, ascending=False )
+        total = curva_abc[ self.obj_col_dfr.custo_total ].sum()
+        curva_abc[ self.obj_col_dfr.percentual_total ] = obj_precisao_percentual_total.percentual( curva_abc[ self.obj_col_dfr.custo_total] / total )
+        soma = 0
+        lista_acumulado = list()
+        for percentual_equipamento in curva_abc[ self.obj_col_dfr.percentual_total ]:
+            soma = obj_precisao_percentual_acumulado.percentual( soma + percentual_equipamento )
+            lista_acumulado.append( soma )
+        curva_abc[ self.obj_col_dfr.percentual_acumulado ] = lista_acumulado
+        return curva_abc
 
     def obter_dfr_servicos_projeto( self ) -> pd.core.frame.DataFrame:
         dfr_servicos = pd.DataFrame( self.obter_servicos_projeto() )

@@ -219,7 +219,7 @@ class TestComposicaoDF(unittest.TestCase):
 
     def test_result_of_associar_dfr_custos_apropriacoes_insumos( self ):
         resultado = self.obj_ComposicaoDF.associar_dfr_custos_apropriacoes_insumos()
-        esperado = pd.merge( self.obj_ComposicaoDF.associar_dfr_dados_basicos_apropriacoes_insumos(), self.obj_ComposicaoDF.dfr_custo_in, on=self.obj_col_dfr.codigo, how='left' )
+        esperado = pd.merge( self.obj_ComposicaoDF.associar_dfr_dados_basicos_apropriacoes_insumos(), self.obj_ComposicaoDF.dfr_custo_in, on=self.obj_col_dfr.codigo, how='left', suffixes=[None,'_y'] )
         pd._testing.assert_frame_equal( resultado, esperado )
     
     def test_result_of_calcular_sre_custo_equipamento( self ):

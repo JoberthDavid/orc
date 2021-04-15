@@ -33,6 +33,8 @@ class Precisao:
     def utilizacao_mao_de_obra( self, valor: float ) -> float:
         return round( valor, self._10_algarismos )
 
+    def percentual( self, valor: float ) -> float:
+        return round( valor, self._06_algarismos )
 
 class Data:
 
@@ -187,6 +189,10 @@ class Formatacao:
             self.dicionario_formatacao.update( {'bg_color': self.dicionario_cor[cor] } )
         else:
             self.dicionario_formatacao.update( {'bg_color':'white'} )
+
+    def algarismo_percentual( self ):
+        representacao_valor = '0.000%'
+        self.dicionario_formatacao.update( {'num_format': representacao_valor} )
 
     def algarismo_significativo( self, numero: int):
         representacao_valor = '###,###,###,##0'
@@ -409,6 +415,8 @@ class ListaColuna:
         self.custo_produtivo = 'Custo produtivo'
         self.momento_transporte_unitario = 'Momento transporte unitário'
         self.momento_transporte_total = 'Momento transporte total'
+        self.percentual_total = 'Percentual do total'
+        self.percentual_acumulado = 'Percentual acumulado'
 
 
     def configurar_custo_produtivo( self, onerado: bool ) -> str:

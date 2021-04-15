@@ -24,6 +24,7 @@ from escrita_resumo import (
                         FormatacaoEscritaResumoMaoDeObra,
                         FormatacaoEscritaResumoMaterial,
                         FormatacaoEscritaResumoServico,
+                        FormatacaoEscritaResumoABCEquipamento,
                     )
 from escrita_composicao import  (
                         FormatacaoComposicao,
@@ -46,7 +47,6 @@ def escrever_arquivo_excel( arquivo, projeto: Projeto, maximo_linhas_na_composic
     writer = pd.ExcelWriter( '{}.{}'.format( arquivo, 'xlsx' ), engine='xlsxwriter' )
 
     formato = FormatacaoComposicao( writer )
-
 
     ##### escreve resumo de serviços do projeto
     obj_format = FormatacaoEscritaResumoServico( writer )
@@ -78,28 +78,35 @@ def escrever_arquivo_excel( arquivo, projeto: Projeto, maximo_linhas_na_composic
 
     ##### escreve utilizações de transportes das composições
     obj_format = FormatacaoEscritaResumoTransporte( writer )
-    obj_configura_data_frame = ConfiguraDataFrame( projeto.obter_dfr_transportes_servicos(), obj_format)
+    obj_configura_data_frame = ConfiguraDataFrame( projeto.obter_dfr_transporte_utilizacao(), obj_format)
     dfr_transporte_utilizacao = obj_configura_data_frame.obter_data_frame_configurado()    
     obj_escrita = Escrita( obj_format, dados_projeto, dfr_transporte_utilizacao.shape[0] )
     writer = obj_escrita.obter_escritor_configurado()
 
     ##### escreve utilizações de equipamentos das composições
     obj_format = FormatacaoEscritaResumoEquipamento( writer )
-    obj_configura_data_frame = ConfiguraDataFrame( projeto.obter_dfr_equipamentos_servicos(), obj_format)
+    obj_configura_data_frame = ConfiguraDataFrame( projeto.obter_dfr_equipamento_utilizacao(), obj_format)
     dfr_equipamento_utilizacao = obj_configura_data_frame.obter_data_frame_configurado()    
     obj_escrita = Escrita( obj_format, dados_projeto, dfr_equipamento_utilizacao.shape[0] )
     writer = obj_escrita.obter_escritor_configurado()
 
+    ##### escreve curva abc de equipamentos das composições
+    obj_format = FormatacaoEscritaResumoABCEquipamento( writer )
+    obj_configura_data_frame = ConfiguraDataFrame( projeto.obter_dfr_curva_abc_equipamento(), obj_format)
+    dfr_curva_abc_equipamento = obj_configura_data_frame.obter_data_frame_configurado()    
+    obj_escrita = Escrita( obj_format, dados_projeto, dfr_curva_abc_equipamento.shape[0] )
+    writer = obj_escrita.obter_escritor_configurado()
+
     ##### escreve utilizações de mão de obra das composições
     obj_format = FormatacaoEscritaResumoMaoDeObra( writer )
-    obj_configura_data_frame = ConfiguraDataFrame( projeto.obter_dfr_mao_de_obra_servicos(), obj_format)
+    obj_configura_data_frame = ConfiguraDataFrame( projeto.obter_dfr_mao_de_obra_utilizacao(), obj_format)
     dfr_mao_de_obra_utilizacao = obj_configura_data_frame.obter_data_frame_configurado()    
     obj_escrita = Escrita( obj_format, dados_projeto, dfr_mao_de_obra_utilizacao.shape[0] )
     writer = obj_escrita.obter_escritor_configurado()
 
     ##### escreve utilizações de materiais das composições
     obj_format = FormatacaoEscritaResumoMaterial( writer )
-    obj_configura_data_frame = ConfiguraDataFrame( projeto.obter_dfr_materiais_servicos(), obj_format)
+    obj_configura_data_frame = ConfiguraDataFrame( projeto.obter_dfr_material_utilizacao(), obj_format)
     dfr_material_utilizacao = obj_configura_data_frame.obter_data_frame_configurado()    
     obj_escrita = Escrita( obj_format, dados_projeto, dfr_material_utilizacao.shape[0] )
     writer = obj_escrita.obter_escritor_configurado()
@@ -123,5 +130,7 @@ def escrever_arquivo_excel( arquivo, projeto: Projeto, maximo_linhas_na_composic
     obj_formatacao_condicional_n_mostrar = FormatacaoComposicaoCondicionalNaoMostrar( writer, obj_codigo, numero_linhas, formato.nome_tabela )
     for item in obj_formatacao_condicional_n_mostrar.lista_entrada_formatacao:
         writer.sheets[ formato.nome_tabela ].conditional_format( obj_formatacao_condicional_n_mostrar.entrada_area_formatacao, {'type':'text','criteria':'containing','value': item.codigo,'format': item.formatacao_condicional} )
+
+
 
     writer.save()
