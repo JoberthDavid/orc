@@ -866,7 +866,10 @@ class Projeto:
                             self.obj_col_dfr.descricao,
                             self.obj_col_dfr.unidade,
                             self.obj_col_dfr.item_transporte,
-                            self.obj_col_dfr.utilizacao
+                            self.obj_col_dfr.utilizacao,
+                            self.obj_col_dfr.dmt,
+                            self.obj_col_dfr.momento_transporte_unitario,
+                            self.obj_col_dfr.momento_transporte_total,
                             ]
         return dfr_transportes[ lista_colunas_tr ]
 
@@ -878,25 +881,35 @@ class Projeto:
         lista_transporte = list()
         lista_item_transportado = list()
         lista_fator_utilizacao = list()
+        lista_dmt = list()
+        lista_momento_transporte_unitario = list()
+        lista_momento_transporte_total = list()
         for item in self.obter_lista_atividades_auxiliares_servicos_projeto():
             for subitem in item:
                 lista_auxiliar_sub = self.obter_lista_transportes_composicao( subitem[0] )
                 for sub in lista_auxiliar_sub:
                     obj_composicaostr = ComposicaoStr( str(sub[0]) )
                     obj_transportestr = ComposicaoStr( str(sub[1]) )
-
+                    dmt = 0.0
                     sub[3] = obj_precisao.utilizacao_transporte( subitem[1] * sub[3] )
                     lista_fator_utilizacao.append( sub[3] )
                     lista_item_transportado.append( sub[2] )
                     lista_transporte.append( obj_transportestr.codigo )
                     lista_composicao_principal.append( obj_composicaostr.codigo )
                     lista_servico.append( item[0][0] )
+                    lista_dmt.append( dmt )
+                    momento_unitario = dmt * sub[3]
+                    lista_momento_transporte_unitario.append( momento_unitario )
+                    lista_momento_transporte_total.append( momento_unitario ) # multiplicar pela quantidade do serviço
 
+        dicionario_transportes[ self.obj_col_dfr.dmt ] = lista_dmt
         dicionario_transportes[ self.obj_col_dfr.utilizacao ] = lista_fator_utilizacao
         dicionario_transportes[ self.obj_col_dfr.item_transporte ] = lista_item_transportado
         dicionario_transportes[ self.obj_col_dfr.codigo ] = lista_transporte
         dicionario_transportes[ self.obj_col_dfr.composicao_principal ] = lista_composicao_principal
         dicionario_transportes[ self.obj_col_dfr.servico_orcamento ] = lista_servico
+        dicionario_transportes[ self.obj_col_dfr.momento_transporte_unitario ] = lista_momento_transporte_unitario
+        dicionario_transportes[ self.obj_col_dfr.momento_transporte_total ] = lista_momento_transporte_total
 
         return dicionario_transportes
     
@@ -926,6 +939,7 @@ class Projeto:
                             self.obj_col_dfr.quantidade_improdutiva,
                             self.obj_col_dfr.custo_produtivo,
                             self.obj_col_dfr.custo_improdutivo,
+                            self.obj_col_dfr.custo_unitario_total,
                             self.obj_col_dfr.custo_total
                             ]
         return dfr_equipamentos[ lista_colunas_eq ]
@@ -941,7 +955,8 @@ class Projeto:
         lista_descricao = list()
         lista_preco_produtivo = list()
         lista_preco_improdutivo = list()
-        lista_preco_total = list()
+        lista_preco_unitario_total = list()
+        lista_custo_total = list()
         for item in self.obter_lista_atividades_auxiliares_servicos_projeto():
             for subitem in item:
                 lista_auxiliar_sub = self.obter_lista_equipamentos_composicao( subitem[0] )
@@ -967,7 +982,8 @@ class Projeto:
                     lista_descricao.append( sub[4] )
                     lista_preco_produtivo.append( pp )
                     lista_preco_improdutivo.append( pi )
-                    lista_preco_total.append( pt )
+                    lista_preco_unitario_total.append( pt )
+                    lista_custo_total.append( pt ) # falta multiplicar pela quantidade do serviço principal
 
         dicionario_equipamentos[ self.obj_col_dfr.quantidade_improdutiva ] = lista_quantidade_improdutiva
         dicionario_equipamentos[ self.obj_col_dfr.quantidade_produtiva ] = lista_quantidade_produtiva
@@ -977,7 +993,8 @@ class Projeto:
         dicionario_equipamentos[ self.obj_col_in.descricao ] = lista_descricao
         dicionario_equipamentos[ self.obj_col_dfr.custo_produtivo ] = lista_preco_produtivo
         dicionario_equipamentos[ self.obj_col_dfr.custo_improdutivo ] = lista_preco_improdutivo
-        dicionario_equipamentos[ self.obj_col_dfr.custo_total ] = lista_preco_total
+        dicionario_equipamentos[ self.obj_col_dfr.custo_unitario_total ] = lista_preco_unitario_total
+        dicionario_equipamentos[ self.obj_col_dfr.custo_total ] = lista_custo_total
 
         return dicionario_equipamentos
 

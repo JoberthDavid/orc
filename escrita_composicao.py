@@ -30,7 +30,7 @@ class FormatacaoComposicaoCodigoInsumo(Formatacao):
         obj_formatacao = Formatacao( writer )
         obj_formatacao.alinhamento_centro()
         self.coluna = 'D:D'
-        self.largura = 1.8 * self.modulo
+        self.largura = 2.0 * self.modulo
         self.formatado = obj_formatacao.aplicar_formatacao()
 
 
@@ -52,7 +52,7 @@ class FormatacaoComposicaoItemTransportado(Formatacao):
         obj_formatacao = Formatacao( writer )
         obj_formatacao.alinhamento_centro()
         self.coluna = 'F:F'
-        self.largura = 1.8 * self.modulo
+        self.largura = 2.0 * self.modulo
         self.formatado = obj_formatacao.aplicar_formatacao()
 
 
@@ -63,7 +63,7 @@ class FormatacaoComposicaoDMT(Formatacao):
         obj_formatacao = Formatacao( writer )
         obj_formatacao.algarismo_significativo(1)
         self.coluna = 'G:G'
-        self.largura = 0.8 * self.modulo
+        self.largura = 2.0 * self.modulo
         self.formatado = obj_formatacao.aplicar_formatacao()
 
 
@@ -74,7 +74,7 @@ class FormatacaoComposicaoUnidade(Formatacao):
         obj_formatacao = Formatacao( writer )
         obj_formatacao.alinhamento_centro()
         self.coluna = 'H:H'
-        self.largura = 0.8 * self.modulo
+        self.largura = 2.0 * self.modulo
         self.formatado = obj_formatacao.aplicar_formatacao()
 
 
@@ -85,7 +85,7 @@ class FormatacaoComposicaoQuantidade(Formatacao):
         obj_formatacao = Formatacao( writer )
         obj_formatacao.algarismo_significativo(5)
         self.coluna = 'I:I'
-        self.largura = 2.5 * self.modulo
+        self.largura = 3.0 * self.modulo
         self.formatado = obj_formatacao.aplicar_formatacao()
 
 
@@ -107,7 +107,7 @@ class FormatacaoComposicaoCustoProdutivo(Formatacao):
         obj_formatacao = Formatacao( writer )
         obj_formatacao.algarismo_significativo(4)
         self.coluna = 'K:K'
-        self.largura = 2.7 * self.modulo
+        self.largura = 3.0 * self.modulo
         self.formatado = obj_formatacao.aplicar_formatacao()
 
 
@@ -118,7 +118,7 @@ class FormatacaoComposicaoCustoImrodutivo(Formatacao):
         obj_formatacao = Formatacao( writer )
         obj_formatacao.algarismo_significativo(4)
         self.coluna = 'L:L'
-        self.largura = 2.7 * self.modulo
+        self.largura = 3.0 * self.modulo
         self.formatado = obj_formatacao.aplicar_formatacao()
 
 
@@ -129,7 +129,7 @@ class FormatacaoComposicaoPrecoUnitario(Formatacao):
         obj_formatacao = Formatacao( writer )
         obj_formatacao.algarismo_significativo(4)
         self.coluna = 'M:M'
-        self.largura = 2.7 * self.modulo
+        self.largura = 3.0 * self.modulo
         self.formatado = obj_formatacao.aplicar_formatacao()
 
 
@@ -140,7 +140,7 @@ class FormatacaoComposicaoCustoTotal(Formatacao):
         obj_formatacao = Formatacao( writer )
         obj_formatacao.algarismo_significativo(4)
         self.coluna = 'N:N'
-        self.largura = 2.7 * self.modulo
+        self.largura = 3.0 * self.modulo
         self.formatado = obj_formatacao.aplicar_formatacao()
 
 

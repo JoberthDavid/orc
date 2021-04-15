@@ -392,6 +392,7 @@ class ListaColuna:
         self.quantidade_improdutiva = 'Quantidade improdutiva'
         self.unidade = 'Unidade'
         self.utilizacao = 'Utilização'
+        self.custo_unitario_total = 'Custo unitário total'
         self.custo_total = 'Custo total'
         self.dmt = 'DMT'
         self.estado = 'Estado'
@@ -406,6 +407,8 @@ class ListaColuna:
         self.custo_pro_desonerado = 'Custo produtivo desonerado'
         self.custo_pro_onerado = 'Custo produtivo onerado'
         self.custo_produtivo = 'Custo produtivo'
+        self.momento_transporte_unitario = 'Momento transporte unitário'
+        self.momento_transporte_total = 'Momento transporte total'
 
 
     def configurar_custo_produtivo( self, onerado: bool ) -> str:
