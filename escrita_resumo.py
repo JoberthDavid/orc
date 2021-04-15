@@ -328,14 +328,15 @@ class FormatacaoEscritaResumoMaoDeObra(FormatacaoEscrita):
     def __init__( self, writer ) -> None:
         super().__init__( writer )
         self.nome_tabela = 'UTILIZAÇÃO MÃO DE OBRA'
-        self.entrada_area_de_impressao = '$A${}:$G${}'
+        self.entrada_area_de_impressao = '$A${}:$H${}'
         self.obj_formatacao_servico.coluna = 'B:B'
         self.obj_formatacao_composicao.coluna = 'C:C'
         self.obj_formatacao_codigo.coluna = 'D:D'
         self.obj_formatacao_descricao.coluna = 'E:E'
         self.obj_formatacao_quantidade_desdobrada.coluna = 'F:F'
-        self.obj_formatacao_custo_total_desdobrado.coluna = 'G:G'
-        self.obj_formatacao_descricao.largura = 16.3 * self.obj_formatacao_descricao.modulo
+        self.obj_formatacao_preco_unitario.coluna = 'G:G'
+        self.obj_formatacao_custo_total_desdobrado.coluna = 'H:H'
+        self.obj_formatacao_descricao.largura = 13.8 * self.obj_formatacao_descricao.modulo
         self.lista_entrada_formatacao = [ 
                 self.obj_formatacao_id,
                 self.obj_formatacao_servico,
@@ -343,6 +344,7 @@ class FormatacaoEscritaResumoMaoDeObra(FormatacaoEscrita):
                 self.obj_formatacao_codigo,
                 self.obj_formatacao_descricao,
                 self.obj_formatacao_quantidade_desdobrada,
+                self.obj_formatacao_preco_unitario,                
                 self.obj_formatacao_custo_total_desdobrado,
             ]
         self.orientacao_retrato = False
@@ -353,14 +355,15 @@ class FormatacaoEscritaResumoMaterial(FormatacaoEscrita):
     def __init__( self, writer ) -> None:
         super().__init__( writer )
         self.nome_tabela = 'UTILIZAÇÃO MATERIAL'
-        self.entrada_area_de_impressao = '$A${}:$G${}'
+        self.entrada_area_de_impressao = '$A${}:$H${}'
         self.obj_formatacao_servico.coluna = 'B:B'
         self.obj_formatacao_composicao.coluna = 'C:C'
         self.obj_formatacao_codigo.coluna = 'D:D'
         self.obj_formatacao_descricao.coluna = 'E:E'
         self.obj_formatacao_quantidade_desdobrada.coluna = 'F:F'
-        self.obj_formatacao_custo_total_desdobrado.coluna = 'G:G'
-        self.obj_formatacao_descricao.largura = 16.3 * self.obj_formatacao_descricao.modulo
+        self.obj_formatacao_preco_unitario.coluna = 'G:G'
+        self.obj_formatacao_custo_total_desdobrado.coluna = 'H:H'
+        self.obj_formatacao_descricao.largura = 13.8 * self.obj_formatacao_descricao.modulo
         self.lista_entrada_formatacao = [ 
                 self.obj_formatacao_id,
                 self.obj_formatacao_servico,
@@ -368,6 +371,7 @@ class FormatacaoEscritaResumoMaterial(FormatacaoEscrita):
                 self.obj_formatacao_codigo,
                 self.obj_formatacao_descricao,
                 self.obj_formatacao_quantidade_desdobrada,
+                self.obj_formatacao_preco_unitario,
                 self.obj_formatacao_custo_total_desdobrado,
             ]
         self.orientacao_retrato = False

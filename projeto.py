@@ -885,12 +885,20 @@ class Projeto:
         lista_momento_transporte_unitario = list()
         lista_momento_transporte_total = list()
         for item in self.obter_lista_atividades_auxiliares_servicos_projeto():
+
+            for serv in self.servicos:
+                obj_p1 = ComposicaoStr( str(serv.codigo) )
+                obj_p2 = ComposicaoStr( str(item[0][0]) )
+
+                if obj_p1.codigo == obj_p2.codigo:
+                    quantidade_serv_principal = serv.quantidade
+
             for subitem in item:
                 lista_auxiliar_sub = self.obter_lista_transportes_composicao( subitem[0] )
                 for sub in lista_auxiliar_sub:
                     obj_composicaostr = ComposicaoStr( str(sub[0]) )
                     obj_transportestr = ComposicaoStr( str(sub[1]) )
-                    dmt = 0.0
+                    dmt = 10
                     sub[3] = obj_precisao.utilizacao_transporte( subitem[1] * sub[3] )
                     lista_fator_utilizacao.append( sub[3] )
                     lista_item_transportado.append( sub[2] )
@@ -900,7 +908,7 @@ class Projeto:
                     lista_dmt.append( dmt )
                     momento_unitario = dmt * sub[3]
                     lista_momento_transporte_unitario.append( momento_unitario )
-                    lista_momento_transporte_total.append( momento_unitario ) # multiplicar pela quantidade do serviço
+                    lista_momento_transporte_total.append( momento_unitario * quantidade_serv_principal )
 
         dicionario_transportes[ self.obj_col_dfr.dmt ] = lista_dmt
         dicionario_transportes[ self.obj_col_dfr.utilizacao ] = lista_fator_utilizacao
@@ -935,8 +943,8 @@ class Projeto:
                             self.obj_col_dfr.composicao_principal,
                             self.obj_col_dfr.codigo,
                             self.obj_col_in.descricao,
-                            self.obj_col_dfr.quantidade_produtiva,
-                            self.obj_col_dfr.quantidade_improdutiva,
+                            self.obj_col_dfr.utilizacao_produtiva,
+                            self.obj_col_dfr.utilizacao_improdutiva,
                             self.obj_col_dfr.custo_produtivo,
                             self.obj_col_dfr.custo_improdutivo,
                             self.obj_col_dfr.custo_unitario_total,
@@ -957,16 +965,24 @@ class Projeto:
         lista_preco_improdutivo = list()
         lista_preco_unitario_total = list()
         lista_custo_total = list()
+
         for item in self.obter_lista_atividades_auxiliares_servicos_projeto():
+
+            for serv in self.servicos:
+                obj_p1 = ComposicaoStr( str(serv.codigo) )
+                obj_p2 = ComposicaoStr( str(item[0][0]) )
+
+                if obj_p1.codigo == obj_p2.codigo:
+                    quantidade_serv_principal = serv.quantidade
+
             for subitem in item:
                 lista_auxiliar_sub = self.obter_lista_equipamentos_composicao( subitem[0] )
 
                 for sub in lista_auxiliar_sub:
                     obj_composicaostr = ComposicaoStr( str(sub[0]) )
-                    
-                    compstr = ComposicaoStr( str(sub[0]) )
-                    comp = self.dic_db_projeto[ compstr.codigo ]
-                    
+
+                    comp = self.dic_db_projeto[ obj_composicaostr.codigo ]
+
                     sub[2] =  subitem[1] * sub[2] * ( 1 + comp.fic )
                     
                     qi = obj_precisao.utilizacao_equipamento( sub[2] * (1 - sub[3]) / comp.produtividade )
@@ -983,10 +999,10 @@ class Projeto:
                     lista_preco_produtivo.append( pp )
                     lista_preco_improdutivo.append( pi )
                     lista_preco_unitario_total.append( pt )
-                    lista_custo_total.append( pt ) # falta multiplicar pela quantidade do serviço principal
+                    lista_custo_total.append( pt * quantidade_serv_principal )
 
-        dicionario_equipamentos[ self.obj_col_dfr.quantidade_improdutiva ] = lista_quantidade_improdutiva
-        dicionario_equipamentos[ self.obj_col_dfr.quantidade_produtiva ] = lista_quantidade_produtiva
+        dicionario_equipamentos[ self.obj_col_dfr.utilizacao_improdutiva ] = lista_quantidade_improdutiva
+        dicionario_equipamentos[ self.obj_col_dfr.utilizacao_produtiva ] = lista_quantidade_produtiva
         dicionario_equipamentos[ self.obj_col_dfr.codigo ] = lista_equipamento
         dicionario_equipamentos[ self.obj_col_dfr.composicao_principal ] = lista_composicao_principal
         dicionario_equipamentos[ self.obj_col_dfr.servico_orcamento ] = lista_servico
@@ -1019,8 +1035,9 @@ class Projeto:
                             self.obj_col_dfr.composicao_principal,
                             self.obj_col_dfr.codigo,
                             self.obj_col_in.descricao,
-                            self.obj_col_dfr.quantidade,
-                            self.obj_col_dfr.custo_total
+                            self.obj_col_dfr.utilizacao,
+                            self.obj_col_dfr.custo_unitario_total,
+                            self.obj_col_dfr.custo_total,
                             ]
         return dfr_mao_de_obra[ lista_colunas_mo ]
 
@@ -1032,8 +1049,18 @@ class Projeto:
         lista_mao_de_obra = list()
         lista_quantidade = list()
         lista_descricao = list()
-        lista_preco = list()
+        lista_preco_unitario_total = list()
+        lista_custo_total = list()
+
         for item in self.obter_lista_atividades_auxiliares_servicos_projeto():
+
+            for serv in self.servicos:
+                obj_p1 = ComposicaoStr( str(serv.codigo) )
+                obj_p2 = ComposicaoStr( str(item[0][0]) )
+
+                if obj_p1.codigo == obj_p2.codigo:
+                    quantidade_serv_principal = serv.quantidade
+
             for subitem in item:
                 lista_auxiliar_sub = self.obter_lista_mao_de_obra_composicao( subitem[0] )
 
@@ -1051,14 +1078,16 @@ class Projeto:
                     lista_composicao_principal.append( obj_composicaostr.codigo )
                     lista_servico.append( item[0][0] )
                     lista_descricao.append( sub[4] )
-                    lista_preco.append( pu )
+                    lista_preco_unitario_total.append( pu )
+                    lista_custo_total.append( pu * quantidade_serv_principal )
 
-        dicionario_mao_de_obra[ self.obj_col_dfr.quantidade ] = lista_quantidade
+        dicionario_mao_de_obra[ self.obj_col_dfr.utilizacao ] = lista_quantidade
         dicionario_mao_de_obra[ self.obj_col_dfr.codigo ] = lista_mao_de_obra
         dicionario_mao_de_obra[ self.obj_col_dfr.composicao_principal ] = lista_composicao_principal
         dicionario_mao_de_obra[ self.obj_col_dfr.servico_orcamento ] = lista_servico
         dicionario_mao_de_obra[ self.obj_col_in.descricao ] = lista_descricao
-        dicionario_mao_de_obra[ self.obj_col_dfr.custo_total ] = lista_preco
+        dicionario_mao_de_obra[ self.obj_col_dfr.custo_unitario_total ] = lista_preco_unitario_total
+        dicionario_mao_de_obra[ self.obj_col_dfr.custo_total ] = lista_custo_total
 
         return dicionario_mao_de_obra
 
@@ -1083,7 +1112,8 @@ class Projeto:
                             self.obj_col_dfr.composicao_principal,
                             self.obj_col_dfr.codigo,
                             self.obj_col_in.descricao,
-                            self.obj_col_dfr.quantidade,
+                            self.obj_col_dfr.utilizacao,
+                            self.obj_col_dfr.custo_unitario_total,
                             self.obj_col_dfr.custo_total
                             ]
         return dfr_materiais[ lista_colunas_ma ]
@@ -1096,8 +1126,17 @@ class Projeto:
         lista_material = list()
         lista_quantidade = list()
         lista_descricao = list()
-        lista_preco = list()
+        lista_preco_unitario_total = list()
+        lista_custo_total = list()
         for item in self.obter_lista_atividades_auxiliares_servicos_projeto():
+
+            for serv in self.servicos:
+                obj_p1 = ComposicaoStr( str(serv.codigo) )
+                obj_p2 = ComposicaoStr( str(item[0][0]) )
+
+                if obj_p1.codigo == obj_p2.codigo:
+                    quantidade_serv_principal = serv.quantidade
+
             for subitem in item:
                 lista_auxiliar_sub = self.obter_lista_materiais_composicao( subitem[0] )
 
@@ -1111,16 +1150,17 @@ class Projeto:
                     lista_composicao_principal.append( obj_composicaostr.codigo )
                     lista_servico.append( item[0][0] )
                     lista_descricao.append( sub[4] )
-                    lista_preco.append( pu )
+                    lista_preco_unitario_total.append( pu )
+                    lista_custo_total.append( pu * quantidade_serv_principal )
 
-        dicionario_materiais[ self.obj_col_dfr.quantidade ] = lista_quantidade
+        dicionario_materiais[ self.obj_col_dfr.utilizacao ] = lista_quantidade
         dicionario_materiais[ self.obj_col_dfr.codigo ] = lista_material
         dicionario_materiais[ self.obj_col_dfr.composicao_principal ] = lista_composicao_principal
         dicionario_materiais[ self.obj_col_dfr.servico_orcamento ] = lista_servico
         dicionario_materiais[ self.obj_col_in.descricao ] = lista_descricao
-        dicionario_materiais[ self.obj_col_dfr.custo_total ] = lista_preco
+        dicionario_materiais[ self.obj_col_dfr.custo_unitario_total ] = lista_preco_unitario_total
+        dicionario_materiais[ self.obj_col_dfr.custo_total ] = lista_custo_total
 
-        self.obter_servicos_projeto()
         return dicionario_materiais
 
     def obter_dfr_servicos_projeto( self ) -> pd.core.frame.DataFrame:
@@ -1164,8 +1204,6 @@ class Projeto:
         dicionario_servicos[ self.obj_col_dfr.unidade ] = lista_unidade
         dicionario_servicos[ self.obj_col_dfr.preco_unitario ] = lista_preco_unitario        
         dicionario_servicos[ self.obj_col_dfr.custo_total ] = lista_preco_total
-    
-        # print(dicionario_servicos)
-        
+           
         return dicionario_servicos
             
