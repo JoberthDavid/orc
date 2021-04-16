@@ -24,7 +24,12 @@ from escrita_resumo import (
                         FormatacaoEscritaResumoMaoDeObra,
                         FormatacaoEscritaResumoMaterial,
                         FormatacaoEscritaResumoServico,
+                        FormatacaoEscritaResumoABCServico,
                         FormatacaoEscritaResumoABCEquipamento,
+                        FormatacaoEscritaResumoABCMaoDeObra,
+                        FormatacaoEscritaResumoABCMaterial,
+                        FormatacaoABCCondicional,
+                        FormatacaoABCCondicionalAcumulado,
                     )
 from escrita_composicao import  (
                         FormatacaoComposicao,
@@ -54,6 +59,21 @@ def escrever_arquivo_excel( arquivo, projeto: Projeto, maximo_linhas_na_composic
     dfr_servico_resumo = obj_configura_data_frame.obter_data_frame_configurado()    
     obj_escrita = Escrita( obj_format, dados_projeto, dfr_servico_resumo.shape[0] )
     writer = obj_escrita.obter_escritor_configurado()
+    ##### escreve curva abc de serviços das composições
+    obj_format = FormatacaoEscritaResumoABCServico( writer )
+    obj_configura_data_frame = ConfiguraDataFrame( projeto.obter_dfr_curva_abc_servico(), obj_format)
+    dfr_curva_abc_servico = obj_configura_data_frame.obter_data_frame_configurado()    
+    obj_escrita = Escrita( obj_format, dados_projeto, dfr_curva_abc_servico.shape[0] )
+    writer = obj_escrita.obter_escritor_configurado()
+    # formatando a coluna de percentual acumulado da curva ABC
+    obj_formatacao_condicional_acumulado = FormatacaoABCCondicionalAcumulado( writer, obj_format.nome_tabela, projeto.numero_servico_unico )
+    for item in obj_formatacao_condicional_acumulado.lista_entrada_formatacao:
+        writer.sheets[ obj_format.nome_tabela ].conditional_format( obj_formatacao_condicional_acumulado.entrada_area_formatacao, {'type':'cell','criteria': item.criterio, 'value': item.value, 'format': item.formatacao_condicional} )
+    # formatando a coluna de percentual da curva ABC
+    obj_formatacao_condicional_percentual = FormatacaoABCCondicional( writer, obj_format.nome_tabela, projeto.numero_servico_unico )
+    for item in obj_formatacao_condicional_percentual.lista_entrada_formatacao:
+        writer.sheets[ obj_format.nome_tabela ].conditional_format( obj_formatacao_condicional_percentual.entrada_area_formatacao, {'type':'cell','criteria': item.criterio, 'value': item.value, 'format': item.formatacao_condicional} )
+
 
     ##### escreve custos de equipamentos das composições
     obj_format = FormatacaoEscritaCustoEquipamento( writer )
@@ -89,13 +109,21 @@ def escrever_arquivo_excel( arquivo, projeto: Projeto, maximo_linhas_na_composic
     dfr_equipamento_utilizacao = obj_configura_data_frame.obter_data_frame_configurado()    
     obj_escrita = Escrita( obj_format, dados_projeto, dfr_equipamento_utilizacao.shape[0] )
     writer = obj_escrita.obter_escritor_configurado()
-
     ##### escreve curva abc de equipamentos das composições
     obj_format = FormatacaoEscritaResumoABCEquipamento( writer )
     obj_configura_data_frame = ConfiguraDataFrame( projeto.obter_dfr_curva_abc_equipamento(), obj_format)
     dfr_curva_abc_equipamento = obj_configura_data_frame.obter_data_frame_configurado()    
     obj_escrita = Escrita( obj_format, dados_projeto, dfr_curva_abc_equipamento.shape[0] )
     writer = obj_escrita.obter_escritor_configurado()
+    # formatando a coluna de percentual acumulado da curva ABC
+    obj_formatacao_condicional_acumulado = FormatacaoABCCondicionalAcumulado( writer, obj_format.nome_tabela, projeto.numero_equipamento_unico )
+    for item in obj_formatacao_condicional_acumulado.lista_entrada_formatacao:
+        writer.sheets[ obj_format.nome_tabela ].conditional_format( obj_formatacao_condicional_acumulado.entrada_area_formatacao, {'type':'cell','criteria': item.criterio, 'value': item.value, 'format': item.formatacao_condicional} )
+    # formatando a coluna de percentual da curva ABC
+    obj_formatacao_condicional_percentual = FormatacaoABCCondicional( writer, obj_format.nome_tabela, projeto.numero_equipamento_unico )
+    for item in obj_formatacao_condicional_percentual.lista_entrada_formatacao:
+        writer.sheets[ obj_format.nome_tabela ].conditional_format( obj_formatacao_condicional_percentual.entrada_area_formatacao, {'type':'cell','criteria': item.criterio, 'value': item.value, 'format': item.formatacao_condicional} )
+
 
     ##### escreve utilizações de mão de obra das composições
     obj_format = FormatacaoEscritaResumoMaoDeObra( writer )
@@ -103,6 +131,21 @@ def escrever_arquivo_excel( arquivo, projeto: Projeto, maximo_linhas_na_composic
     dfr_mao_de_obra_utilizacao = obj_configura_data_frame.obter_data_frame_configurado()    
     obj_escrita = Escrita( obj_format, dados_projeto, dfr_mao_de_obra_utilizacao.shape[0] )
     writer = obj_escrita.obter_escritor_configurado()
+    ##### escreve curva abc de mão de obra das composições
+    obj_format = FormatacaoEscritaResumoABCMaoDeObra( writer )
+    obj_configura_data_frame = ConfiguraDataFrame( projeto.obter_dfr_curva_abc_mao_de_obra(), obj_format)
+    dfr_curva_abc_mao_de_obra = obj_configura_data_frame.obter_data_frame_configurado()    
+    obj_escrita = Escrita( obj_format, dados_projeto, dfr_curva_abc_mao_de_obra.shape[0] )
+    writer = obj_escrita.obter_escritor_configurado()
+    # formatando a coluna de percentual acumulado da curva ABC
+    obj_formatacao_condicional_acumulado = FormatacaoABCCondicionalAcumulado( writer, obj_format.nome_tabela, projeto.numero_mao_de_obra_unica )
+    for item in obj_formatacao_condicional_acumulado.lista_entrada_formatacao:
+        writer.sheets[ obj_format.nome_tabela ].conditional_format( obj_formatacao_condicional_acumulado.entrada_area_formatacao, {'type':'cell','criteria': item.criterio, 'value': item.value, 'format': item.formatacao_condicional} )
+    # formatando a coluna de percentual da curva ABC
+    obj_formatacao_condicional_percentual = FormatacaoABCCondicional( writer, obj_format.nome_tabela, projeto.numero_mao_de_obra_unica )
+    for item in obj_formatacao_condicional_percentual.lista_entrada_formatacao:
+        writer.sheets[ obj_format.nome_tabela ].conditional_format( obj_formatacao_condicional_percentual.entrada_area_formatacao, {'type':'cell','criteria': item.criterio, 'value': item.value, 'format': item.formatacao_condicional} )
+
 
     ##### escreve utilizações de materiais das composições
     obj_format = FormatacaoEscritaResumoMaterial( writer )
@@ -110,7 +153,23 @@ def escrever_arquivo_excel( arquivo, projeto: Projeto, maximo_linhas_na_composic
     dfr_material_utilizacao = obj_configura_data_frame.obter_data_frame_configurado()    
     obj_escrita = Escrita( obj_format, dados_projeto, dfr_material_utilizacao.shape[0] )
     writer = obj_escrita.obter_escritor_configurado()
+    ##### escreve curva abc de material das composições
+    obj_format = FormatacaoEscritaResumoABCMaterial( writer )
+    obj_configura_data_frame = ConfiguraDataFrame( projeto.obter_dfr_curva_abc_material(), obj_format)
+    dfr_curva_abc_material = obj_configura_data_frame.obter_data_frame_configurado()    
+    obj_escrita = Escrita( obj_format, dados_projeto, dfr_curva_abc_material.shape[0] )
+    writer = obj_escrita.obter_escritor_configurado()
+    # formatando a coluna de percentual acumulado da curva ABC
+    obj_formatacao_condicional_acumulado = FormatacaoABCCondicionalAcumulado( writer, obj_format.nome_tabela, projeto.numero_material_unico )
+    for item in obj_formatacao_condicional_acumulado.lista_entrada_formatacao:
+        writer.sheets[ obj_format.nome_tabela ].conditional_format( obj_formatacao_condicional_acumulado.entrada_area_formatacao, {'type':'cell','criteria': item.criterio, 'value': item.value, 'format': item.formatacao_condicional} )
+    # formatando a coluna de percentual da curva ABC
+    obj_formatacao_condicional_percentual = FormatacaoABCCondicional( writer, obj_format.nome_tabela, projeto.numero_material_unico )
+    for item in obj_formatacao_condicional_percentual.lista_entrada_formatacao:
+        writer.sheets[ obj_format.nome_tabela ].conditional_format( obj_formatacao_condicional_percentual.entrada_area_formatacao, {'type':'cell','criteria': item.criterio, 'value': item.value, 'format': item.formatacao_condicional} )
 
+
+    ##### escreve as composições
     for _df in dicionario.values():
         obj_configura_data_frame = ConfiguraDataFrame( _df.dfr_insumo, formato, linha_inicio)
         obj_formatacao_cabecalho = FormatacaoCabecalho( writer, _df.composicao, formato.nome_tabela )
@@ -121,7 +180,6 @@ def escrever_arquivo_excel( arquivo, projeto: Projeto, maximo_linhas_na_composic
 
     obj_escrita = Escrita( formato, dados_projeto, numero_linhas, numero_de_composicoes )
     writer = obj_escrita.obter_escritor_configurado()
-
     # formatando as linhas de custos horários e unitários
     obj_formatacao_condicional = FormatacaoComposicaoCondicional( writer, obj_codigo, numero_linhas, formato.nome_tabela )
     for item in obj_formatacao_condicional.lista_entrada_formatacao:

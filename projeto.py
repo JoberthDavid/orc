@@ -1183,6 +1183,55 @@ class Projeto:
             soma = obj_precisao_percentual_acumulado.percentual( soma + percentual_equipamento )
             lista_acumulado.append( soma )
         curva_abc[ self.obj_col_dfr.percentual_acumulado ] = lista_acumulado
+        self.numero_equipamento_unico = len( lista_acumulado )
+        return curva_abc
+
+    def obter_dfr_curva_abc_mao_de_obra( self ) -> pd.core.frame.DataFrame:
+        obj_precisao_percentual_total = Precisao()
+        obj_precisao_percentual_acumulado = Precisao()
+        curva_abc = self.obter_dfr_mao_de_obra_servicos().groupby( by=[ self.obj_col_dfr.codigo, self.obj_col_dfr.descricao ], as_index=False )[ self.obj_col_dfr.custo_total ].sum()
+        curva_abc.sort_values( by=[ self.obj_col_dfr.custo_total ], inplace=True, ascending=False )
+        total = curva_abc[ self.obj_col_dfr.custo_total ].sum()
+        curva_abc[ self.obj_col_dfr.percentual_total ] = obj_precisao_percentual_total.percentual( curva_abc[ self.obj_col_dfr.custo_total] / total )
+        soma = 0
+        lista_acumulado = list()
+        for percentual_mao_de_obra in curva_abc[ self.obj_col_dfr.percentual_total ]:
+            soma = obj_precisao_percentual_acumulado.percentual( soma + percentual_mao_de_obra )
+            lista_acumulado.append( soma )
+        curva_abc[ self.obj_col_dfr.percentual_acumulado ] = lista_acumulado
+        self.numero_mao_de_obra_unica = len( lista_acumulado )
+        return curva_abc
+
+    def obter_dfr_curva_abc_material( self ) -> pd.core.frame.DataFrame:
+        obj_precisao_percentual_total = Precisao()
+        obj_precisao_percentual_acumulado = Precisao()
+        curva_abc = self.obter_dfr_materiais_servicos().groupby( by=[ self.obj_col_dfr.codigo, self.obj_col_dfr.descricao ], as_index=False )[ self.obj_col_dfr.custo_total ].sum()
+        curva_abc.sort_values( by=[ self.obj_col_dfr.custo_total ], inplace=True, ascending=False )
+        total = curva_abc[ self.obj_col_dfr.custo_total ].sum()
+        curva_abc[ self.obj_col_dfr.percentual_total ] = obj_precisao_percentual_total.percentual( curva_abc[ self.obj_col_dfr.custo_total] / total )
+        soma = 0
+        lista_acumulado = list()
+        for percentual_material in curva_abc[ self.obj_col_dfr.percentual_total ]:
+            soma = obj_precisao_percentual_acumulado.percentual( soma + percentual_material )
+            lista_acumulado.append( soma )
+        curva_abc[ self.obj_col_dfr.percentual_acumulado ] = lista_acumulado
+        self.numero_material_unico = len( lista_acumulado )
+        return curva_abc
+
+    def obter_dfr_curva_abc_servico( self ) -> pd.core.frame.DataFrame:
+        obj_precisao_percentual_total = Precisao()
+        obj_precisao_percentual_acumulado = Precisao()
+        curva_abc = self.obter_dfr_servicos_projeto().groupby( by=[ self.obj_col_dfr.servico_orcamento, self.obj_col_dfr.descricao ], as_index=False )[ self.obj_col_dfr.custo_total ].sum()
+        curva_abc.sort_values( by=[ self.obj_col_dfr.custo_total ], inplace=True, ascending=False )
+        total = curva_abc[ self.obj_col_dfr.custo_total ].sum()
+        curva_abc[ self.obj_col_dfr.percentual_total ] = obj_precisao_percentual_total.percentual( curva_abc[ self.obj_col_dfr.custo_total] / total )
+        soma = 0
+        lista_acumulado = list()
+        for percentual_servico in curva_abc[ self.obj_col_dfr.percentual_total ]:
+            soma = obj_precisao_percentual_acumulado.percentual( soma + percentual_servico )
+            lista_acumulado.append( soma )
+        curva_abc[ self.obj_col_dfr.percentual_acumulado ] = lista_acumulado
+        self.numero_servico_unico = len( lista_acumulado )
         return curva_abc
 
     def obter_dfr_servicos_projeto( self ) -> pd.core.frame.DataFrame:
