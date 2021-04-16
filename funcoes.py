@@ -30,6 +30,7 @@ from escrita_resumo import (
                         FormatacaoEscritaResumoABCMaterial,
                         FormatacaoABCCondicional,
                         FormatacaoABCCondicionalAcumulado,
+                        FormatacaoABCCondicionalAcumuladoEquipamento,
                     )
 from escrita_composicao import  (
                         FormatacaoComposicao,
@@ -68,7 +69,7 @@ def escrever_arquivo_excel( arquivo, projeto: Projeto, maximo_linhas_na_composic
     # formatando a coluna de percentual acumulado da curva ABC
     obj_formatacao_condicional_acumulado = FormatacaoABCCondicionalAcumulado( writer, obj_format.nome_tabela, projeto.numero_servico_unico )
     for item in obj_formatacao_condicional_acumulado.lista_entrada_formatacao:
-        writer.sheets[ obj_format.nome_tabela ].conditional_format( obj_formatacao_condicional_acumulado.entrada_area_formatacao, {'type':'cell','criteria': item.criterio, 'value': item.value, 'format': item.formatacao_condicional} )
+        writer.sheets[ obj_format.nome_tabela ].conditional_format( obj_formatacao_condicional_acumulado.entrada_area_formatacao, {'type':'cell','criteria': item.criterio, 'minimum': item.value_min, 'maximum': item.value_max, 'format': item.formatacao_condicional} )
     # formatando a coluna de percentual da curva ABC
     obj_formatacao_condicional_percentual = FormatacaoABCCondicional( writer, obj_format.nome_tabela, projeto.numero_servico_unico )
     for item in obj_formatacao_condicional_percentual.lista_entrada_formatacao:
@@ -116,13 +117,9 @@ def escrever_arquivo_excel( arquivo, projeto: Projeto, maximo_linhas_na_composic
     obj_escrita = Escrita( obj_format, dados_projeto, dfr_curva_abc_equipamento.shape[0] )
     writer = obj_escrita.obter_escritor_configurado()
     # formatando a coluna de percentual acumulado da curva ABC
-    obj_formatacao_condicional_acumulado = FormatacaoABCCondicionalAcumulado( writer, obj_format.nome_tabela, projeto.numero_equipamento_unico )
+    obj_formatacao_condicional_acumulado = FormatacaoABCCondicionalAcumuladoEquipamento( writer, obj_format.nome_tabela, projeto.numero_equipamento_unico )
     for item in obj_formatacao_condicional_acumulado.lista_entrada_formatacao:
-        writer.sheets[ obj_format.nome_tabela ].conditional_format( obj_formatacao_condicional_acumulado.entrada_area_formatacao, {'type':'cell','criteria': item.criterio, 'value': item.value, 'format': item.formatacao_condicional} )
-    # formatando a coluna de percentual da curva ABC
-    obj_formatacao_condicional_percentual = FormatacaoABCCondicional( writer, obj_format.nome_tabela, projeto.numero_equipamento_unico )
-    for item in obj_formatacao_condicional_percentual.lista_entrada_formatacao:
-        writer.sheets[ obj_format.nome_tabela ].conditional_format( obj_formatacao_condicional_percentual.entrada_area_formatacao, {'type':'cell','criteria': item.criterio, 'value': item.value, 'format': item.formatacao_condicional} )
+        writer.sheets[ obj_format.nome_tabela ].conditional_format( obj_formatacao_condicional_acumulado.entrada_area_formatacao, {'type':'cell','criteria': item.criterio, 'minimum': item.value_min, 'maximum': item.value_max, 'format': item.formatacao_condicional} )
 
 
     ##### escreve utilizações de mão de obra das composições
@@ -140,11 +137,7 @@ def escrever_arquivo_excel( arquivo, projeto: Projeto, maximo_linhas_na_composic
     # formatando a coluna de percentual acumulado da curva ABC
     obj_formatacao_condicional_acumulado = FormatacaoABCCondicionalAcumulado( writer, obj_format.nome_tabela, projeto.numero_mao_de_obra_unica )
     for item in obj_formatacao_condicional_acumulado.lista_entrada_formatacao:
-        writer.sheets[ obj_format.nome_tabela ].conditional_format( obj_formatacao_condicional_acumulado.entrada_area_formatacao, {'type':'cell','criteria': item.criterio, 'value': item.value, 'format': item.formatacao_condicional} )
-    # formatando a coluna de percentual da curva ABC
-    obj_formatacao_condicional_percentual = FormatacaoABCCondicional( writer, obj_format.nome_tabela, projeto.numero_mao_de_obra_unica )
-    for item in obj_formatacao_condicional_percentual.lista_entrada_formatacao:
-        writer.sheets[ obj_format.nome_tabela ].conditional_format( obj_formatacao_condicional_percentual.entrada_area_formatacao, {'type':'cell','criteria': item.criterio, 'value': item.value, 'format': item.formatacao_condicional} )
+        writer.sheets[ obj_format.nome_tabela ].conditional_format( obj_formatacao_condicional_acumulado.entrada_area_formatacao, {'type':'cell','criteria': item.criterio, 'minimum': item.value_min, 'maximum': item.value_max, 'format': item.formatacao_condicional} )
 
 
     ##### escreve utilizações de materiais das composições
@@ -162,11 +155,7 @@ def escrever_arquivo_excel( arquivo, projeto: Projeto, maximo_linhas_na_composic
     # formatando a coluna de percentual acumulado da curva ABC
     obj_formatacao_condicional_acumulado = FormatacaoABCCondicionalAcumulado( writer, obj_format.nome_tabela, projeto.numero_material_unico )
     for item in obj_formatacao_condicional_acumulado.lista_entrada_formatacao:
-        writer.sheets[ obj_format.nome_tabela ].conditional_format( obj_formatacao_condicional_acumulado.entrada_area_formatacao, {'type':'cell','criteria': item.criterio, 'value': item.value, 'format': item.formatacao_condicional} )
-    # formatando a coluna de percentual da curva ABC
-    obj_formatacao_condicional_percentual = FormatacaoABCCondicional( writer, obj_format.nome_tabela, projeto.numero_material_unico )
-    for item in obj_formatacao_condicional_percentual.lista_entrada_formatacao:
-        writer.sheets[ obj_format.nome_tabela ].conditional_format( obj_formatacao_condicional_percentual.entrada_area_formatacao, {'type':'cell','criteria': item.criterio, 'value': item.value, 'format': item.formatacao_condicional} )
+        writer.sheets[ obj_format.nome_tabela ].conditional_format( obj_formatacao_condicional_acumulado.entrada_area_formatacao, {'type':'cell','criteria': item.criterio, 'minimum': item.value_min, 'maximum': item.value_max, 'format': item.formatacao_condicional} )
 
 
     ##### escreve as composições

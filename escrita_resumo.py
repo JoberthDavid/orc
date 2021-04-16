@@ -159,7 +159,7 @@ class FormatacaoResumoPercentual(Formatacao):
         obj_formatacao.algarismo_percentual()
         self.formatado = obj_formatacao.aplicar_formatacao()
         self.coluna = ''
-        self.largura = 2.5 * self.modulo
+        self.largura = 2.0 * self.modulo
 
 
 class FormatacaoEscrita:
@@ -177,6 +177,9 @@ class FormatacaoEscrita:
         self.obj_formatacao_descricao = FormatacaoResumoDescricao( writer )
         self.obj_formatacao_unidade = FormatacaoResumoUnidade( writer )
         self.obj_formatacao_quantidade = FormatacaoResumoQuantidade( writer )
+        self.obj_formatacao_quantidade_hora_produtiva = FormatacaoResumoQuantidade( writer )
+        self.obj_formatacao_quantidade_hora_improdutiva = FormatacaoResumoQuantidade( writer )
+        self.obj_formatacao_quantidade_hora_total = FormatacaoResumoQuantidade( writer )
         self.obj_formatacao_preco_unitario = FormatacaoResumoPrecoUnitario( writer )
         self.obj_formatacao_custo_total = FormatacaoResumoCustoTotal( writer )
         self.obj_formatacao_quantidade_desdobrada = FormatacaoResumoQuantidadeDesdobrada( writer )
@@ -413,17 +416,23 @@ class FormatacaoEscritaResumoABCEquipamento(FormatacaoEscrita):
     def __init__( self, writer ) -> None:
         super().__init__( writer )
         self.nome_tabela = 'ABC EQUIPAMENTO ORÇAMENTO'
-        self.entrada_area_de_impressao = '$A${}:$F${}'
+        self.entrada_area_de_impressao = '$A${}:$I${}'
         self.obj_formatacao_codigo.coluna = 'B:B'
         self.obj_formatacao_descricao.coluna = 'C:C'
-        self.obj_formatacao_custo_total.coluna = 'D:D'
-        self.obj_formatacao_percentual.coluna = 'E:E'
-        self.obj_formatacao_percentual_acumulado.coluna = 'F:F'
-        self.obj_formatacao_descricao.largura = 16.3 * self.obj_formatacao_descricao.modulo
+        self.obj_formatacao_quantidade_hora_produtiva.coluna = 'D:D'
+        self.obj_formatacao_quantidade_hora_improdutiva.coluna = 'E:E'
+        self.obj_formatacao_quantidade_hora_total.coluna = 'F:F'
+        self.obj_formatacao_custo_total.coluna = 'G:G'
+        self.obj_formatacao_percentual.coluna = 'H:H'
+        self.obj_formatacao_percentual_acumulado.coluna = 'I:I'
+        self.obj_formatacao_descricao.largura = 11.0 * self.obj_formatacao_descricao.modulo
         self.lista_entrada_formatacao = [ 
                 self.obj_formatacao_id,
                 self.obj_formatacao_codigo,
                 self.obj_formatacao_descricao,
+                self.obj_formatacao_quantidade_hora_produtiva,
+                self.obj_formatacao_quantidade_hora_improdutiva,
+                self.obj_formatacao_quantidade_hora_total,
                 self.obj_formatacao_custo_total,
                 self.obj_formatacao_percentual,
                 self.obj_formatacao_percentual_acumulado,
@@ -437,17 +446,19 @@ class FormatacaoEscritaResumoABCMaoDeObra(FormatacaoEscrita):
     def __init__( self, writer ) -> None:
         super().__init__( writer )
         self.nome_tabela = 'ABC MÃO DE OBRA ORÇAMENTO'
-        self.entrada_area_de_impressao = '$A${}:$F${}'
+        self.entrada_area_de_impressao = '$A${}:$G${}'
         self.obj_formatacao_codigo.coluna = 'B:B'
         self.obj_formatacao_descricao.coluna = 'C:C'
-        self.obj_formatacao_custo_total.coluna = 'D:D'
-        self.obj_formatacao_percentual.coluna = 'E:E'
-        self.obj_formatacao_percentual_acumulado.coluna = 'F:F'
-        self.obj_formatacao_descricao.largura = 16.3 * self.obj_formatacao_descricao.modulo
+        self.obj_formatacao_quantidade.coluna = 'D:D'
+        self.obj_formatacao_custo_total.coluna = 'E:E'
+        self.obj_formatacao_percentual.coluna = 'F:F'
+        self.obj_formatacao_percentual_acumulado.coluna = 'G:G'
+        self.obj_formatacao_descricao.largura = 15.3 * self.obj_formatacao_descricao.modulo
         self.lista_entrada_formatacao = [ 
                 self.obj_formatacao_id,
                 self.obj_formatacao_codigo,
                 self.obj_formatacao_descricao,
+                self.obj_formatacao_quantidade,
                 self.obj_formatacao_custo_total,
                 self.obj_formatacao_percentual,
                 self.obj_formatacao_percentual_acumulado,
@@ -460,17 +471,19 @@ class FormatacaoEscritaResumoABCMaterial(FormatacaoEscrita):
     def __init__( self, writer ) -> None:
         super().__init__( writer )
         self.nome_tabela = 'ABC MATERIAL ORÇAMENTO'
-        self.entrada_area_de_impressao = '$A${}:$F${}'
+        self.entrada_area_de_impressao = '$A${}:$G${}'
         self.obj_formatacao_codigo.coluna = 'B:B'
         self.obj_formatacao_descricao.coluna = 'C:C'
-        self.obj_formatacao_custo_total.coluna = 'D:D'
-        self.obj_formatacao_percentual.coluna = 'E:E'
-        self.obj_formatacao_percentual_acumulado.coluna = 'F:F'
-        self.obj_formatacao_descricao.largura = 16.3 * self.obj_formatacao_descricao.modulo
+        self.obj_formatacao_quantidade.coluna = 'D:D'
+        self.obj_formatacao_custo_total.coluna = 'E:E'
+        self.obj_formatacao_percentual.coluna = 'F:F'
+        self.obj_formatacao_percentual_acumulado.coluna = 'G:G'
+        self.obj_formatacao_descricao.largura = 15.3 * self.obj_formatacao_descricao.modulo
         self.lista_entrada_formatacao = [ 
                 self.obj_formatacao_id,
                 self.obj_formatacao_codigo,
                 self.obj_formatacao_descricao,
+                self.obj_formatacao_quantidade,
                 self.obj_formatacao_custo_total,
                 self.obj_formatacao_percentual,
                 self.obj_formatacao_percentual_acumulado,
@@ -483,17 +496,19 @@ class FormatacaoEscritaResumoABCServico(FormatacaoEscrita):
     def __init__( self, writer ) -> None:
         super().__init__( writer )
         self.nome_tabela = 'ABC SERVIÇO ORÇAMENTO'
-        self.entrada_area_de_impressao = '$A${}:$F${}'
+        self.entrada_area_de_impressao = '$A${}:$G${}'
         self.obj_formatacao_codigo.coluna = 'B:B'
         self.obj_formatacao_descricao.coluna = 'C:C'
-        self.obj_formatacao_custo_total.coluna = 'D:D'
-        self.obj_formatacao_percentual.coluna = 'E:E'
-        self.obj_formatacao_percentual_acumulado.coluna = 'F:F'
-        self.obj_formatacao_descricao.largura = 16.3 * self.obj_formatacao_descricao.modulo
+        self.obj_formatacao_quantidade.coluna = 'D:D'
+        self.obj_formatacao_custo_total.coluna = 'E:E'
+        self.obj_formatacao_percentual.coluna = 'F:F'
+        self.obj_formatacao_percentual_acumulado.coluna = 'G:G'
+        self.obj_formatacao_descricao.largura = 15.3 * self.obj_formatacao_descricao.modulo
         self.lista_entrada_formatacao = [ 
                 self.obj_formatacao_id,
                 self.obj_formatacao_codigo,
                 self.obj_formatacao_descricao,
+                self.obj_formatacao_quantidade,
                 self.obj_formatacao_custo_total,
                 self.obj_formatacao_percentual,
                 self.obj_formatacao_percentual_acumulado,
@@ -503,32 +518,37 @@ class FormatacaoEscritaResumoABCServico(FormatacaoEscrita):
 
 class FormatacaoCondicionalResumoPercentualAcumulado(Formatacao):
 
-    def __init__( self, writer ) -> None:
+    def __init__( self, writer, cor ) -> None:
         super().__init__( writer )
         obj_formatacao = Formatacao( writer )
-        obj_formatacao.cor_fundo('amarelo-escuro-dnit')
+        obj_formatacao.cor_fundo( cor )
         self.formatado = obj_formatacao.aplicar_formatacao()
 
 
 class ObjetoCondicionalABCacumulado:
 
-    def __init__( self, writer ) -> None:
-        formatacao_condicional = FormatacaoCondicionalResumoPercentualAcumulado( writer )
+    def __init__( self, writer, cor='amarelo-escuro-dnit' ) -> None:
+        formatacao_condicional = FormatacaoCondicionalResumoPercentualAcumulado( writer, cor )
         self.formatacao_condicional = formatacao_condicional.formatado
-        self.criterio = '<='
-        self.value = 0.8
+        self.criterio = 'between'
+        self.value_min = 0
+        self.value_max = 0.5
 
 
-class FormatacaoABCCondicionalAcumulado:
+class FormatacaoABCCondicionalAcumuladoEquipamento:
 
-    def __init__( self, writer, nome_tabela, numero_linhas=500  ) -> None:
+    def __init__( self, writer, nome_tabela, numero_linhas  ) -> None:
         self.writer = writer
         self.numero_linhas = numero_linhas
         self.nome_tabela = nome_tabela
-        self.entrada_area_formatacao = '$F$1:$F${}'.format( numero_linhas )
-        self.obj_formato_percentual_acumualdo = ObjetoCondicionalABCacumulado( writer )
+        self.entrada_area_formatacao = '$I$1:$I${}'.format( numero_linhas )
+        self.obj_formato_percentual_acumulado_faixa_a = ObjetoCondicionalABCacumulado( writer )
+        self.obj_formato_percentual_acumulado_faixa_b = ObjetoCondicionalABCacumulado( writer, cor='azul-claro-dnit' )
+        self.obj_formato_percentual_acumulado_faixa_b.value_min = self.obj_formato_percentual_acumulado_faixa_a.value_max
+        self.obj_formato_percentual_acumulado_faixa_b.value_max = 0.8
         self.lista_entrada_formatacao = [ 
-                self.obj_formato_percentual_acumualdo,
+                self.obj_formato_percentual_acumulado_faixa_a,
+                self.obj_formato_percentual_acumulado_faixa_b,
             ]
 
 
@@ -537,7 +557,7 @@ class FormatacaoCondicionalResumoPercentual(Formatacao):
     def __init__( self, writer ) -> None:
         super().__init__( writer )
         obj_formatacao = Formatacao( writer )
-        obj_formatacao.cor_fundo('azul-claro-dnit')
+        obj_formatacao.cor_fundo('cinza-claro-dnit')
         self.formatado = obj_formatacao.aplicar_formatacao()
 
 
@@ -552,12 +572,28 @@ class ObjetoCondicionalABC:
 
 class FormatacaoABCCondicional:
 
-    def __init__( self, writer, nome_tabela, numero_linhas=500 ) -> None:
+    def __init__( self, writer, nome_tabela, numero_linhas ) -> None:
         self.writer = writer
         self.numero_linhas = numero_linhas
         self.nome_tabela = nome_tabela
-        self.entrada_area_formatacao = '$E$1:$E${}'.format( numero_linhas )
+        self.entrada_area_formatacao = '$F$1:$F${}'.format( numero_linhas )
         self.obj_formato_percentual_acumualdo = ObjetoCondicionalABC( writer )
         self.lista_entrada_formatacao = [ 
                 self.obj_formato_percentual_acumualdo,
+            ]
+
+class FormatacaoABCCondicionalAcumulado:
+
+    def __init__( self, writer, nome_tabela, numero_linhas  ) -> None:
+        self.writer = writer
+        self.numero_linhas = numero_linhas
+        self.nome_tabela = nome_tabela
+        self.entrada_area_formatacao = '$G$1:$G${}'.format( numero_linhas )
+        self.obj_formato_percentual_acumulado_faixa_a = ObjetoCondicionalABCacumulado( writer )
+        self.obj_formato_percentual_acumulado_faixa_b = ObjetoCondicionalABCacumulado( writer, cor='azul-claro-dnit' )
+        self.obj_formato_percentual_acumulado_faixa_b.value_min = self.obj_formato_percentual_acumulado_faixa_a.value_max
+        self.obj_formato_percentual_acumulado_faixa_b.value_max = 0.8
+        self.lista_entrada_formatacao = [ 
+                self.obj_formato_percentual_acumulado_faixa_a,
+                self.obj_formato_percentual_acumulado_faixa_b,
             ]

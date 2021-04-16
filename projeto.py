@@ -965,14 +965,14 @@ class Projeto:
         lista_servico = list()
         lista_composicao_principal = list()
         lista_equipamento = list()
-        lista_quantidade_produtiva = list()
-        lista_quantidade_improdutiva = list()
+        lista_utilizacao_produtiva = list()
+        lista_utilizacao_improdutiva = list()
         lista_descricao = list()
         lista_preco_produtivo = list()
         lista_preco_improdutivo = list()
         lista_preco_unitario_total = list()
         lista_custo_total = list()
-
+        lista_quantidade_servico = list()
         for item in self.obter_lista_atividades_auxiliares_servicos_projeto():
 
             for serv in self.servicos:
@@ -993,12 +993,12 @@ class Projeto:
                     sub[2] =  subitem[1] * sub[2] * ( 1 + comp.fic )
                     
                     qi = obj_precisao.utilizacao_equipamento( sub[2] * (1 - sub[3]) / comp.produtividade )
-                    lista_quantidade_improdutiva.append( qi )
+                    lista_utilizacao_improdutiva.append( qi )
                     qp = obj_precisao.utilizacao_equipamento( sub[2] * sub[3] / comp.produtividade )
                     pp = obj_precisao.custo( qp * sub[5] )
                     pi = obj_precisao.custo( qi * sub[6] )
                     pt = pp + pi
-                    lista_quantidade_produtiva.append( qp )
+                    lista_utilizacao_produtiva.append( qp )
                     lista_equipamento.append( sub[1] )
                     lista_composicao_principal.append( obj_composicaostr.codigo )
                     lista_servico.append( item[0][0] )
@@ -1007,9 +1007,10 @@ class Projeto:
                     lista_preco_improdutivo.append( pi )
                     lista_preco_unitario_total.append( pt )
                     lista_custo_total.append( pt * quantidade_serv_principal )
+                    lista_quantidade_servico.append( quantidade_serv_principal )
 
-        dicionario_equipamentos[ self.obj_col_dfr.utilizacao_improdutiva ] = lista_quantidade_improdutiva
-        dicionario_equipamentos[ self.obj_col_dfr.utilizacao_produtiva ] = lista_quantidade_produtiva
+        dicionario_equipamentos[ self.obj_col_dfr.utilizacao_improdutiva ] = lista_utilizacao_improdutiva
+        dicionario_equipamentos[ self.obj_col_dfr.utilizacao_produtiva ] = lista_utilizacao_produtiva
         dicionario_equipamentos[ self.obj_col_dfr.codigo ] = lista_equipamento
         dicionario_equipamentos[ self.obj_col_dfr.composicao_principal ] = lista_composicao_principal
         dicionario_equipamentos[ self.obj_col_dfr.servico_orcamento ] = lista_servico
@@ -1018,7 +1019,7 @@ class Projeto:
         dicionario_equipamentos[ self.obj_col_dfr.custo_improdutivo ] = lista_preco_improdutivo
         dicionario_equipamentos[ self.obj_col_dfr.custo_unitario_total ] = lista_preco_unitario_total
         dicionario_equipamentos[ self.obj_col_dfr.custo_total ] = lista_custo_total
-
+        dicionario_equipamentos[ self.obj_col_dfr.quantidade ] = lista_quantidade_servico
         return dicionario_equipamentos
 
     def obter_lista_mao_de_obra_composicao( self, codigo: str ) -> list:
@@ -1055,11 +1056,11 @@ class Projeto:
         lista_servico = list()
         lista_composicao_principal = list()
         lista_mao_de_obra = list()
-        lista_quantidade = list()
+        lista_utilizacao = list()
         lista_descricao = list()
         lista_preco_unitario_total = list()
         lista_custo_total = list()
-
+        lista_quantidade_servico = list()
         for item in self.obter_lista_atividades_auxiliares_servicos_projeto():
 
             for serv in self.servicos:
@@ -1081,21 +1082,23 @@ class Projeto:
                     sub[2] = subitem[1] * sub[2] * ( 1 + comp.fic )
                     qmo = obj_precisao.utilizacao_mao_de_obra( sub[2] / comp.produtividade )
                     pu = obj_precisao.custo( qmo * sub[5] )
-                    lista_quantidade.append( qmo )
+                    lista_utilizacao.append( qmo )
                     lista_mao_de_obra.append( sub[1] )
                     lista_composicao_principal.append( obj_composicaostr.codigo )
                     lista_servico.append( item[0][0] )
                     lista_descricao.append( sub[4] )
                     lista_preco_unitario_total.append( pu )
                     lista_custo_total.append( pu * quantidade_serv_principal )
+                    lista_quantidade_servico.append( quantidade_serv_principal )
 
-        dicionario_mao_de_obra[ self.obj_col_dfr.utilizacao ] = lista_quantidade
+        dicionario_mao_de_obra[ self.obj_col_dfr.utilizacao ] = lista_utilizacao
         dicionario_mao_de_obra[ self.obj_col_dfr.codigo ] = lista_mao_de_obra
         dicionario_mao_de_obra[ self.obj_col_dfr.composicao_principal ] = lista_composicao_principal
         dicionario_mao_de_obra[ self.obj_col_dfr.servico_orcamento ] = lista_servico
         dicionario_mao_de_obra[ self.obj_col_in.descricao ] = lista_descricao
         dicionario_mao_de_obra[ self.obj_col_dfr.custo_unitario_total ] = lista_preco_unitario_total
         dicionario_mao_de_obra[ self.obj_col_dfr.custo_total ] = lista_custo_total
+        dicionario_mao_de_obra[ self.obj_col_dfr.quantidade ] = lista_quantidade_servico
         return dicionario_mao_de_obra
 
     def obter_lista_materiais_composicao( self, codigo: str ) -> list:
@@ -1132,7 +1135,8 @@ class Projeto:
         lista_servico = list()
         lista_composicao_principal = list()
         lista_material = list()
-        lista_quantidade = list()
+        lista_quantidade_servico = list()
+        lista_utilizacao = list()
         lista_descricao = list()
         lista_preco_unitario_total = list()
         lista_custo_total = list()
@@ -1153,27 +1157,34 @@ class Projeto:
 
                     sub[2] = obj_precisao.utilizacao_material( subitem[1] * sub[2] )
                     pu = obj_precisao.custo( sub[2] * sub[5] )
-                    lista_quantidade.append( sub[2] )
+                    lista_utilizacao.append( sub[2] )
                     lista_material.append( sub[1] )
                     lista_composicao_principal.append( obj_composicaostr.codigo )
                     lista_servico.append( item[0][0] )
                     lista_descricao.append( sub[4] )
                     lista_preco_unitario_total.append( pu )
                     lista_custo_total.append( pu * quantidade_serv_principal )
+                    lista_quantidade_servico.append( quantidade_serv_principal )
 
-        dicionario_materiais[ self.obj_col_dfr.utilizacao ] = lista_quantidade
+        dicionario_materiais[ self.obj_col_dfr.utilizacao ] = lista_utilizacao
         dicionario_materiais[ self.obj_col_dfr.codigo ] = lista_material
         dicionario_materiais[ self.obj_col_dfr.composicao_principal ] = lista_composicao_principal
         dicionario_materiais[ self.obj_col_dfr.servico_orcamento ] = lista_servico
         dicionario_materiais[ self.obj_col_in.descricao ] = lista_descricao
         dicionario_materiais[ self.obj_col_dfr.custo_unitario_total ] = lista_preco_unitario_total
         dicionario_materiais[ self.obj_col_dfr.custo_total ] = lista_custo_total
+        dicionario_materiais[ self.obj_col_dfr.quantidade ] = lista_quantidade_servico
         return dicionario_materiais
 
     def obter_dfr_curva_abc_equipamento( self ) -> pd.core.frame.DataFrame:
         obj_precisao_percentual_total = Precisao()
         obj_precisao_percentual_acumulado = Precisao()
-        curva_abc = self.obter_dfr_equipamentos_servicos().groupby( by=[ self.obj_col_dfr.codigo, self.obj_col_dfr.descricao ], as_index=False )[ self.obj_col_dfr.custo_total ].sum()
+        equipamento_servicos = self.obter_dfr_equipamentos_servicos()
+        equipamento_servicos[ self.obj_col_dfr.quantidade_hora_produtiva ] = equipamento_servicos[ self.obj_col_dfr.utilizacao_produtiva ] * equipamento_servicos[ self.obj_col_dfr.quantidade ]
+        equipamento_servicos[ self.obj_col_dfr.quantidade_hora_improdutiva ] = equipamento_servicos[ self.obj_col_dfr.utilizacao_improdutiva ] * equipamento_servicos[ self.obj_col_dfr.quantidade ]
+        equipamento_servicos[ self.obj_col_dfr.quantidade_hora_total ] = equipamento_servicos[ self.obj_col_dfr.quantidade_hora_produtiva ] + equipamento_servicos[ self.obj_col_dfr.quantidade_hora_improdutiva ] 
+
+        curva_abc = equipamento_servicos.groupby( by=[ self.obj_col_dfr.codigo, self.obj_col_dfr.descricao ], as_index=False ).aggregate( { self.obj_col_dfr.quantidade_hora_produtiva: 'sum', self.obj_col_dfr.quantidade_hora_improdutiva: 'sum', self.obj_col_dfr.quantidade_hora_total: 'sum', self.obj_col_dfr.custo_total: 'sum' } )
         curva_abc.sort_values( by=[ self.obj_col_dfr.custo_total ], inplace=True, ascending=False )
         total = curva_abc[ self.obj_col_dfr.custo_total ].sum()
         curva_abc[ self.obj_col_dfr.percentual_total ] = obj_precisao_percentual_total.percentual( curva_abc[ self.obj_col_dfr.custo_total] / total )
@@ -1189,7 +1200,9 @@ class Projeto:
     def obter_dfr_curva_abc_mao_de_obra( self ) -> pd.core.frame.DataFrame:
         obj_precisao_percentual_total = Precisao()
         obj_precisao_percentual_acumulado = Precisao()
-        curva_abc = self.obter_dfr_mao_de_obra_servicos().groupby( by=[ self.obj_col_dfr.codigo, self.obj_col_dfr.descricao ], as_index=False )[ self.obj_col_dfr.custo_total ].sum()
+        mao_de_obra_servicos = self.obter_dfr_mao_de_obra_servicos()
+        mao_de_obra_servicos[ self.obj_col_dfr.quantidade ] = mao_de_obra_servicos[ self.obj_col_dfr.utilizacao ] * mao_de_obra_servicos[ self.obj_col_dfr.quantidade ]
+        curva_abc = mao_de_obra_servicos.groupby( by=[ self.obj_col_dfr.codigo, self.obj_col_dfr.descricao ], as_index=False ).aggregate( { self.obj_col_dfr.quantidade: 'sum', self.obj_col_dfr.custo_total: 'sum' } )
         curva_abc.sort_values( by=[ self.obj_col_dfr.custo_total ], inplace=True, ascending=False )
         total = curva_abc[ self.obj_col_dfr.custo_total ].sum()
         curva_abc[ self.obj_col_dfr.percentual_total ] = obj_precisao_percentual_total.percentual( curva_abc[ self.obj_col_dfr.custo_total] / total )
@@ -1205,7 +1218,9 @@ class Projeto:
     def obter_dfr_curva_abc_material( self ) -> pd.core.frame.DataFrame:
         obj_precisao_percentual_total = Precisao()
         obj_precisao_percentual_acumulado = Precisao()
-        curva_abc = self.obter_dfr_materiais_servicos().groupby( by=[ self.obj_col_dfr.codigo, self.obj_col_dfr.descricao ], as_index=False )[ self.obj_col_dfr.custo_total ].sum()
+        materiais_servicos = self.obter_dfr_materiais_servicos()
+        materiais_servicos[ self.obj_col_dfr.quantidade ] = materiais_servicos[ self.obj_col_dfr.utilizacao ] * materiais_servicos[ self.obj_col_dfr.quantidade ]
+        curva_abc = materiais_servicos.groupby( by=[ self.obj_col_dfr.codigo, self.obj_col_dfr.descricao ], as_index=False ).aggregate( { self.obj_col_dfr.quantidade: 'sum', self.obj_col_dfr.custo_total: 'sum' } )
         curva_abc.sort_values( by=[ self.obj_col_dfr.custo_total ], inplace=True, ascending=False )
         total = curva_abc[ self.obj_col_dfr.custo_total ].sum()
         curva_abc[ self.obj_col_dfr.percentual_total ] = obj_precisao_percentual_total.percentual( curva_abc[ self.obj_col_dfr.custo_total] / total )
@@ -1221,7 +1236,7 @@ class Projeto:
     def obter_dfr_curva_abc_servico( self ) -> pd.core.frame.DataFrame:
         obj_precisao_percentual_total = Precisao()
         obj_precisao_percentual_acumulado = Precisao()
-        curva_abc = self.obter_dfr_servicos_projeto().groupby( by=[ self.obj_col_dfr.servico_orcamento, self.obj_col_dfr.descricao ], as_index=False )[ self.obj_col_dfr.custo_total ].sum()
+        curva_abc = self.obter_dfr_servicos_projeto().groupby( by=[ self.obj_col_dfr.servico_orcamento, self.obj_col_dfr.descricao ], as_index=False ).aggregate( { self.obj_col_dfr.quantidade: 'sum', self.obj_col_dfr.custo_total: 'sum' } )
         curva_abc.sort_values( by=[ self.obj_col_dfr.custo_total ], inplace=True, ascending=False )
         total = curva_abc[ self.obj_col_dfr.custo_total ].sum()
         curva_abc[ self.obj_col_dfr.percentual_total ] = obj_precisao_percentual_total.percentual( curva_abc[ self.obj_col_dfr.custo_total] / total )
