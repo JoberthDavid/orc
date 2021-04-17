@@ -838,7 +838,7 @@ class Projeto:
         return dfr_material[ lista_colunas_ma ]
 
     def obter_lista_transportes_composicao( self, codigo: str ) -> list:
-        consulta = self.baseDF.dfr_apropriacao_in.query( "{} == '{}' & {} == {}".format( self.obj_col_dfr.composicao_principal, codigo, self.obj_col_dfr.grupo, self.obj_grupo.insumo_transporte ) )
+        consulta = self.baseDF.dfr_apropriacao_in.query( "{} == '{}' & {} > {}".format( self.obj_col_dfr.composicao_principal, codigo, self.obj_col_dfr.grupo, self.obj_grupo.insumo_transporte ) )
         consulta = consulta[ [
                             self.obj_col_dfr.composicao_principal,
                             self.obj_col_dfr.codigo,
@@ -863,9 +863,12 @@ class Projeto:
         return dfr_transportes
 
     def obter_dfr_transporte_utilizacao( self ) -> pd.core.frame.DataFrame:
+        transporte = self.obter_dfr_transportes_servicos()
+        transporte = transporte.groupby( by=[ self.obj_col_dfr.servico_orcamento, self.obj_col_dfr.codigo, self.obj_col_dfr.descricao, self.obj_col_dfr.unidade, self.obj_col_dfr.item_transporte, self.obj_col_dfr.dmt ], as_index=False ).aggregate( { self.obj_col_dfr.utilizacao: 'sum', self.obj_col_dfr.momento_transporte_unitario: 'sum' } )
+        transporte.sort_values( by=[ self.obj_col_dfr.item_transporte, self.obj_col_dfr.codigo, self.obj_col_dfr.servico_orcamento ] )
         lista_colunas_tr = [ 
                             self.obj_col_dfr.servico_orcamento,
-                            self.obj_col_dfr.composicao_principal,
+                            # self.obj_col_dfr.composicao_principal,
                             self.obj_col_dfr.codigo,
                             self.obj_col_dfr.descricao,
                             self.obj_col_dfr.unidade,
@@ -874,7 +877,7 @@ class Projeto:
                             self.obj_col_dfr.dmt,
                             self.obj_col_dfr.momento_transporte_unitario,
                             ]
-        return self.obter_dfr_transportes_servicos()[ lista_colunas_tr ]
+        return transporte[ lista_colunas_tr ]
 
     def obter_dicionario_transportes_servicos_projeto( self ) -> dict:
         obj_precisao_utilizacao = Precisao()
@@ -901,9 +904,10 @@ class Projeto:
             for subitem in item:
                 lista_auxiliar_sub = self.obter_lista_transportes_composicao( subitem[0] )
                 for sub in lista_auxiliar_sub:
+
                     obj_composicaostr = ComposicaoStr( str(sub[0]) )
                     obj_transportestr = ComposicaoStr( str(sub[1]) )
-                    dmt = 10 # valor travado para teste
+                    dmt = 1 # valor travado para teste
                     sub[3] = obj_precisao_utilizacao.utilizacao_transporte( subitem[1] * sub[3] )
                     lista_fator_utilizacao.append( sub[3] )
                     lista_item_transportado.append( sub[2] )

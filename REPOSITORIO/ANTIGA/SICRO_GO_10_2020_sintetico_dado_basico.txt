@@ -8770,5 +8770,5 @@ SICRO;ZZ;00-0000;9999122;Equipamento da equipe de conservação;mês
 SICRO;ZZ;00-0000;9999131;Mão de obra da equipe de controle tecnológico;mês
 SICRO;ZZ;00-0000;9999132;Equipamento da equipe de controle tecnológico;mês
 
-SICRO;ZZ;00-0000;9999200;Conservação mensal por desempenho da faixa de domínio e limpeza de dispositivos de drenagem e de OAC;mês
-SICRO;ZZ;00-0000;9999201;Conservação anual da faixa de domínio e limpeza de dispositivos de drenagem e de OAC;ano
+SICRO;ZZ;00-0000;9999200;Conservação mensal da faixa de domínio e limpeza de dispositivos de drenagem e de OAC por desempenho;mês
+SICRO;ZZ;00-0000;9999201;Conservação anual da faixa de domínio e limpeza de dispositivos de drenagem e de OAC por desempenho;ano

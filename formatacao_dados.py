@@ -342,10 +342,11 @@ class EscritaCabecalho:
 class Grupo:
 
     def __init__( self ) -> None:
-        self.linha_vazia_inicial = 13
+        self.composicao_principal = 10
+        self.linha_vazia_inicial = 19
         self.insumo_equipamento = 20
         self.subtotal_horario_equipamento = 22
-        self.linha_vazia_equipamento = 23
+        self.linha_vazia_equipamento = 29
         self.insumo_mao_de_obra = 30
         self.subtotal_horario_mao_de_obra = 32
         self.linha_vazia_mao_de_obra = 33
@@ -353,23 +354,27 @@ class Grupo:
         self.subtotal_unitario_execucao = 35
         self.subtotal_unitario_fic = 36
         self.subtotal_unitario_fit = 37
-        self.linha_vazia_execucao = 38
+        self.linha_vazia_execucao = 39
         self.insumo_material = 40
         self.subtotal_unitario_material = 42
-        self.linha_vazia_material = 43
+        self.linha_vazia_material = 49
         self.insumo_atividade_auxiliar = 50
         self.subtotal_unitario_atividade_auxiliar = 52
-        self.linha_vazia_atividade_auxiliar = 53
+        self.linha_vazia_atividade_auxiliar = 59
         self.insumo_tempo_fixo = 60
         self.subtotal_unitario_tempo_fixo = 62
-        self.linha_vazia_tempo_fixo = 63
+        self.linha_vazia_tempo_fixo = 69
         self.insumo_transporte = 70
-        self.subtotal_unitario_transporte = 72
-        self.linha_vazia_transporte = 73
+        self.insumo_transporte_leito_natural = 74
+        self.insumo_transporte_revestimento_primario = 75
+        self.insumo_transporte_pavimentado = 76
+        self.insumo_transporte_ferroviario = 77
+        self.subtotal_unitario_transporte = 78
+        self.linha_vazia_transporte = 79
         self.total_unitario_direto = 80
         self.linha_vazia_unitario_direto = 81
         self.subtotal_unitario_bdi = 90
-        self.linha_vazia_bdi = 91
+        self.linha_vazia_bdi = 99
         self.total_preco_unitario = 100
 
 
@@ -404,6 +409,10 @@ class ListaColuna:
         self.custo_unitario_total = 'Custo unitário total'
         self.custo_total = 'Custo total'
         self.dmt = 'DMT'
+        self.dmt_ln = 'DMT LN'
+        self.dmt_rp = 'DMT RP'
+        self.dmt_pv = 'DMT PV'
+        self.dmt_fe = 'DMT FE'
         self.estado = 'Estado'
         self.fic = 'FIC'
         self.produtividade = 'Produtividade'
