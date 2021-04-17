@@ -314,19 +314,17 @@ class FormatacaoEscritaResumoEquipamento(FormatacaoEscrita):
     def __init__( self, writer ) -> None:
         super().__init__( writer )
         self.nome_tabela = 'EQUIPAMENTO POR UNIDADE SERVIÇO'
-        self.entrada_area_de_impressao = '$A${}:$J${}'
+        self.entrada_area_de_impressao = '$A${}:$I${}'
         self.obj_formatacao_servico.coluna = 'B:B'
-        self.obj_formatacao_composicao.coluna = 'C:C'
-        self.obj_formatacao_codigo.coluna = 'D:D'
-        self.obj_formatacao_descricao.coluna = 'E:E'
-        self.obj_formatacao_quantidade_desdobrada.coluna = 'F:G'
-        self.obj_formatacao_preco_unitario.coluna = 'H:I'
-        self.obj_formatacao_custo_total_desdobrado.coluna = 'J:J'
-        self.obj_formatacao_descricao.largura = 9 * self.obj_formatacao_descricao.modulo
+        self.obj_formatacao_codigo.coluna = 'C:C'
+        self.obj_formatacao_descricao.coluna = 'D:D'
+        self.obj_formatacao_quantidade_desdobrada.coluna = 'E:F'
+        self.obj_formatacao_preco_unitario.coluna = 'G:H'
+        self.obj_formatacao_custo_total_desdobrado.coluna = 'I:I'
+        self.obj_formatacao_descricao.largura = 10.5 * self.obj_formatacao_descricao.modulo
         self.lista_entrada_formatacao = [ 
                 self.obj_formatacao_id,
                 self.obj_formatacao_servico,
-                self.obj_formatacao_composicao,
                 self.obj_formatacao_codigo,
                 self.obj_formatacao_descricao,
                 self.obj_formatacao_quantidade_desdobrada,
@@ -341,22 +339,20 @@ class FormatacaoEscritaResumoMaoDeObra(FormatacaoEscrita):
     def __init__( self, writer ) -> None:
         super().__init__( writer )
         self.nome_tabela = 'MÃO DE OBRA POR UNIDADE SERVIÇO'
-        self.entrada_area_de_impressao = '$A${}:$G${}'
+        self.entrada_area_de_impressao = '$A${}:$F${}'
         self.obj_formatacao_servico.coluna = 'B:B'
-        self.obj_formatacao_composicao.coluna = 'C:C'
-        self.obj_formatacao_codigo.coluna = 'D:D'
-        self.obj_formatacao_descricao.coluna = 'E:E'
-        self.obj_formatacao_quantidade_desdobrada.coluna = 'F:F'
-        self.obj_formatacao_preco_unitario.coluna = 'G:G'
-        self.obj_formatacao_descricao.largura = 16.5 * self.obj_formatacao_descricao.modulo
+        self.obj_formatacao_codigo.coluna = 'C:C'
+        self.obj_formatacao_descricao.coluna = 'D:D'
+        self.obj_formatacao_quantidade_desdobrada.coluna = 'E:E'
+        self.obj_formatacao_preco_unitario.coluna = 'F:F'
+        self.obj_formatacao_descricao.largura = 18.0 * self.obj_formatacao_descricao.modulo
         self.lista_entrada_formatacao = [ 
                 self.obj_formatacao_id,
                 self.obj_formatacao_servico,
-                self.obj_formatacao_composicao,
                 self.obj_formatacao_codigo,
                 self.obj_formatacao_descricao,
                 self.obj_formatacao_quantidade_desdobrada,
-                self.obj_formatacao_preco_unitario,                
+                self.obj_formatacao_preco_unitario,
             ]
         self.orientacao_retrato = False
 
@@ -366,18 +362,16 @@ class FormatacaoEscritaResumoMaterial(FormatacaoEscrita):
     def __init__( self, writer ) -> None:
         super().__init__( writer )
         self.nome_tabela = 'MATERIAL POR UNIDADE SERVIÇO'
-        self.entrada_area_de_impressao = '$A${}:$G${}'
+        self.entrada_area_de_impressao = '$A${}:$F${}'
         self.obj_formatacao_servico.coluna = 'B:B'
-        self.obj_formatacao_composicao.coluna = 'C:C'
-        self.obj_formatacao_codigo.coluna = 'D:D'
-        self.obj_formatacao_descricao.coluna = 'E:E'
-        self.obj_formatacao_quantidade_desdobrada.coluna = 'F:F'
-        self.obj_formatacao_preco_unitario.coluna = 'G:G'
-        self.obj_formatacao_descricao.largura = 16.5 * self.obj_formatacao_descricao.modulo
+        self.obj_formatacao_codigo.coluna = 'C:C'
+        self.obj_formatacao_descricao.coluna = 'D:D'
+        self.obj_formatacao_quantidade_desdobrada.coluna = 'E:E'
+        self.obj_formatacao_preco_unitario.coluna = 'F:F'
+        self.obj_formatacao_descricao.largura = 18.0 * self.obj_formatacao_descricao.modulo
         self.lista_entrada_formatacao = [ 
                 self.obj_formatacao_id,
                 self.obj_formatacao_servico,
-                self.obj_formatacao_composicao,
                 self.obj_formatacao_codigo,
                 self.obj_formatacao_descricao,
                 self.obj_formatacao_quantidade_desdobrada,

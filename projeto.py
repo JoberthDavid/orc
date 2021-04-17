@@ -946,9 +946,11 @@ class Projeto:
         return pd.DataFrame( self.equipamento_projeto )
 
     def obter_dfr_equipamento_utilizacao( self ) -> pd.core.frame.DataFrame:
+        equipamento = self.obter_dfr_equipamentos_servicos()
+        equipamento = equipamento.groupby( by=[ self.obj_col_dfr.servico_orcamento, self.obj_col_dfr.codigo, self.obj_col_dfr.descricao ], as_index=False ).aggregate( { self.obj_col_dfr.utilizacao_produtiva: 'sum', self.obj_col_dfr.utilizacao_improdutiva: 'sum', self.obj_col_dfr.custo_produtivo: 'sum', self.obj_col_dfr.custo_improdutivo: 'sum', self.obj_col_dfr.custo_unitario_total: 'sum' } )
         lista_colunas_eq = [ 
                             self.obj_col_dfr.servico_orcamento,
-                            self.obj_col_dfr.composicao_principal,
+                            # self.obj_col_dfr.composicao_principal,
                             self.obj_col_dfr.codigo,
                             self.obj_col_in.descricao,
                             self.obj_col_dfr.utilizacao_produtiva,
@@ -957,7 +959,7 @@ class Projeto:
                             self.obj_col_dfr.custo_improdutivo,
                             self.obj_col_dfr.custo_unitario_total,
                             ]
-        return self.obter_dfr_equipamentos_servicos()[ lista_colunas_eq ]
+        return equipamento[ lista_colunas_eq ]
 
     def obter_dicionario_equipamentos_servicos_projeto( self ) -> dict:
         obj_precisao = Precisao()
@@ -1040,15 +1042,16 @@ class Projeto:
         return pd.DataFrame( self.mao_de_obra_projeto )
 
     def obter_dfr_mao_de_obra_utilizacao( self ) -> pd.core.frame.DataFrame:
+        mao_de_obra = self.obter_dfr_mao_de_obra_servicos()
+        mao_de_obra = mao_de_obra.groupby( by=[ self.obj_col_dfr.servico_orcamento, self.obj_col_dfr.codigo, self.obj_col_dfr.descricao ], as_index=False ).aggregate( { self.obj_col_dfr.utilizacao: 'sum', self.obj_col_dfr.custo_unitario_total: 'sum' } )
         lista_colunas_mo = [
                             self.obj_col_dfr.servico_orcamento,
-                            self.obj_col_dfr.composicao_principal,
                             self.obj_col_dfr.codigo,
                             self.obj_col_in.descricao,
                             self.obj_col_dfr.utilizacao,
                             self.obj_col_dfr.custo_unitario_total,
                             ]
-        return self.obter_dfr_mao_de_obra_servicos()[ lista_colunas_mo ]
+        return mao_de_obra[ lista_colunas_mo ]
 
     def obter_dicionario_mao_de_obra_servicos_projeto( self ) -> dict:
         obj_precisao = Precisao()
@@ -1119,15 +1122,16 @@ class Projeto:
         return pd.DataFrame( self.material_projeto )
 
     def obter_dfr_material_utilizacao( self ) -> pd.core.frame.DataFrame:
+        material = self.obter_dfr_materiais_servicos()
+        material = material.groupby( by=[ self.obj_col_dfr.servico_orcamento, self.obj_col_dfr.codigo, self.obj_col_dfr.descricao ], as_index=False ).aggregate( { self.obj_col_dfr.utilizacao: 'sum', self.obj_col_dfr.custo_unitario_total: 'sum' } )
         lista_colunas_ma = [ 
                             self.obj_col_dfr.servico_orcamento,
-                            self.obj_col_dfr.composicao_principal,
                             self.obj_col_dfr.codigo,
                             self.obj_col_in.descricao,
                             self.obj_col_dfr.utilizacao,
                             self.obj_col_dfr.custo_unitario_total,
                             ]
-        return self.obter_dfr_materiais_servicos()[ lista_colunas_ma ]
+        return material[ lista_colunas_ma ]
 
     def obter_dicionario_materiais_servicos_projeto( self ) -> dict:
         obj_precisao = Precisao()
