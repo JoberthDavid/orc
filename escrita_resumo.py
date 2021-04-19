@@ -282,20 +282,22 @@ class FormatacaoEscritaResumoTransporte(FormatacaoEscrita):
     def __init__( self, writer ) -> None:
         super().__init__( writer )
         self.nome_tabela = 'TRANSPORTE POR UNIDADE SERVIÇO'
-        self.entrada_area_de_impressao = '$A${}:$I${}'
-        self.obj_formatacao_servico.coluna = 'B:B'
-        self.obj_formatacao_composicao.coluna = 'C:C'
-        self.obj_formatacao_descricao.coluna = 'D:D'
-        self.obj_formatacao_unidade.coluna = 'E:E'
-        self.obj_formatacao_codigo.coluna = 'F:F'
-        self.obj_formatacao_quantidade_desdobrada.coluna = 'G:G'
-        self.obj_formatacao_dmt.coluna = 'H:H'
-        self.obj_formatacao_momento_transporte_unitario.coluna = 'I:I' # momento de transporte unitário
+        self.entrada_area_de_impressao = '$A${}:$J${}'
+        self.obj_formatacao_grupo.coluna = 'B:B'
+        self.obj_formatacao_servico.coluna = 'C:C'
+        self.obj_formatacao_composicao.coluna = 'D:D'
+        self.obj_formatacao_descricao.coluna = 'E:E'
+        self.obj_formatacao_unidade.coluna = 'F:F'
+        self.obj_formatacao_codigo.coluna = 'G:G'
+        self.obj_formatacao_quantidade_desdobrada.coluna = 'H:H'
+        self.obj_formatacao_dmt.coluna = 'I:I'
+        self.obj_formatacao_momento_transporte_unitario.coluna = 'J:J' # momento de transporte unitário
         self.obj_formatacao_momento_transporte_unitario.largura = 2.5 * self.obj_formatacao_momento_transporte_unitario.modulo
         self.obj_formatacao_dmt.largura = 1.0 * self.obj_formatacao_descricao.modulo
         self.obj_formatacao_descricao.largura = 12.9 * self.obj_formatacao_descricao.modulo
         self.lista_entrada_formatacao = [
                 self.obj_formatacao_id,
+                self.obj_formatacao_grupo,
                 self.obj_formatacao_servico,
                 self.obj_formatacao_composicao,
                 self.obj_formatacao_descricao,

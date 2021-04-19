@@ -22,8 +22,10 @@ from formatacao_dados import (
                             ListaColunaApropriacaoDB,
                             ListaColunaCustoInsumoCT,
                             ListaColunaComposicaoDF,
+                            ListaColunaDMTInsumoDB,
                         )
 
+from arquivos import arq_dmt
 
 ENCODING = 'utf-8'
 
@@ -95,9 +97,10 @@ class BonificacaoDespesasIndiretas:
 class ComposicaoDB:
     """Classe que representa os parâmetros mais importantes de cada composição do projeto"""
 
-    def __init__( self, codigo: str, bdi: BonificacaoDespesasIndiretas, diferenciado=False ) -> None:
+    def __init__( self, codigo: str, bdi: BonificacaoDespesasIndiretas, transporte: bool=False, diferenciado: bool=False ) -> None:
         self.obj_arred = Precisao()
         obj_composicaostr = ComposicaoStr( codigo )
+        self.transporte = transporte
         self.codigo = obj_composicaostr.codigo
         self.bdi = bdi
         self.diferenciado = diferenciado
@@ -581,7 +584,7 @@ class ComposicaoDF:
         return obj_linha_tf
 
     def obter_dfr_transporte( self ) -> pd.core.frame.DataFrame:
-        return self.dfr_insumo.query( '{} == {}'.format( self.obj_col_dfr.grupo, self.obj_grupo.insumo_transporte ) )
+        return self.dfr_insumo.query( '{} > {} & {} < {}'.format( self.obj_col_dfr.grupo, self.obj_grupo.linha_vazia_tempo_fixo, self.obj_col_dfr.grupo, self.obj_grupo.subtotal_unitario_transporte ) )
 
     def obter_dfr_subtotal_transporte( self ):
         obj_linha_tr = self.criar_linha_subtotal_transporte( self.obter_dfr_transporte(), self.composicao, self.obj_col_dfr )
@@ -620,12 +623,21 @@ class ComposicaoDF:
         for item in lista:
             grupo = item[0]
             item = item[1]
+        
             self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.codigo ] == item, self.obj_col_dfr.preco_unitario ] = dicionario[ item ].custo_unitario_total 
             quantidade = self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.codigo ] == item, self.obj_col_dfr.quantidade ]
             preco_unitario = self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.codigo ] == item, self.obj_col_dfr.preco_unitario ]
-            if ( grupo == self.obj_grupo.insumo_transporte ):
-                distancia_transporte = self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.codigo ] == item, self.obj_col_dfr.dmt ] = 0.00
+            if ( grupo > self.obj_grupo.linha_vazia_tempo_fixo ) and ( grupo < self.obj_grupo.subtotal_unitario_transporte ):
+                # Transporte na composição
+                if self.composicao.transporte:
+                    distancia_transporte = self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_ln, self.obj_col_dfr.dmt ] = 10.0
+                    distancia_transporte = self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_rp, self.obj_col_dfr.dmt ] = 20.0
+                    distancia_transporte = self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_pv, self.obj_col_dfr.dmt ] = 30.0
+                    distancia_transporte = self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_fe, self.obj_col_dfr.dmt ] = 40.0
+                else:
+                    distancia_transporte = self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.codigo ] == item, self.obj_col_dfr.dmt ] = 0.00
                 self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.codigo ] == item, self.obj_col_dfr.custo_total ] = self.obj_arred.custo( distancia_transporte * quantidade * preco_unitario )
+
             else:
                 self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.codigo ] == item, self.obj_col_dfr.custo_total ] = self.obj_arred.custo( quantidade * preco_unitario )
 
@@ -840,6 +852,7 @@ class Projeto:
     def obter_lista_transportes_composicao( self, codigo: str ) -> list:
         consulta = self.baseDF.dfr_apropriacao_in.query( "{} == '{}' & {} > {}".format( self.obj_col_dfr.composicao_principal, codigo, self.obj_col_dfr.grupo, self.obj_grupo.insumo_transporte ) )
         consulta = consulta[ [
+                            self.obj_col_dfr.grupo,
                             self.obj_col_dfr.composicao_principal,
                             self.obj_col_dfr.codigo,
                             self.obj_col_dfr.item_transporte,
@@ -863,12 +876,26 @@ class Projeto:
         return dfr_transportes
 
     def obter_dfr_transporte_utilizacao( self ) -> pd.core.frame.DataFrame:
-        transporte = self.obter_dfr_transportes_servicos()
-        transporte = transporte.groupby( by=[ self.obj_col_dfr.servico_orcamento, self.obj_col_dfr.codigo, self.obj_col_dfr.descricao, self.obj_col_dfr.unidade, self.obj_col_dfr.item_transporte, self.obj_col_dfr.dmt ], as_index=False ).aggregate( { self.obj_col_dfr.utilizacao: 'sum', self.obj_col_dfr.momento_transporte_unitario: 'sum' } )
+        transporte = self.obter_dfr_transportes_servicos() 
+        transporte = transporte.groupby( by=[ self.obj_col_dfr.grupo, self.obj_col_dfr.servico_orcamento, self.obj_col_dfr.codigo, self.obj_col_dfr.descricao, self.obj_col_dfr.unidade, self.obj_col_dfr.item_transporte, self.obj_col_dfr.dmt ], as_index=False ).aggregate( { self.obj_col_dfr.utilizacao: 'sum', self.obj_col_dfr.momento_transporte_unitario: 'sum' } )
         transporte.sort_values( by=[ self.obj_col_dfr.item_transporte, self.obj_col_dfr.codigo, self.obj_col_dfr.servico_orcamento ] )
+        
+        obj_col_dmt = ListaColunaDMTInsumoDB()
+        dfr_dmt_sem_tratamento = GeradorDF( arq_dmt )
+        dfr_dmt = dfr_dmt_sem_tratamento.tratar_dfr( obj_col_dmt.obter_lista() )
+        
+        transp = pd.merge( transporte, dfr_dmt, on=self.obj_col_dfr.item_transporte, how='left', suffixes=[None,'_y'] )
+
+        transp.loc[ transp[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_ln, self.obj_col_dfr.dmt ] = transp.loc[ transp[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_ln, self.obj_col_dfr.dmt_ln ]
+        transp.loc[ transp[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_rp, self.obj_col_dfr.dmt ] = transp.loc[ transp[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_rp, self.obj_col_dfr.dmt_rp ]
+        transp.loc[ transp[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_pv, self.obj_col_dfr.dmt ] = transp.loc[ transp[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_pv, self.obj_col_dfr.dmt_pv ]
+        transp.loc[ transp[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_fe, self.obj_col_dfr.dmt ] = transp.loc[ transp[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_fe, self.obj_col_dfr.dmt_fe ]
+        transp[ self.obj_col_dfr.momento_transporte_unitario ] =  transp[ self.obj_col_dfr.utilizacao ] * transp[ self.obj_col_dfr.dmt ]
+
+
         lista_colunas_tr = [ 
+                            self.obj_col_dfr.grupo,
                             self.obj_col_dfr.servico_orcamento,
-                            # self.obj_col_dfr.composicao_principal,
                             self.obj_col_dfr.codigo,
                             self.obj_col_dfr.descricao,
                             self.obj_col_dfr.unidade,
@@ -877,13 +904,14 @@ class Projeto:
                             self.obj_col_dfr.dmt,
                             self.obj_col_dfr.momento_transporte_unitario,
                             ]
-        return transporte[ lista_colunas_tr ]
+        return transp[ lista_colunas_tr ]
 
     def obter_dicionario_transportes_servicos_projeto( self ) -> dict:
         obj_precisao_utilizacao = Precisao()
         obj_precisao_momento_unitario = Precisao()
         obj_precisao_momento_total = Precisao()
         dicionario_transportes = dict()
+        lista_grupo = list()
         lista_servico = list()
         lista_composicao_principal = list()
         lista_transporte = list()
@@ -892,6 +920,7 @@ class Projeto:
         lista_dmt = list()
         lista_momento_transporte_unitario = list()
         lista_momento_transporte_total = list()
+
         for item in self.obter_lista_atividades_auxiliares_servicos_projeto():
 
             for serv in self.servicos:
@@ -905,21 +934,25 @@ class Projeto:
                 lista_auxiliar_sub = self.obter_lista_transportes_composicao( subitem[0] )
                 for sub in lista_auxiliar_sub:
 
-                    obj_composicaostr = ComposicaoStr( str(sub[0]) )
-                    obj_transportestr = ComposicaoStr( str(sub[1]) )
+                    obj_composicaostr = ComposicaoStr( str(sub[1]) )
+                    obj_transportestr = ComposicaoStr( str(sub[2]) )
+
                     dmt = 1 # valor travado para teste
-                    sub[3] = obj_precisao_utilizacao.utilizacao_transporte( subitem[1] * sub[3] )
-                    lista_fator_utilizacao.append( sub[3] )
-                    lista_item_transportado.append( sub[2] )
+
+                    sub[4] = obj_precisao_utilizacao.utilizacao_transporte( subitem[1] * sub[4] )
+                    lista_fator_utilizacao.append( sub[4] )
+                    lista_item_transportado.append( sub[3] )
                     lista_transporte.append( obj_transportestr.codigo )
                     lista_composicao_principal.append( obj_composicaostr.codigo )
                     lista_servico.append( item[0][0] )
                     lista_dmt.append( dmt )
-                    momento_unitario = obj_precisao_momento_unitario.utilizacao_transporte( dmt * sub[3] )
+                    momento_unitario = obj_precisao_momento_unitario.utilizacao_transporte( dmt * sub[4] )
                     lista_momento_transporte_unitario.append( momento_unitario )
                     momento_total = obj_precisao_momento_total.utilizacao_transporte( momento_unitario * quantidade_serv_principal )
                     lista_momento_transporte_total.append( momento_total )
+                    lista_grupo.append( sub[0] )
 
+        dicionario_transportes[ self.obj_col_dfr.grupo ] = lista_grupo
         dicionario_transportes[ self.obj_col_dfr.dmt ] = lista_dmt
         dicionario_transportes[ self.obj_col_dfr.utilizacao ] = lista_fator_utilizacao
         dicionario_transportes[ self.obj_col_dfr.item_transporte ] = lista_item_transportado
@@ -1300,4 +1333,41 @@ class Projeto:
         dicionario_servicos[ self.obj_col_dfr.custo_total ] = lista_preco_total
            
         return dicionario_servicos
-            
+
+
+
+
+
+#########################################################################
+from io import TextIOWrapper
+
+class MaterialDMT:
+
+    def __init__( self, codigo: str, origem: str, destino: str, dmt_ln: float, dmt_rp: float, dmt_pv: float, dmt_fe: float ) -> None:
+        self.codigo = codigo
+        self.origem = origem
+        self.destino = destino
+        self.dmt_ln = dmt_ln
+        self.dmt_rp = dmt_rp
+        self.dmt_pv = dmt_pv
+        self.dmt_fe = dmt_fe
+
+class ListaDMT:
+
+    def __init__( self, lista: list ) -> None:
+        self.lista = lista
+
+    def obter_path( self ) -> str:
+        return 'REPOSITORIO/'
+
+    def gerar_arquivo_dmt( self ) -> TextIOWrapper:
+        return open( ''.join( [ self.obter_path(), 'relatorio_dmt_material.txt' ] ), 'a', encoding="utf-8" )
+
+    def obter_dados_dmt_material( self ) -> str:
+        for material in self.lista:
+            dados = ';'.join( [ material.codigo, material.origem, material.destino, material.dmt_ln, material.dmt_rp, material.dmt_pv, material.dmt_fe ] )
+            dados = '{}{}'.format( dados, '\n' )
+        return dados
+
+    def escrever_arquivo_dmt( self, nome_arquivo: TextIOWrapper, dados ):
+        nome_arquivo.write( dados )

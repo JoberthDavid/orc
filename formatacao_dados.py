@@ -365,10 +365,10 @@ class Grupo:
         self.subtotal_unitario_tempo_fixo = 62
         self.linha_vazia_tempo_fixo = 69
         self.insumo_transporte = 70
-        self.insumo_transporte_leito_natural = 74
-        self.insumo_transporte_revestimento_primario = 75
-        self.insumo_transporte_pavimentado = 76
-        self.insumo_transporte_ferroviario = 77
+        self.insumo_tr_ln = 74
+        self.insumo_tr_rp = 75
+        self.insumo_tr_pv = 76
+        self.insumo_tr_fe = 77
         self.subtotal_unitario_transporte = 78
         self.linha_vazia_transporte = 79
         self.total_unitario_direto = 80
@@ -502,6 +502,21 @@ class ListaColunaApropriacaoDB(ListaColuna):
                 ]
 
 
+class ListaColunaDMTInsumoDB(ListaColuna):
+
+    def __init__( self ) -> None:
+        super().__init__()
+
+    def obter_lista( self ) -> list:
+        return [ 
+                    self.item_transporte,
+                    self.dmt_ln,
+                    self.dmt_rp,
+                    self.dmt_pv,
+                    self.dmt_fe,
+                ]
+
+
 class ListaColunaCustoInsumoCT(ListaColuna):
 
     def __init__( self ) -> None:
@@ -541,4 +556,4 @@ class ListaColunaComposicaoDF(ListaColuna):
                     self.custo_improdutivo,
                     self.preco_unitario,
                     self.custo_total
-                ]       
+                ]

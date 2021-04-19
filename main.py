@@ -10,18 +10,21 @@ from arquivos import (
                         arq_db_al_an,
                         arq_db_al_st,
                         arq_apr_al,
+                        arq_dmt,
                     )
 
 from funcoes import escrever_arquivo_excel
-from projeto import BaseDF, Servico, BonificacaoDespesasIndiretas, Projeto
+from projeto import BaseDF, Servico, BonificacaoDespesasIndiretas, Projeto, GeradorDF
 
 from formatacao_dados import Data, DadosProjeto
+
 
 baseDF = BaseDF( arq_db_cp, arq_db_in, arq_apr_in, arq_cto_in )
 
 codigos_servicos_projeto = [ '9999200', '9999100', '7119700', '308321', '408031', '606841', '705371', '804215', '909621', '1108055', '2009619', '3009090', '4011287', '5213385', '6106188', '7119788']
 quantidade_servicos_projeto = [ 24, 12, 1, 100.001, 200.002, 300.003, 400.004, 500.005, 600.006, 700.007, 800.008, 900.009, 1100.011, 1200.021, 1300.031, 6]
 bdi_servicos_projeto = [ False, False, False, True, False, True, False, False, False, False, False, False, False, False, False, False]
+transporte_servicos_projeto = [ True, True, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
 
 lista_servicos_projeto = list()
 
