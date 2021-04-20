@@ -8772,3 +8772,71 @@ SICRO;ZZ;00-0000;9999132;Equipamento da equipe de controle tecnológico;mês
 
 SICRO;ZZ;00-0000;9999200;Conservação mensal por desempenho da faixa de domínio e limpeza de dispositivos de drenagem e de OAC;mês
 SICRO;ZZ;00-0000;9999201;Conservação anual da faixa de domínio e limpeza de dispositivos de drenagem e de OAC;ano
+
+SICRO;ZZ;00-0000;9999307;Aquisição de RR1C para tapa buraco (e=7cm);m³
+SICRO;ZZ;00-0000;9999306;Aquisição de RR1C para tapa buraco (e=6cm);m³
+SICRO;ZZ;00-0000;9999305;Aquisição de RR1C para tapa buraco (e=5cm);m³
+SICRO;ZZ;00-0000;9999317;Aquisição de RR1C para correção de defeitos (e=7cm);m³
+SICRO;ZZ;00-0000;9999316;Aquisição de RR1C para correção de defeitos (e=6cm);m³
+SICRO;ZZ;00-0000;9999315;Aquisição de RR1C para correção de defeitos (e=5cm);m³
+SICRO;ZZ;00-0000;9999322;Aquisição de EAI para remendo profundo (e=20cm);m³
+SICRO;ZZ;00-0000;9999321;Aquisição de EAI para remendo profundo (e=15cm);m³
+SICRO;ZZ;00-0000;9999341;Aquisição de RR2C com taxa de TSD com emulsão;m²
+SICRO;ZZ;00-0000;9999352;Aquisição de CAP 50/70 com taxa de CBUQ faixa B;t
+SICRO;ZZ;00-0000;9999353;Aquisição de CAP 50/70 com taxa de CBUQ faixa C;t
+SICRO;ZZ;00-0000;9999355;Aquisição de CAP 50/70 com taxa de CBUQ faixa B (5,0%);t
+SICRO;ZZ;00-0000;9999356;Aquisição de CAP 50/70 com taxa de CBUQ faixa C (5,5%);t
+SICRO;ZZ;00-0000;9999361;Aquisição de RR1C com taxa de pintura de ligação;m²
+SICRO;ZZ;00-0000;9999362;Aquisição de EAI com taxa de imprimação com emulsão asfáltica;m²
+
+SICRO;ZZ;00-0000;9999393;Transporte de RR1C para tapa buraco (e=7cm);m³
+SICRO;ZZ;00-0000;9999394;Transporte de RR1C para tapa buraco (e=6cm);m³
+SICRO;ZZ;00-0000;9999395;Transporte de RR1C para tapa buraco (e=5cm);m³
+SICRO;ZZ;00-0000;9999383;Transporte de RR1C para correção de defeitos (e=7cm);m³
+SICRO;ZZ;00-0000;9999384;Transporte de RR1C para correção de defeitos (e=6cm);m³
+SICRO;ZZ;00-0000;9999385;Transporte de RR1C para correção de defeitos (e=5cm);m³
+SICRO;ZZ;00-0000;9999378;Transporte de EAI para remendo profundo (e=20cm);m³
+SICRO;ZZ;00-0000;9999379;Transporte de EAI para remendo profundo (e=15cm);m³
+SICRO;ZZ;00-0000;9999359;Transporte de RR2C com taxa de TSD com emulsão;m²
+SICRO;ZZ;00-0000;9999348;Transporte de CAP 50/70 com taxa de CBUQ faixa B;t
+SICRO;ZZ;00-0000;9999347;Transporte de CAP 50/70 com taxa de CBUQ faixa C;t
+SICRO;ZZ;00-0000;9999345;Transporte de CAP 50/70 com taxa de CBUQ faixa B (5,0%);t
+SICRO;ZZ;00-0000;9999344;Transporte de CAP 50/70 com taxa de CBUQ faixa C (5,5%);t
+SICRO;ZZ;00-0000;9999339;Transporte de RR1C com taxa de pintura de ligação;m²
+SICRO;ZZ;00-0000;9999338;Transporte de EAI com taxa de imprimação com emulsão asfáltica;m²
+
+
+SICRO;ZZ;00-0000;9999400;Canteiro de obras com container;un
+SICRO;ZZ;00-0000;9999401;Utilização de container como escritório e seção técnica (29,72m²);un
+SICRO;ZZ;00-0000;9999402;Utilização de container como almoxarifado (29,54m²);un
+SICRO;ZZ;00-0000;9999403;Utilização de container como banheiro e vestiário (14,77m²);un
+SICRO;ZZ;00-0000;9999404;Utilização de container como oficina (37,10m²);un
+SICRO;ZZ;00-0000;9999405;Utilização de container como guarita (5,29m²);un
+SICRO;ZZ;00-0000;9999406;Utilização de container como refeitório e cozinha (59,08m²);un
+SICRO;ZZ;00-0000;9999407;Utilização de grupo de containers por 5 vezes;un
+SICRO;ZZ;00-0000;9999491;Utilização de grupo de containers por 5 vezes com fator de mobiliário e aparelhagem (k2);un
+SICRO;ZZ;00-0000;9999492;Utilização de grupo de containers por 5 vezes com fatores de mobiliário e aparelhagem (k2) e de distância ao centro fornecedor (k3);un
+SICRO;ZZ;00-0000;9999493;Custos com área descoberta (FEAT 3%);m²
+SICRO;ZZ;00-0000;9999451;Custos com área descoberta devido ao escritório e seção técnica (2x29,72m²);un
+SICRO;ZZ;00-0000;9999452;Custos com área descoberta devido ao almoxarifado (2x29,54m²);un
+SICRO;ZZ;00-0000;9999453;Custos com área descoberta devido ao banheiro e vestiário (2x14,77m²);un
+SICRO;ZZ;00-0000;9999454;Custos com área descoberta devido à oficina (2x37,10m²);un
+SICRO;ZZ;00-0000;9999455;Custos com área descoberta devido à guarita (2x5,29m²);un
+SICRO;ZZ;00-0000;9999456;Custos com área descoberta devido ao refeitório e cozinha (2x59,08m²);un
+
+SINAPI;ZZ;00-0000;CMCC1;Custos médios da construção civil;m²
+
+ANP;ZZ;00-0000;ANP1943;Cimento asfáltico CAP 50/70 (ANP);t
+ANP;ZZ;00-0000;ANP1944;Cimento asfáltico CAP 150/200 (ANP);t
+ANP;ZZ;00-0000;ANP1945;Cimento asfáltico CAP 85/100 (ANP);t
+ANP;ZZ;00-0000;ANP1946;Emulsão asfáltica RR-1C (ANP);t
+ANP;ZZ;00-0000;ANP1947;Emulsão asfáltica RM-1C (ANP);t
+ANP;ZZ;00-0000;ANP1949;Emulsão asfáltica RL-1C (ANP);t
+ANP;ZZ;00-0000;ANP1950;Emulsão com polímero para microrrevestimento a frio (ANP);t
+ANP;ZZ;00-0000;ANP1952;Cimento asfáltico CAP 150/200 com polímero (ANP);t
+ANP;ZZ;00-0000;ANP1953;Agente rejuvenescedor para reciclagem a quente (ANP);t
+ANP;ZZ;00-0000;ANP1955;Cimento asfáltico CAP 50/70 com polímero (ANP);t
+ANP;ZZ;00-0000;ANP1956;Emulsão asfáltica RR-2C com polímero (ANP);t
+ANP;ZZ;00-0000;ANP1958;Emulsão asfáltica RM-1C com polímero (ANP);t
+ANP;ZZ;00-0000;ANP2092;Emulsão asfáltica para imprimação (ANP);t
+ANP;ZZ;00-0000;ANP2097;Emulsão asfáltica RR-2C (ANP);t

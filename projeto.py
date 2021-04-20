@@ -97,7 +97,7 @@ class BonificacaoDespesasIndiretas:
 class ComposicaoDB:
     """Classe que representa os parâmetros mais importantes de cada composição do projeto"""
 
-    def __init__( self, codigo: str, bdi: BonificacaoDespesasIndiretas, transporte: bool=False, diferenciado: bool=False ) -> None:
+    def __init__( self, codigo: str, bdi: BonificacaoDespesasIndiretas, diferenciado: bool=False, transporte: bool=False ) -> None:
         self.obj_arred = Precisao()
         obj_composicaostr = ComposicaoStr( codigo )
         self.transporte = transporte
@@ -703,10 +703,11 @@ class ComposicaoDF:
 
 class Servico:
 
-    def __init__( self, codigo: str, quantidade: float, diferenciado: bool ) -> None:
+    def __init__( self, codigo: str, quantidade: float, diferenciado: bool, transporte: bool ) -> None:
         self.codigo = codigo
         self.diferenciado = diferenciado
         self.quantidade = quantidade
+        self.transporte = transporte
 
 
 class Projeto:
@@ -745,7 +746,7 @@ class Projeto:
 
     def instanciar_composicao_db( self, codigo: str, posicao_em_servicos: int ) -> ComposicaoDB:
         if codigo in self.composicoes_com_bdi:
-            obj_composicao_db = ComposicaoDB( codigo, self.bdi, self.servicos[ posicao_em_servicos ].diferenciado )
+            obj_composicao_db = ComposicaoDB( codigo, self.bdi, self.servicos[ posicao_em_servicos ].diferenciado, self.servicos[ posicao_em_servicos ].transporte )
         else:
             obj_composicao_db = ComposicaoDB( codigo, self.obj_bdi_zero )
         return obj_composicao_db
