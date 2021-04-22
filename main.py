@@ -21,17 +21,17 @@ from formatacao_dados import Data, DadosProjeto
 
 baseDF = BaseDF( arq_db_cp, arq_db_in, arq_apr_in, arq_cto_in )
 
-codigos_servicos_projeto = [ '9999200', '9999100', '9999400', '9999307', '9999393', '9999322', '9999341', '9999352', '9999356', '9999361', '9999362', '9999400', '7119700', '308321', '408031', '606841', '705371', '804215', '909621', '1108055', '2009619', '3009090', '4011287', '5213385', '6106188', '7119788']
-quantidade_servicos_projeto = [ 24, 12, 1, 1000, 1000, 200, 100, 15, 20, 60, 70, 50, 1, 100.001, 200.002, 300.003, 400.004, 500.005, 600.006, 700.007, 800.008, 900.009, 1100.011, 1200.021, 1300.031, 6]
-bdi_servicos_projeto = [ False, False, False, True, True, True, True, True, True, True, True, True, False, True, False, True, False, False, False, False, False, False, False, False, False, False]
-transporte_servicos_projeto = [ True, True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+codigos_servicos_projeto = [ '9999200', '9999100', '9999307', '9999393', '9999322', '9999341', '9999352', '9999356', '9999361', '9999362', '9999400', '7119700', '308321', '408031', '606841', '705371', '804215', '909621', '1108055', '2009619', '3009090', '4011287', '5213385', '6106188', '7119788']
+quantidade_servicos_projeto = [ 24, 12, 1000, 1000, 200, 100, 15, 20, 60, 70, 50, 1, 100.001, 200.002, 300.003, 400.004, 500.005, 600.006, 700.007, 800.008, 900.009, 1100.011, 1200.021, 1300.031, 6]
+bdi_servicos_projeto = [ False, False, True, True, True, True, True, True, True, True, True, False, True, False, True, False, False, False, False, False, False, False, False, False, False]
+transporte_servicos_projeto = [ True, True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
 
 lista_servicos_projeto = list()
 
 for i, codigo in enumerate(codigos_servicos_projeto):
     lista_servicos_projeto.append( Servico( codigo, quantidade_servicos_projeto[ i ], bdi_servicos_projeto[ i ], transporte_servicos_projeto[ i ] ) )
 
-situacao = False #True #
+situacao = True #False #
 bdi = BonificacaoDespesasIndiretas( 0.267, 0.150, situacao )
 projeto = Projeto( lista_servicos_projeto, baseDF, bdi )
 

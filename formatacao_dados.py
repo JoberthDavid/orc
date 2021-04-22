@@ -19,7 +19,7 @@ class Precisao:
         return round( valor, self._02_algarismos )
 
     def utilizacao( self, valor: float ) -> float:
-        return round( valor, self._05_algarismos )
+        return round( valor, self._06_algarismos )
 
     def utilizacao_transporte( self, valor: float ) -> float:
         return round( valor, self._10_algarismos )

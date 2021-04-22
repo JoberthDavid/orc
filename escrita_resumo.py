@@ -385,7 +385,7 @@ class FormatacaoEscritaResumoServico(FormatacaoEscrita):
 
     def __init__( self, writer ) -> None:
         super().__init__( writer )
-        self.nome_tabela = 'RESUMO ORÇAMENTO'
+        self.nome_tabela = 'RESUMO ORÇAMENTO POR SERVIÇO'
         self.entrada_area_de_impressao = '$A${}:$G${}'
         self.obj_formatacao_servico.coluna = 'B:B'
         self.obj_formatacao_descricao.coluna = 'C:C'

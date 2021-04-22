@@ -3,10 +3,11 @@ from formatacao_dados import Precisao
 
 class Particula:
 
-    def __init__(self, codigo_principal, atividade_auxiliar, quantidade) -> None:
+    def __init__(self, codigo_principal, atividade_auxiliar, quantidade, transporte ) -> None:
         self.codigo_principal = codigo_principal.zfill(7)
         self.atividade_auxiliar = atividade_auxiliar.zfill(7)
         self.quantidade = quantidade
+        self.transporte_sinal = transporte
 
 
 class NohArvore:
@@ -17,6 +18,7 @@ class NohArvore:
         self.noh_filhos = list()
         self.lista_auxiliar = lista_noh_arvore
         self.quantidade = encapsulada.quantidade
+        self.transporte_sinal = encapsulada.transporte_sinal
         self.insumo = insumo
 
     def inserir_noh_arvore( self, encapsulada: Particula ) -> bool:
@@ -35,7 +37,7 @@ class NohArvore:
         _obj_pilha.colocar_noh_na_pilha( self )
         while _obj_pilha.verificar_se_pilha_estah_vazia() != True:
             self = _obj_pilha.obter_primeiro_noh_da_pilha()
-            self.lista_auxiliar.append( (self.codigo_principal_noh_arvore, self.quantidade) )
+            self.lista_auxiliar.append( (self.codigo_principal_noh_arvore, self.quantidade, self.transporte_sinal) )
             _obj_pilha.retirar_noh_da_pilha()
             for noh_pai in self.noh_filhos[::-1]:
                 _obj_pilha.colocar_noh_na_pilha( noh_pai )
@@ -46,7 +48,7 @@ class NohArvore:
         _obj_pilha.colocar_noh_na_pilha( self )
         while _obj_pilha.verificar_se_pilha_estah_vazia() != True:
             self = _obj_pilha.obter_primeiro_noh_da_pilha()
-            self.lista_auxiliar.append( (self.codigo_principal_noh_arvore, self.quantidade) )
+            self.lista_auxiliar.append( (self.codigo_principal_noh_arvore, self.quantidade, self.transporte_sinal) )
             _obj_pilha.retirar_noh_da_pilha()
             for noh_pai in self.noh_filhos:
                 _obj_pilha.colocar_noh_na_pilha( noh_pai )
@@ -148,20 +150,27 @@ class Arvore:
         consulta = consulta[[self.obj_col_dfr.composicao_principal, self.obj_col_dfr.codigo, self.obj_col_dfr.quantidade]].values.tolist()
         return consulta
 
+    def obter_lista_atividades_auxiliares_inclusive_transporte_composicao( self, codigo: str, sinal_transporte: bool=False ) -> list:
+        consulta = self.baseDF.dfr_apropriacao_in.query( "{} == '{}' & ( {} == {} | {} == {} )".format( self.obj_col_dfr.composicao_principal, codigo, self.obj_col_dfr.grupo, self.obj_grupo.insumo_atividade_auxiliar, self.obj_col_dfr.grupo, self.obj_grupo.insumo_tempo_fixo ) )
+        if sinal_transporte:
+            consulta = self.baseDF.dfr_apropriacao_in.query( "{} == '{}' & ( {} == {} | {} == {} | {} == {} | {} == {} | {} == {} | {} == {} )".format( self.obj_col_dfr.composicao_principal, codigo, self.obj_col_dfr.grupo, self.obj_grupo.insumo_atividade_auxiliar, self.obj_col_dfr.grupo, self.obj_grupo.insumo_tempo_fixo, self.obj_col_dfr.grupo, self.obj_grupo.insumo_tr_ln, self.obj_col_dfr.grupo, self.obj_grupo.insumo_tr_rp, self.obj_col_dfr.grupo, self.obj_grupo.insumo_tr_pv, self.obj_col_dfr.grupo, self.obj_grupo.insumo_tr_fe ) )
+        consulta = consulta[[self.obj_col_dfr.composicao_principal, self.obj_col_dfr.codigo, self.obj_col_dfr.quantidade]].values.tolist()
+        return consulta
+
     def inserir_auxiliar_noh_arvore( self, encapsulada: Particula ) -> bool:
         sinal = False
         if self.noh_raiz_arvore_composicao == None:
             self.noh_raiz_arvore_composicao = NohArvore( encapsulada, self.lista )
-            for item in self.obter_lista_atividades_auxiliares_composicao( encapsulada.codigo_principal ):
-                encapsulada2 = Particula( encapsulada.codigo_principal, item[1], item[2] )
+            for item in self.obter_lista_atividades_auxiliares_inclusive_transporte_composicao( encapsulada.codigo_principal, encapsulada.transporte_sinal ):
+                encapsulada2 = Particula( encapsulada.codigo_principal, item[1], item[2], encapsulada.transporte_sinal )
                 self.inserir_auxiliar_noh_arvore( encapsulada2 )
             sinal = True
         else:
             obj_arred = Precisao()
             self.noh_raiz_arvore_composicao.inserir_noh_arvore( encapsulada )
-            for item in self.obter_lista_atividades_auxiliares_composicao( encapsulada.atividade_auxiliar ):
+            for item in self.obter_lista_atividades_auxiliares_inclusive_transporte_composicao( encapsulada.atividade_auxiliar, encapsulada.transporte_sinal ):
                 quantidade = obj_arred.utilizacao( encapsulada.quantidade * item[2] )
-                encapsulada3 = Particula( encapsulada.atividade_auxiliar, item[1], quantidade )
+                encapsulada3 = Particula( encapsulada.atividade_auxiliar, item[1], quantidade, encapsulada.transporte_sinal )
                 self.inserir_auxiliar_noh_arvore( encapsulada3 )
             sinal = True
         return sinal

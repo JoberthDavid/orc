@@ -97,10 +97,10 @@ class BonificacaoDespesasIndiretas:
 class ComposicaoDB:
     """Classe que representa os parâmetros mais importantes de cada composição do projeto"""
 
-    def __init__( self, codigo: str, bdi: BonificacaoDespesasIndiretas, diferenciado: bool=False, transporte: bool=False ) -> None:
+    def __init__( self, codigo: str, bdi: BonificacaoDespesasIndiretas, diferenciado: bool=False, transporte_sinal: bool=False ) -> None:
         self.obj_arred = Precisao()
         obj_composicaostr = ComposicaoStr( codigo )
-        self.transporte = transporte
+        self.transporte_sinal = transporte_sinal
         self.codigo = obj_composicaostr.codigo
         self.bdi = bdi
         self.diferenciado = diferenciado
@@ -151,13 +151,13 @@ class ComposicaoDB:
         return self.custo_fit
 
     def configurar_custo_bdi( self ) -> float:
-        self.custo_bdi = self.obj_arred.custo( self.custo_unitario_total * self.bdi_valor_utilizado )
+        self.custo_bdi = self.obj_arred.monetario( self.custo_unitario_total * self.bdi_valor_utilizado )
         return self.custo_bdi
 
     def configurar_custo_unitario_total( self ) -> float:
         custos_execucao = self.custo_unitario_execucao + self.custo_fic + self.custo_fit
         custos_atividades_auxiliares = self.custo_total_atividade_auxiliar + self.custo_total_tempo_fixo + self.custo_total_transporte
-        self.custo_unitario_total = self.obj_arred.custo( custos_execucao + self.custo_unitario_material + custos_atividades_auxiliares )
+        self.custo_unitario_total = self.obj_arred.monetario( custos_execucao + self.custo_unitario_material + custos_atividades_auxiliares )
         return self.custo_unitario_total
 
     def configurar_preco_unitario_total( self ) -> float:
@@ -629,11 +629,17 @@ class ComposicaoDF:
             preco_unitario = self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.codigo ] == item, self.obj_col_dfr.preco_unitario ]
             if ( grupo > self.obj_grupo.linha_vazia_tempo_fixo ) and ( grupo < self.obj_grupo.subtotal_unitario_transporte ):
                 # Transporte na composição
-                if self.composicao.transporte:
-                    distancia_transporte = self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_ln, self.obj_col_dfr.dmt ] = 10.0
-                    distancia_transporte = self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_rp, self.obj_col_dfr.dmt ] = 20.0
-                    distancia_transporte = self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_pv, self.obj_col_dfr.dmt ] = 30.0
-                    distancia_transporte = self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_fe, self.obj_col_dfr.dmt ] = 40.0
+                if self.composicao.transporte_sinal:
+
+                    obj_col_dmt = ListaColunaDMTInsumoDB()
+                    dfr_dmt_sem_tratamento = GeradorDF( arq_dmt )
+                    dfr_dmt = dfr_dmt_sem_tratamento.tratar_dfr( obj_col_dmt.obter_lista() )
+                    transp = pd.merge( self.dfr_insumo, dfr_dmt, on=self.obj_col_dfr.item_transporte, how='left', suffixes=[None,'_y'] )
+                    distancia_transporte = self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_ln, self.obj_col_dfr.dmt ] = transp.loc[ transp[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_ln, self.obj_col_dfr.dmt_ln ]
+                    distancia_transporte = self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_rp, self.obj_col_dfr.dmt ] = transp.loc[ transp[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_rp, self.obj_col_dfr.dmt_rp ]
+                    distancia_transporte = self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_pv, self.obj_col_dfr.dmt ] = transp.loc[ transp[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_pv, self.obj_col_dfr.dmt_pv ]
+                    distancia_transporte = self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_fe, self.obj_col_dfr.dmt ] = transp.loc[ transp[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_fe, self.obj_col_dfr.dmt_fe ]
+                
                 else:
                     distancia_transporte = self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.codigo ] == item, self.obj_col_dfr.dmt ] = 0.00
                 self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.codigo ] == item, self.obj_col_dfr.custo_total ] = self.obj_arred.custo( distancia_transporte * quantidade * preco_unitario )
@@ -703,11 +709,11 @@ class ComposicaoDF:
 
 class Servico:
 
-    def __init__( self, codigo: str, quantidade: float, diferenciado: bool, transporte: bool ) -> None:
+    def __init__( self, codigo: str, quantidade: float, diferenciado: bool, transporte_sinal: bool ) -> None:
         self.codigo = codigo
         self.diferenciado = diferenciado
         self.quantidade = quantidade
-        self.transporte = transporte
+        self.transporte_sinal = transporte_sinal
 
 
 class Projeto:
@@ -730,8 +736,8 @@ class Projeto:
         self.dic_df_composicao = dict()
         self.lista_auxiliar = list()
         self.configurar_lista_composicoes_projeto()
-        self.gerar_dicionario_dados_basicos_composicoes_projeto()
         self.atividades_auxiliares_projeto = self.obter_lista_atividades_auxiliares_servicos_projeto()
+        self.gerar_dicionario_dados_basicos_composicoes_projeto()
         self.transportes_projeto = self.obter_dicionario_transportes_servicos_projeto()
         self.equipamento_projeto = self.obter_dicionario_equipamentos_servicos_projeto()
         self.material_projeto = self.obter_dicionario_materiais_servicos_projeto()
@@ -744,11 +750,19 @@ class Projeto:
             self.composicoes_projeto.append( obj_composicaostr.codigo )
         self.composicoes_com_bdi = self.composicoes_projeto.copy()
 
+    def obter_sinal_transporte( self, codigo: str ) -> bool:
+        obj_composicaostr = ComposicaoStr( codigo )
+        for item in self.atividades_auxiliares_projeto:
+            for subitem in item:
+                if subitem[0] == obj_composicaostr.codigo:
+                    return subitem[2]
+
     def instanciar_composicao_db( self, codigo: str, posicao_em_servicos: int ) -> ComposicaoDB:
         if codigo in self.composicoes_com_bdi:
-            obj_composicao_db = ComposicaoDB( codigo, self.bdi, self.servicos[ posicao_em_servicos ].diferenciado, self.servicos[ posicao_em_servicos ].transporte )
+            obj_composicao_db = ComposicaoDB( codigo, self.bdi, self.servicos[ posicao_em_servicos ].diferenciado, self.servicos[ posicao_em_servicos ].transporte_sinal )
         else:
-            obj_composicao_db = ComposicaoDB( codigo, self.obj_bdi_zero )
+            sinal_transporte = self.obter_sinal_transporte( codigo )
+            obj_composicao_db = ComposicaoDB( codigo, self.obj_bdi_zero, transporte_sinal=sinal_transporte )
         return obj_composicao_db
 
     def instanciar_composicao_df( self, obj_composicao_db: ComposicaoDB ) -> ComposicaoDF:
@@ -866,9 +880,9 @@ class Projeto:
         for item in self.servicos:
             quantidade = 1.0
             obj_arvore_servico = Arvore( self.baseDF, self.obj_col_dfr, self.obj_grupo )
-            enParticulada = Particula( item.codigo, item.codigo, quantidade )
+            enParticulada = Particula( item.codigo, item.codigo, quantidade, item.transporte_sinal )
             obj_arvore_servico.inserir_auxiliar_noh_arvore( enParticulada )
-            lista_primaria.append( obj_arvore_servico.obter_lista_auxiliares_noh_arvore_in_order() )           
+            lista_primaria.append( obj_arvore_servico.obter_lista_auxiliares_noh_arvore_in_order() )
         return lista_primaria
 
     def obter_dfr_transportes_servicos( self ) -> pd.core.frame.DataFrame:
@@ -922,7 +936,7 @@ class Projeto:
         lista_momento_transporte_unitario = list()
         lista_momento_transporte_total = list()
 
-        for item in self.obter_lista_atividades_auxiliares_servicos_projeto():
+        for item in self.atividades_auxiliares_projeto:
 
             for serv in self.servicos:
                 obj_p1 = ComposicaoStr( str(serv.codigo) )
@@ -1013,7 +1027,7 @@ class Projeto:
         lista_preco_unitario_total = list()
         lista_custo_total = list()
         lista_quantidade_servico = list()
-        for item in self.obter_lista_atividades_auxiliares_servicos_projeto():
+        for item in self.atividades_auxiliares_projeto:
 
             for serv in self.servicos:
                 obj_p1 = ComposicaoStr( str(serv.codigo) )
@@ -1102,7 +1116,7 @@ class Projeto:
         lista_preco_unitario_total = list()
         lista_custo_total = list()
         lista_quantidade_servico = list()
-        for item in self.obter_lista_atividades_auxiliares_servicos_projeto():
+        for item in self.atividades_auxiliares_projeto:
 
             for serv in self.servicos:
                 obj_p1 = ComposicaoStr( str(serv.codigo) )
@@ -1182,7 +1196,7 @@ class Projeto:
         lista_descricao = list()
         lista_preco_unitario_total = list()
         lista_custo_total = list()
-        for item in self.obter_lista_atividades_auxiliares_servicos_projeto():
+        for item in self.atividades_auxiliares_projeto:
 
             for serv in self.servicos:
                 obj_p1 = ComposicaoStr( str(serv.codigo) )
@@ -1321,7 +1335,7 @@ class Projeto:
             lista_unidade.append( self.dic_db_projeto[ obj_compstr.codigo ].unidade )
             quantidade = item.quantidade
             lista_quantidade.append( quantidade )
-            pu = self.dic_db_projeto[ obj_compstr.codigo ].custo_horario_equipamento #retornar para preco_unitario_total após resolver a questão do dicionario
+            pu = self.dic_db_projeto[ obj_compstr.codigo ].preco_unitario_total
             lista_preco_unitario.append( pu )
             ct = obj_precisao.monetario( pu * quantidade )
             lista_preco_total.append( ct )
