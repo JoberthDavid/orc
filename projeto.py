@@ -43,6 +43,9 @@ class GeradorDF:
         self.dfr.columns = obj_col_origem.obter_lista() + lista
         return self.dfr
 
+    def tratar_dfr_dmt( self, lista=list() ) -> pd.core.frame.DataFrame:
+        self.dfr.columns = lista
+        return self.dfr
 
 class ComposicaoStr:
 
@@ -634,15 +637,20 @@ class ComposicaoDF:
                     obj_col_dmt = ListaColunaDMTInsumoDB()
                     dfr_dmt_sem_tratamento = GeradorDF( arq_dmt )
                     dfr_dmt = dfr_dmt_sem_tratamento.tratar_dfr( obj_col_dmt.obter_lista() )
-                    transp = pd.merge( self.dfr_insumo, dfr_dmt, on=self.obj_col_dfr.item_transporte, how='left', suffixes=[None,'_y'] )
-                    distancia_transporte = self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_ln, self.obj_col_dfr.dmt ] = transp.loc[ transp[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_ln, self.obj_col_dfr.dmt_ln ]
-                    distancia_transporte = self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_rp, self.obj_col_dfr.dmt ] = transp.loc[ transp[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_rp, self.obj_col_dfr.dmt_rp ]
-                    distancia_transporte = self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_pv, self.obj_col_dfr.dmt ] = transp.loc[ transp[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_pv, self.obj_col_dfr.dmt_pv ]
-                    distancia_transporte = self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_fe, self.obj_col_dfr.dmt ] = transp.loc[ transp[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_fe, self.obj_col_dfr.dmt_fe ]
+
+                    dfr_aux = pd.merge( self.dfr_insumo, dfr_dmt, on=[ self.obj_col_dfr.item_transporte ], how='left', suffixes=[None,'_y'] )
+
+                    self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_ln, self.obj_col_dfr.dmt ] =  dfr_aux.loc[ dfr_aux[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_ln, self.obj_col_dfr.dmt_ln ]
+                    self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_rp, self.obj_col_dfr.dmt ] =  dfr_aux.loc[ dfr_aux[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_rp, self.obj_col_dfr.dmt_rp ]
+                    self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_pv, self.obj_col_dfr.dmt ] =  dfr_aux.loc[ dfr_aux[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_pv, self.obj_col_dfr.dmt_pv ]
+                    self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_fe, self.obj_col_dfr.dmt ] =  dfr_aux.loc[ dfr_aux[ self.obj_col_dfr.grupo ] == self.obj_grupo.insumo_tr_fe, self.obj_col_dfr.dmt_fe ]
+
                 
                 else:
-                    distancia_transporte = self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.codigo ] == item, self.obj_col_dfr.dmt ] = 0.00
-                self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.codigo ] == item, self.obj_col_dfr.custo_total ] = self.obj_arred.custo( distancia_transporte * quantidade * preco_unitario )
+                    self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.codigo ] == item, self.obj_col_dfr.dmt ] = 0.00
+                
+                distancia_transporte = self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.codigo ] == item, self.obj_col_dfr.dmt ]
+                self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.codigo ] == item, self.obj_col_dfr.custo_total ] = distancia_transporte * quantidade * preco_unitario
 
             else:
                 self.dfr_insumo.loc[ self.dfr_insumo[ self.obj_col_dfr.codigo ] == item, self.obj_col_dfr.custo_total ] = self.obj_arred.custo( quantidade * preco_unitario )
